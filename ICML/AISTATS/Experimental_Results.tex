@@ -1,0 +1,71 @@
+
+% This section presents the empirical evaluation of our proposed GCOD loss function, along with the two methods leveraging Dirichlet energy regularization (CE+W2 and a method directly using $\mathcal{L}_{DE}$ with fixed and class-specific bounds), comparing their robustness against label noise across diverse datasets and conditions. In addition to standard Cross Entropy (CE) baselines, we include two recent state of the art methods for robustness: SOP \cite{liu2022robusttraininglabelnoise} and OMG \cite{omg7}. SOP is a leading approach for noise robust image classification based on sample reweighting, while OMG is a graph specific method designed to mitigate overfitting to noisy supervision. Their inclusion provides a strong comparative reference for evaluating the noise robustness of GCOD and our Dirichlet energy methods in both general and graph specific settings.
+% \paragraph{Results on PPA}
+% Table \ref{tab:ppa_30_perc_6_classes} summarizes the results under 0\%, 20\%, and 40\% label noise on the PPA dataset, where 30\% of the data across $6$ classes was selected, utilizing a 5-layered GIN network (details provided in Appendix \ref{sec:experimental_setting})  \\
+% The proposed {GCOD} loss consistently outperforms other methods by achieving a smaller gap between the best and final accuracies, which reflects improved generalization and robustness to noise. 
+% SOP, despite being competitive, exhibits wider accuracy gaps, indicating its susceptibility to overfitting. 
+%  {CE+W2} occasionally surpasses SOP at certain noise levels; its excessive smoothing leads to overfitting in noise-free scenarios. 
+% Precisely {CE+W2} improves test accuracy under moderate noise (e.g., 20\%: 89.83 vs. 88.66 compared to CE) and narrows the gap between training and test performance, indicating reduced overfitting. 
+% However, under clean labels (0\%  noise), CE+W2 tends to over-smooth, with slightly degraded final accuracy. The eigen decomposition step introduces a modest training overhead (see Table \ref{tab:runtime_comparison}) and potential instability. However, the findings confirm that controlling the weight matrix spectrum influences Dirichlet energy and robustness. $\mathcal L_{DE}$ with a \emph{Fixed bound} shows results in line with CE+W2: it's able to imporve the performance in the presence of moderate levels of noise, but in noise-free settings the gains were limited due to potential over-smoothing. With the use \emph{Class-specific bounds}, instead, the adaptive mechanism allowed the regularization to align with the intrinsic complexity of each class, which enable the method to improve the accuracy at all levels of label noise, including the absence of noise. This suggests the class specific method improves generalization as well as model robustness.
+
+
+% \textbf{Results Across Multiple Datasets (20\% Symmetric Noise)}
+% Table \ref{tab:alldataset} compares {GCOD} with standard CE under 20\% symmetrical noise across several datasets.
+%  The Table shows that 
+% {GCOD} outperforms CE on most datasets, highlighting its resilience regardless of the specific data characteristics (with the exception of REDDIT-MULTI-12K in this specific test).
+
+% \textbf{Results under Asymmetric Noise (40\%)}
+% In Table~\ref{tab:asymmetric_noise}, a comparison of {GCOD} and CE under 40\% asymmetric label noise across datasets is presented. {GCOD} consistently outperforms CE, demonstrating its robustness in handling asymmetric label noise.
+
+% \textbf{Comparison with OMG}
+% Lastly, Table~\ref{tab:omg_table} compares the percentage accuracy improvements of the OMG method and our proposed {GCOD} method across three datasets (MUTAG, IMDB-B, and PROTEINS) under experimental conditions similar to those in the OMG paper.It further underscores the superior performance and robustness of {GCOD} in noisy environments.
+
+% \textbf{Computational Efficiency and Hyperparameter Sensitivity of GCOD} Table~\ref{tab:runtime_comparison} compares the percentage runtime increase for various methods relative to GIN trained with cross entropy loss, normalized to 1, {CE+W2} incurs a 33\% increase in training time. The GCOD loss function introduces no additional hyperparameters beyond the learning rate for the learnable parameters (the weights and a parameter $u$). Table~\ref{tab:lr_sensitivity} shows the impact of the learning rate of  $u$ on GCOD performances.
+
+
+
+
+
+
+
+We evaluate our three methods---spectral constraints (CE+W2), Dirichlet regularization ($\mathcal{L}_{DE}$ with fixed and class-specific bounds), and \method---against standard cross-entropy and recent robust baselines across diverse graph classification benchmarks under both symmetric and asymmetric noise. In addition to standard Cross Entropy (CE) baselines, we include two recent state-of-the-art methods: SOP~\cite{liu2022robusttraininglabelnoise}, a leading sample reweighting approach for noisy image classification, and OMG~\cite{omg7}, a graph-specific method combining contrastive learning with curriculum learning. Their inclusion provides strong comparative reference for evaluating noise robustness in graph classification.
+
+\paragraph{Results on PPA}
+Table \ref{tab:ppa_30_perc_6_classes} summarizes the results under 0\%, 20\%, and 40\% label noise on the PPA dataset, where 30\% of the data across $6$ classes was selected, utilizing a 5-layered GIN network (details provided in Appendix \ref{sec:experimental_setting}).
+
+The proposed {GCOD} loss consistently outperforms other methods by achieving a smaller gap between the best and final accuracies, which reflects improved generalization and robustness to noise. 
+SOP, despite being competitive, exhibits wider accuracy gaps, indicating its susceptibility to overfitting. 
+{CE+W2} occasionally surpasses SOP at certain noise levels; its excessive smoothing leads to overfitting in noise-free scenarios. 
+Precisely {CE+W2} improves test accuracy under moderate noise (e.g., 20\%: 89.83 vs. 88.66 compared to CE) and narrows the gap between training and test performance, indicating reduced overfitting. 
+However, under clean labels (0\% noise), CE+W2 tends to over-smooth, with slightly degraded final accuracy. The eigen decomposition step introduces a modest training overhead (see Table \ref{tab:runtime_comparison}) and potential instability. However, the findings confirm that controlling the weight matrix spectrum influences Dirichlet energy and robustness. 
+
+$\mathcal L_{DE}$ with a \emph{Fixed bound} shows results in line with CE+W2: it improves performance in the presence of moderate levels of noise, but in noise-free settings the gains were limited due to potential over-smoothing. With the use of \emph{Class-specific bounds}, instead, the adaptive mechanism allowed the regularization to align with the intrinsic complexity of each class, enabling the method to improve accuracy at all levels of label noise, including the absence of noise. This suggests the class-specific method improves generalization as well as model robustness.
+
+\textbf{Results Across Multiple Datasets (20\% Symmetric Noise)}
+Table \ref{tab:alldataset} compares {GCOD} with standard CE under 20\% symmetrical noise across several datasets.
+The Table shows that {GCOD} outperforms CE on most datasets, highlighting its resilience regardless of the specific data characteristics (with the exception of REDDIT-MULTI-12K in this specific test).
+
+\textbf{Results under Asymmetric Noise (40\%)}
+In Table~\ref{tab:asymmetric_noise}, a comparison of {GCOD} and CE under 40\% asymmetric label noise across datasets is presented. {GCOD} consistently outperforms CE, demonstrating its robustness in handling asymmetric label noise.
+
+\textbf{Comparison with OMG}
+Lastly, Table~\ref{tab:omg_table} compares the percentage accuracy improvements of the OMG method and our proposed {GCOD} method across three datasets (MUTAG, IMDB-B, and PROTEINS) under experimental conditions similar to those in the OMG paper. It further underscores the superior performance and robustness of {GCOD} in noisy environments. In terms of efficiency, Table IV of the OMG paper reports an average runtime overhead of ~200\% for small datasets (MUTAG, PROTEINS, IMDB-B, NCI1) compared to a base GIN. OMG is even slower than Co-Teaching under identical settings. In contrast, GCOD has only a 0.029\% overhead even on the large and complex OGB-PPA dataset.
+
+\textbf{Computational Efficiency and Hyperparameter Sensitivity of GCOD} 
+Table~\ref{tab:runtime_comparison} compares the percentage runtime increase for various methods relative to GIN trained with cross entropy loss, normalized to 1. {CE+W2} incurs a 33\% increase in training time. The GCOD loss function introduces no additional hyperparameters beyond the learning rate for the learnable parameters (the weights and a parameter $u$). Table~\ref{tab:lr_sensitivity} shows the impact of the learning rate of $u$ on GCOD performances.
+
+% \subsection{Evidence for Causality: Three Mechanisms, One Effect}
+
+% A natural concern is whether Dirichlet energy merely \emph{correlates} with noise robustness or \emph{causally} influences it. We present three lines of evidence supporting a causal relationship.
+
+% \textbf{Convergent mechanisms.} Our three methods improve robustness through fundamentally different mechanisms: CE+W2 constrains weight matrix spectra, $\mathcal{L}_{DE}$ explicitly penalizes energy, and \method reweights samples based on centroid deviation. Despite these differences, all three (i) reduce Dirichlet energy relative to cross-entropy under noise (Fig.~\ref{fig:PPA_NCOD_Dirich_energy}), and (ii) improve test accuracy (Table~\ref{tab:ppa_30_perc_6_classes}). This convergence across distinct mechanisms supports a causal role for energy.
+
+% \textbf{Dose-response relationship.} Fig.~\ref{fig:noise_levels_energy} in Appendix~\ref{sec:Additional_studies} shows that higher noise levels produce larger energy increases under cross-entropy. This systematic relationship between noise severity and energy growth would not be expected if energy were merely a confounding artifact.
+
+% \textbf{Temporal alignment.} The energy increase does not occur gradually throughout training but precisely when training accuracy on noisy samples begins rising (Fig.~\ref{fig:PPA_DE_NCOD_subfig1}). This temporal specificity---energy spiking exactly during noise memorization, not before or after---suggests a direct mechanistic link rather than coincidental correlation.
+
+% While a formal causal analysis (e.g., via interventions or instrumental variables) is beyond our scope, these observations collectively support our hypothesis that controlling Dirichlet energy is a \emph{mechanism} for achieving robustness in graph classification, not merely a correlate.
+
+\subsection{Evidence for Causality}
+
+A natural concern is whether Dirichlet energy merely \emph{correlates} with noise robustness or \emph{causally} influences it. Three observations support a causal relationship: (i)~\textbf{Convergent mechanisms}---our three methods improve robustness through fundamentally different mechanisms (spectral constraints, explicit energy penalties, centroid-based reweighting), yet all reduce Dirichlet energy under noise (Fig.~\ref{fig:PPA_NCOD_Dirich_energy}); (ii)~\textbf{Dose-response}---higher noise levels produce proportionally larger energy increases (Fig.~\ref{fig:noise_levels_energy}, Appendix~\ref{sec:Additional_studies}); and (iii)~\textbf{Temporal alignment}---energy spikes precisely when training accuracy on noisy samples rises (Fig.~\ref{fig:PPA_DE_NCOD_subfig1}), not gradually throughout training. While formal causal analysis is beyond our scope, these observations collectively support that controlling Dirichlet energy is a \emph{mechanism} for robustness, not merely a correlate.

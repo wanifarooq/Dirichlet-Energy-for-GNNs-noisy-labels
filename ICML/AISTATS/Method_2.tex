@@ -1,0 +1,184 @@
+% Having shown that noise overfitting aligns with increasing  Dirichlet energy and that $E^{dir}$ decreasing methods improve robustness, we now explore an alternative path; a robust loss function. We introduce Graph Centroid Outlier Discounting \method, adapted from \cite{wani2023combining} image classification for learning with noisy labels. Unlike previous methods, \method enhances robustness directly through its formulation, not by explicitly controlling $E^{dir}$
+% While \method is not designed to directly minimize Dirichlet energy, we investigate its performance in the presence of label noise and, crucially, observe the corresponding behavior in terms of $E^{dir}$.  In this section, we focus on research questions: \textbf{RQ3}.\textit{ Is \method able to prevent learning of noisy samples and promote smoothness of \eqref{eq: avg_dirichlet}, even though it is not specifically designed for it?}
+
+% We analyze this question through a set of experiments.
+% NCOD \cite{wani2023combining} is a loss function designed to address overfitting due to noisy labels for image classification \cite{memorizenoise}. 
+% NCOD assumes samples of the same class are closer in latent space and leverages Deep Neural Networks' tendency to first learn from clean samples before noisy ones \cite{arpit2017closer}. 
+
+
+
+ 
+% Our \method method adapts the NCOD framework for graph classification with noisy labels. All the details about the newly designed loss are relegated to Section \ref{appendix:details_GCOD_method} in the Appendix. We introduce two main modifications over the original NCOD.
+% We add a third loss term $\mathcal{L}_3$ (see eq. \eqref{eq: eq_L3}  in Section \ref{appendix:details_GCOD_method}). This term uses a regularization based on a per sample trainable parameter to help the model distinguish between clean and noisy samples for better alignment.
+% We incorporate the current training accuracy ($a_{ 
+% train}$) as feedback into other loss terms (eq \eqref{eq: eq_L1}, \ref{eq: eq_L2} in Section \ref{appendix:details_GCOD_method}). This prioritizes learning from samples that the model correctly fits in early training, assuming these are more likely to be clean.
+
+
+% \method consistently reduces overfitting on noisy samples and preserves smoothness in graph learning, as evidenced by the decreasing Dirichlet energy (Fig. \ref{fig:PPA_DE_NCOD_subfig1} and \ref{fig:PPA_NCOD_Dirich_energy}). Our results for Graph Isomorphism Networks (GIN) \cite{WL1} in Table \ref{tab:ppa_30_perc_6_classes}, Table \ref{tab:alldataset}, and (Fig. \ref{fig:gin_enzymes} and for Graph Convolutional Networks (GCN)  \cite{gcn} in Fig. \ref{fig:NCOD_accuracy} in the Appendix) show that GCOD effectively mitigates noise impact, validating our hypothesis and answering \textbf{RQ3}.
+
+
+
+Having shown that noise overfitting aligns with increasing Dirichlet energy and that ($E^{dir}$) decreasing methods improve robustness, we now explore an alternative path: a robust loss function. We introduce Graph Centroid Outlier Discounting (\method), adapted from \cite{wani2023combining} for graph classification with noisy labels. Unlike previous methods, \method enhances robustness directly through its formulation, not by explicitly controlling $E^{dir}$.
+
+While \method is not designed to directly minimize Dirichlet energy, we investigate its performance in the presence of label noise and observe the corresponding behavior in terms of $E^{dir}$. This leads to our research question: \textbf{RQ3}. \textit{Is \method able to prevent learning of noisy samples and promote smoothness of \eqref{eq: avg_dirichlet}, even though it is not specifically designed for it?}
+
+\subsection{GCOD Loss Formulation}
+
+NCOD~\cite{wani2023combining} is a loss function designed for image classification under label noise~\cite{memorizenoise}, which assumes samples of the same class cluster in latent space and exploits the tendency of networks to learn clean patterns before memorizing noise~\cite{arpit2017closer}.
+
+We adapt this framework for graph classification. Let $f_{\theta}: \mathbb{R}^{N \times m'} \rightarrow \mathbb{R}^{|C|}$ map pooled node representations to class probabilities. For a batch of $B$ graphs, we introduce $\mathbf{u}_B \in \mathbb{R}^B$ as a learnable per-sample parameter capturing sample reliability, with $\mathbf{\hat{y}}_B$ (one-hot encoded) as predicted labels, $\mathbf{y}_B$ (one-hot encoded) as given labels, and $\mathbf{\tilde{y}}_B$ as soft labels computed from class centroids. Let $\mathbf{Z}_B$ denote the pooled graph representations for the batch.
+
+\method optimizes three complementary terms:
+
+\textbf{Term 1: Adaptive Cross-Entropy.}
+\begin{equation}
+\label{eq:gcod1}
+\mathcal{L}_1 = \mathcal{L}_{\text{CE}}\big(f_{\theta}(\mathbf{Z}_B) + a_{\text{train}} \cdot \text{diag}_\text{vec}(\mathbf{u}_B) \cdot \mathbf{y}_B,\; \mathbf{\tilde{y}}_B\big)
+\end{equation}
+where $a_{\text{train}}$ is the current training accuracy. Early in training (low $a_{\text{train}}$), the loss behaves like standard CE; as training progresses, reliable samples (low $u$) are emphasized.
+
+\textbf{Term 2: Reliability Learning.}
+\begin{equation}
+\label{eq:gcod2}
+\mathcal{L}_2 = \frac{1}{|C|} \left\| \mathbf{\hat{y}}_B + \text{diag}_\text{vec}(\mathbf{u}_B) \cdot \mathbf{y}_B - \mathbf{y}_B \right\|^2
+\end{equation}
+This encourages $u_i$ to be small when graph $i$ aligns with its label (likely clean) and large when it deviates (likely noisy).
+
+\textbf{Term 3: Alignment Regularization}:
+\begin{equation}
+\label{eq:gcod3}
+\mathcal{L}_3 = (1 - a_{\text{train}}) \cdot D_{KL}\big(\mathfrak{L} \,\|\, \sigma(-\log(\mathbf{u}_B))\big)
+\end{equation}
+where $\mathfrak{L} = \log(\sigma(\text{diag}_\text{mat}(f_{\theta}(\mathbf{Z}_B)\mathbf{y}_B^\top)))$. This term, absent in the original NCOD, prevents $\mathbf{u}$ from growing aggressively early in training by regularizing alignment between predictions and reliability estimates.
+
+\textbf{Parameter Updates.} Model parameters $\theta$ and reliability parameters $\mathbf{u}$ are updated separately:
+\begin{equation}
+\label{eq:gcod_update}
+\theta^{t+1} \leftarrow \theta^t - \alpha \nabla_\theta (\mathcal{L}_1 + \mathcal{L}_3), \quad
+\mathbf{u}^{t+1} \leftarrow \mathbf{u}^t - \beta \nabla_{\mathbf{u}} \mathcal{L}_2
+\end{equation}
+
+The soft labels $\mathbf{\tilde{y}}_B$ are computed from class centroids in representation space following~\cite{wani2023combining}; see Appendix~\ref{appendix:details_GCOD_method} for details.
+
+\subsection{Connection to Graph Classification and Smoothness}
+
+Unlike image classification where NCOD operates on flattened feature vectors, \method operates on \emph{pooled graph representations}---the result of aggregating node features across each graph. Graphs whose pooled representations deviate from their assigned class centroid are down-weighted, as they are likely mislabeled.
+
+Although \method does not explicitly minimize Dirichlet energy, it achieves a similar effect. By down-weighting graphs that deviate from class centroids, \method prevents the model from learning sharp, high-frequency node patterns needed to fit outliers. Fig.~\ref{fig:PPA_DE_NCOD_subfig1} and~\ref{fig:PPA_NCOD_Dirich_energy} confirm this: under \method, Dirichlet energy remains low throughout training, whereas cross-entropy shows the characteristic energy spike during noise memorization.
+% \subsection{Experimental Validation}
+
+\method consistently reduces overfitting on noisy samples and preserves smoothness in graph learning. Results for Graph Isomorphism Networks (GIN)~\cite{WL1} in Table~\ref{tab:ppa_30_perc_6_classes} and Table~\ref{tab:alldataset}, and for Graph Convolutional Networks (GCN)~\cite{gcn} in Fig.~\ref{fig:NCOD_accuracy} (Appendix), show that \method effectively mitigates noise impact, validating our hypothesis and answering \textbf{RQ3}.
+
+
+
+
+
+\begin{table}[htbp]
+  \centering
+
+  % ==== LEFT: PPA, 30 % of data from 6 classes ====================
+ 
+    \centering
+    \caption{Performance on the PPA dataset using 30\% of the data restricted to 6 selected classes. The best test accuracy is highlighted in bold red, the second best in blue. Reported values denote mean ± standard deviation across 4 independent runs}
+      % \vspace{1pt}
+    \label{tab:ppa_30_perc_6_classes}
+
+    \renewcommand{\arraystretch}{1.2}
+    \resizebox{\linewidth}{!}{%
+      \begin{tabular}{c c c c c c}
+        \toprule
+        \textbf{Noise} & \textbf{Method} &
+        \multicolumn{2}{c}{\textbf{Test Acc.}} &
+        \multicolumn{2}{c}{\textbf{Train Acc.}} \\
+        \cline{3-6}
+        & & \textbf{Best} & \textbf{Last} & \textbf{Best} & \textbf{Last} \\
+        \midrule
+
+        % ------------ 0 % noise -------------
+        \multirow{5}{*}{0 \%}
+          & CE              & 96.25 ± 0.05 & 91.25 &  1.00 & 99.33 \\
+          & \method         & 96.65 ± 0.52 & 93.25 & 99.23 & 99.03 \\
+          & CE + W2         & 96.50 ± 1.12 & 86.50 & 99.76 & 99.29 \\
+          & Fixed           & 96.58 ± 0.27 & 85.70 & 99.26 & 98.29 \\
+          & Class-specific  & 96.96 ± 0.04 & 88.67 & 99.41 & 98.67 \\
+        \midrule
+
+        % ------------ 20 % noise ------------
+        \multirow{7}{*}{20 \%}
+          & CE (clean only) & \textcolor{gray}{96.15 ± 0.09} & \textcolor{gray}{90.66}
+                            & \textcolor{gray}{84.50} & \textcolor{gray}{84.07} \\ \cline{3-6}
+          & CE              & 88.66 ± 0.16 & 62.58 & 94.98 & 93.45 \\
+          & SOP             & 91.01 ± 0.44 & 85.50 & 79.17 & 77.64 \\
+          & \textcolor{red}{\method}
+                            & \textbf{\textcolor{red}{93.91 ± 0.26}} &
+                              \textbf{\textcolor{red}{92.58}} &
+                              \textcolor{red}{80.11} & \textcolor{red}{79.52} \\
+          & CE + W2         & 89.83 ± 1.23 & 76.66 & 84.90 & 83.68 \\
+          & Fixed           & 89.69 ± 0.57 & 80.25 & 78.07 & 70.14 \\
+          & \textcolor{blue}{Class-specific}$^\ast$
+                            & \textcolor{blue}{92.34 ± 0.41} &
+                              \textcolor{blue}{80.92} &
+                              \textcolor{blue}{84.55} & \textcolor{blue}{83.73} \\
+        \midrule
+
+        % ------------ 40 % noise ------------
+        \multirow{7}{*}{40 \%}
+          & CE (clean only) & \textcolor{gray}{95.08 ± 0.13} & \textcolor{gray}{80.44}
+                            & \textcolor{gray}{68.15} & \textcolor{gray}{67.05} \\ \cline{3-6}
+          & CE              & 82.08 ± 0.22 & 51.83 & 82.47 & 78.88 \\
+          & SOP             & 82.33 ± 1.32 & 65.41 & 58.90 & 57.68 \\
+          & \textcolor{red}{\method}
+                            & \textbf{\textcolor{red}{93.88 ± 0.04}} &
+                              \textbf{\textcolor{red}{91.08}} &
+                              \textcolor{red}{65.09} & \textcolor{red}{64.31} \\
+          & CE + W2         & 88.25 ± 1.13 & 56.33 & 68.78 & 65.88 \\
+          & \textcolor{blue}{Fixed}
+                            & \textcolor{blue}{88.58 ± 0.75} &
+                              \textcolor{blue}{77.12} &
+                              \textcolor{blue}{61.08} & \textcolor{blue}{54.53} \\
+          & Class-specific$^\ast$
+                            & 88.55 ± 0.11 & 71.83 & 68.98 & 67.80 \\
+        \bottomrule
+      \end{tabular}%
+    }
+    \end{table}
+    \footnotetext{$^\ast$ \small Requires clean validation set.}
+
+  \hfill
+  % ==== RIGHT: 20 % symmetric noise across datasets ===============
+  \begin{table}
+      \centering
+     \caption{Performance of the GIN network across multiple datasets under 40\% asymmetric label noise. Reported values are test accuracy (\%). Columns correspond to cross-entropy (CE) with clean labels (0\% CE), cross entropy with noisy labels (40\% CE), and GCOD under 40\% noise (40\% GCOD).}
+    \label{tab:asymmetric_noise}
+     \resizebox{\linewidth}{!}{\begin{tabular}{lccc}
+      \hline
+      \textbf{Dataset} & \textbf{0\% CE} & \textbf{40\% CE} & \textbf{40\% GCOD} \\ \hline
+      PROTEINS & 81.16 & 72.90 & 76.19 \\
+      MNIST    & 72.69 & 71.15 & 72.61 \\
+      ENZYMES  & 73.33 & 65.80 & 69.81 \\
+      IMDB/B   & 76.50 & 68.18 & 72.89 \\
+      MUTAG    & 94.73 & 91.16 & 93.19 \\
+      REDDIT   & 48.15 & 48.01 & 47.94 \\
+      MSRC/21  & 96.69 & 94.39 & 95.57 \\ \hline
+    \end{tabular}}
+  \end{table}
+
+
+ \begin{table}
+     \centering
+     \centering
+    \caption{Percentage improvement over cross entropy (CE) using the GIN network. Values show gains of OMG and GCOD on selected datasets.}
+    \label{tab:omg_table}
+    \begin{tabular}{lcc}
+      \hline
+      \textbf{Dataset} & \textbf{OMG} & \textbf{GCOD} \\ \hline
+      MUTAG    & 0.061 & 0.062 \\
+      IMDB-B   & 0.047 & 0.049 \\
+      PROTEINS & 0.039 & 0.041 \\ \hline
+    \end{tabular}    
+ \end{table}
+    
+
+
+
+

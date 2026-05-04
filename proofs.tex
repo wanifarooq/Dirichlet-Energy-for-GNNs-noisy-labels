@@ -1,0 +1,556 @@
+
+
+\documentclass[11pt]{article}\usepackage{amsmath,amssymb,amsthm,bbm}
+\usepackage{graphicx,geometry}
+\usepackage{amsmath}
+\geometry{margin=1in}
+\usepackage{xcolor}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newcommand{\EE}{\mathcal{E}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\1}{\mathbbm{1}}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+\newcommand{\laplacian}{\Delta}
+\usepackage{natbib}
+\begin{document}
+\title{}
+\author{}
+\date{\today}
+
+%
+
+
+
+
+Graph Neural Networks process information by transforming node features through layers whose behavior is significantly shaped by learnable weight matrices. These weights govern crucial properties like Lipschitz continuity, which relates how much the output changes in response to input variations \citep{chuang2022tree, davidson2024h, juvina2024training, gama2020stability}. Beyond overall stability, the spectral properties of these weight matrices dictate whether the network smooths features across edges (driven by positive eigenvalues, aligning with low graph frequencies) or sharpens them (driven by negative eigenvalues, enhancing high graph frequencies) as investigated in specific settings by \cite{GRAFF}. Sharpening increases the differences between connected nodes, a form of signal variation captured by the Dirichlet energy \citep{zhou2021dirichlet}. The phenomenon of oversharpening occurs when high-frequency components dominate the learned features, often linked to weight matrices having large spectral norms or significant negative eigenvalues \cite{GRAFF}. While models can be designed to avoid excessive smoothing or sharpening through careful weight initialization or control \citep{zhuo2024graph}, the training process itself, in its effort to fit the training data's specific structure and potentially its noise, can push the weight matrices towards configurations that amplify sharpening effects. This drive to capture nuanced patterns or resolve ambiguities inherent in the data can lead to an increase in the signal's high-frequency content, resulting in higher Dirichlet energy.
+
+\textbf{Conjecture (Linking Noisy Labels, High Frequencies, and Distinction)}:
+We conjecture that when training on data afflicted by noisy labels, particularly labels that incorrectly differentiate instances which should belong to the same true class, the model is compelled to discover and amplify subtle distinctions between these otherwise similar inputs. These crucial, fine-grained differences manifest as high-frequency components in the graph signal. To endow the model with the discriminative power necessary to justify assigning distinct outputs to such inherently similar inputs, the training process drives the network to enhance these high frequencies. This sharpening, mediated by the spectral properties of the weight matrices (such as dominant negative eigenvalues or high spectral norms), increases the signal variation captured by the Dirichlet energy, enabling the model to 'see' and leverage these detailed variations to fit the contradictory demands of the noisy labels. In essence, the noise forces the model to become highly sensitive to nuances, pushing its learned representation towards emphasizing higher frequencies to establish separation where intrinsic similarity suggests smoothness.
+
+
+
+
+
+\section*{Lipschitz Continuity in Graph Neural Networks}
+
+Regarding Lipschitz continuity, a key aspect of model robustness, \cite{chuang2022tree} provides a theoretical bound on the Lipschitz constant of the Graph Isomorphism Network (GIN) with respect to the Tree Mover’s Distance (TMD). The derived bound, $|h(G_a)-h(G_b)| \le \sum_{l=1}^{L+1} K^{(l)}_{\phi} \cdot \mathrm{TMD}_w^{L+1}(G_a,G_b)$, relates the change in the GIN's output to the distance between the input graphs as measured by TMD. This theorem highlights that if the constituent learnable functions $\phi^{(l)}$ have bounded Lipschitz constants $K^{(l)}_{\phi}$, then the entire GIN architecture exhibits a Lipschitz property with respect to TMD. Notably, TMD serves as a pseudometric for graphs that are distinguished by the $L$-iteration Weisfeiler-Leman (WL) test, a crucial property given that GIN's representational power is closely tied to the WL test. \cite{davidson2024h} further contribute to the understanding of Lipschitz properties in neural networks operating on sets of features, which are fundamental building blocks in MPNNs. Their analysis of ReLU summation, a common aggregation function, demonstrates that it is uniformly Lipschitz under certain conditions. Moreover, their informal theorem on Hölder MPNN embeddings suggests that if the aggregation, combination, and readout functions within an MPNN are Lipschitz continuous, then the overall MPNN will also be Lipschitz continuous. \cite{juvina2024training} delve into tight Lipschitz constraints for GNNs in the context of node classification. By analyzing a generic graph convolution operation, they derive an optimal Lipschitz constant $\vartheta = \phi(\lambda_K)$ for the network, where $\lambda_K$ is the maximum eigenvalue of a weighted adjacency matrix $M$, assuming non-negative weights and ReLU activations without bias. This work provides a more precise characterization of the robustness of GNNs to input perturbations. \cite{gama2020stability} examine the stability of GNNs with respect to perturbations in the graph shift operator. Their Theorem 4 establishes that if the graph shift operator $S$ is perturbed by $E$ such that $|E|\le\epsilon$, and the filter banks used in the GNN are bounded and the non-linearity is Lipschitz continuous, then the output of the GNN with the perturbed graph $\hat{S}$ will be close to the output with the original graph $S$, with a bound proportional to $\epsilon$ and the number of layers.
+More precisely the Theorem in \cite{davidson2024h} state: 
+
+\begin{theorem}[Hölder MPNN embeddings, informal version]
+Let $p\ge1$. Given an MPNN $f:\mathcal{G}*{\le n}(\Omega)\to\mathbb{R}^m$ with $K$ message passing layers followed by a READOUT layer:
+\begin{enumerate}
+\item If aggregation $\varphi^{(k)}$, combine $\psi^{(k)}$, and readout $\eta$ are $\alpha_k,\beta_k,\gamma$ lower-Hölder continuous in expectation, then $f$ is lower-Hölder continuous in expectation with exponent $\gamma\prod*{k=1}^K(\alpha_k\beta_k)$.
+\item If all above functions are uniformly upper Lipschitz, then $f$ is uniformly upper Lipschitz.
+\end{enumerate}
+\end{theorem}
+
+
+The Theorem in \cite{juvina2024training} using the following notation: $G=(V,E)$ be directed, $V={v_1,\ldots,v_K}$, and each $v\in V$ has features $x_v\in\mathbb{R}^{N_0}$ and label $c_v\in{1,\ldots,C}$. The neighborhood $N(v)={u:(u,v)\in E}$. A generic graph convolution at node $v$ and layer $i=1,\ldots,m$ is:
+\begin{equation}
+y_v^{(i)} = R_i\Bigl(w_0^{(i)}y_v^{(i-1)} + w_1^{(i)}\sum_{u\in N(v)}\rho_{v,u},y_u^{(i-1)} + b_v^{(i)}\Bigr),
+\end{equation}
+where $y_v^{(i)}\in\mathbb{R}^{N_i}$, $b_v^{(i)}\in\mathbb{R}^{N_i}$, $w_0^{(i)},w_1^{(i)}\in\mathbb{R}^{N_i\times N_{i-1}}$, and $R_i$ is 1-Lipschitz activation (ReLU, sigmoid), applied componentwise except possibly last layer. For $y_v^{(0)}=x_v$, $N_0=N$, and $N_m=C$.
+With symmetric GraphSAGE mean aggregator, by Theorem 3.1 in \cite{juvina2024training},
+$\vartheta = \phi(1) = \| (w_0^{(m)}+w_1^{(m)})\cdots(w_0^{(1)}+w_1^{(1)})\|_S.$
+For GCN 
+$\vartheta = \|w_1^{(m)}\cdots w_1^{(1)}\|_S.$
+
+
+
+
+\section*{Oversharpening in Graph Neural Networks}
+The primary definition of GNN oversharpening, as introduced in the literature and particularly highlighted by analyses such as \cite{GRAFF}, characterizes it as an asymptotic behavior. Specifically, oversharpening occurs when the node features, after passing through multiple GNN layers, become predominantly determined by their projection onto the eigenvector of the graph Laplacian associated with its highest frequency. This implies that the learned representations capture primarily the most rapidly varying components of the signal over the graph.
+Pioneering work, notably by \citeauthor{GRAFF}, has rigorously established how the eigenvalues of GNN weight matrices directly influence feature dynamics, leading to either smoothing or sharpening effects.13 This analysis primarily considers linear graph convolutions employing symmetric weight matrices W.
+The key findings are:
+\texbf{Positive eigenvalues of W}: These induce an attractive force between the features of connected nodes. This attraction causes their representations to become more similar, promoting a smoothing effect across the graph. Consequently, features tend to align with the low-frequency components of the graph Laplacian, which is characteristic of oversmoothing.
+\textbf{Negative eigenvalues of W}: Conversely, these induce a repulsive force between the features of connected nodes. This repulsion drives their representations apart, leading to increased differences and thus a sharpening effect. This enhances the high-frequency components of the features. If these negative eigenvalues are sufficiently dominant and interact appropriately with the graph Laplacian's spectrum, this can lead to the oversharpening phenomenon, where node features become primarily aligned with the highest-frequency eigenvector of the graph Laplacian.
+The spectral norm of GNN weight matrices, while not a direct cause of oversharpening in the same way as the sign of eigenvalues, plays a significant modulatory role. It governs the overall "energy" or "scale" of the transformations applied by the GNN layers, thereby influencing the potential for various spectral phenomena, including oversharpening.
+The link between a large spectral norm (or large weight variance) and "oversharpening" (defined as high-frequency dominance) is indirect but significant. 
+A large spectral norm, by definition, allows for eigenvalues of large magnitudes, both positive and negative.
+If learning dynamics or initialization conditions lead to a scenario in which negative eigenvalues of large magnitude become dominant within this expanded spectral envelope, the oversharpening conditions, as described by 
+\citet{GRAFF}, could be met.
+
+\cite{zhou2021dirichlet} analyzes this issue through the lens of Dirichlet energy, a measure of the variance of node embeddings. This work shows that the Dirichlet energy at each layer of a Graph Convolutional Network (GCN) is bounded by the Dirichlet energy of the previous layer, scaled by the singular values of the weight matrix. By imposing constraints on the Dirichlet energy, it is possible to control the smoothness of the learned embeddings. The work titled "Graph Neural Networks Do Not Always Oversmooth" challenges the universality of the oversmoothing problem. It establishes a "chaotic, non-oversmoothing phase" in GCNs that can be reached by appropriately tuning the weight variance at initialization. This suggests that oversmoothing is not an inherent limitation of GCN architectures, but rather a consequence of parameter initialization. \cite{eldan2017braess}'s lemma on the spectral gap and edge addition provides insights into how graph structure influences spectral properties, which are related to information propagation and potentially oversmoothing. Their result shows that adding an edge can decrease the spectral gap of the Laplacian matrix under certain conditions related to the eigenvector and degrees of the connected nodes. Finally, the paper \cite{zhuo2024graph} demonstrates that with carefully chosen weights, GNNs can avoid oversmoothing even in deep architectures. Specifically, by employing a whitening transformation on the node features at each layer, the network can prevent the convergence of node representations to a constant vector, suggesting that learnable weights play a crucial role in mitigating oversmoothing.
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+\begin{theorem}[Graph Poincar'e] \label{thm:poincare} For every $f:V\to\RR$ let the degree‑weighted mean be
+%\[\bar f \;:=\; \frac{1}{\sum_{u} d(u)} \sum_{u} d(u)\,f(u).\]
+
+\[
+\bar f \;:=\; \frac{1}{|V|}\sum_{u \in V} \,f(u).\]
+Then \begin{equation} \label{eq:poincare} \sum_{u\in V}  \bigl[f(u)-\bar f\bigr]^2  \le \frac{1}{\lambda_2}, \EE_G(f). \end{equation} The constant $1/\lambda_2$ is optimal (attained by the Fiedler eigen‑vector). \end{theorem}
+\begin{proof} 
+The laplacian $\laplacian$ is real and symmetric, so there exists an orthonormal eigen‑basis ${v_1,\dots,v_n}$ with $\laplacian v_k=\lambda_k v_k$ and $v_1\propto \1$. They order the eigenvaluse so that 
+$\lambda_1 \leq \lambda_2 \le \dots \le \lambda_n$. 
+By Courant minimax principle \cite{courant1989methods}, 
+because $\laplacian$ is real symmetric: 
+\[ \lambda_2 = \operatorname{min}_{\substack{x \in {v_1}^{\perp} \\ \|x \|_2 = 1}} \ip{x}{\laplacian x}_{} \]
+Define $g=f-\bar {f}{\1}$, now by defintion $g \perp v_1$, 
+\[ \lambda_2 \le \frac{\ip{g}{\laplacian g}_{}}{\|g \|^2 } \], namely 
+\[ \EE_G(f)  = g^T \laplacian g \ \ge \lambda_2 \| g\|^2_2 \]
+\begin{align*} \|g\|_{2}^2 &= \sum_ {u} \bigl[f(u)-\bar f\bigr]^2 = \sum_{u} \bigl[f(u)-\bar f\bigr]^2, \end{align*}\end{proof}
+
+For signal on graph of dimension $d$ almost nothing changes ,indeed for each singl feature dimension $i$ we can apply Theorem \ref{thm:poincare} to obtain 
+\[ \|f - \bar{f} \|_2 =  \sum_{i=1}^d \sum_{u} |f_i(u) - \bar{f_i} |^2 \leq \frac{1}{\lambda_2} \EE(G).\]
+
+\paragraph{Corollary (variance form).} Writing $\operatorname{Var}G(f):=\frac1n\sum_{u}[f(u)-\bar f]^2$ they also have \begin{equation} \operatorname{Var}_G(f) \le \frac{\EE_G(f)}{\lambda_2 n}. \end{equation}
+% ============================================================\section{Static Lower Bound on Dirichlet Energy for Two Graphs}Consider two graphs $G_1,G_2$ with $|V_i|\le n$ and second eigen‑values $\lambda_2(G_i)$. Denote $\underline\lambda:=\min{\lambda_2(G_1),\lambda_2(G_2)}$.
+
+
+
+\begin{theorem}
+    Let $ h_{\theta} $ be a GIN network. They consider two graphs $G_1 = (V_1, E_1) $, $G_2 = (V_2, E_2) $, with identical topology:$V_1 = V_2 = V, \; E_1 = E_2$, but different initial node features $X_1, X_2$.
+    We denote by \( h_{\theta,G_i} \) the signal induced by $h_{\theta}$ on graph $G_i$. 
+They denote by \(\bar{h}_i \) the constant signal on the graph having value \( g_i = \frac{1}{|V_i|}\sum_{v \in V_i} h_{\theta}(v) \) on every node.  It holds that 
+\[ \| h_{\theta,G_1} - h_{\theta,G_2}\|_2 \leq \sqrt{|V|}  \; |  g_1 -  g_2| + \frac{1}{\lambda_2(G_1)} \EE(G_1)  + \frac{1}{\lambda_2(G_2)} \EE(G_2) \]
+\end{theorem}
+\begin{proof}
+For every $v_1 \in V_1, \; v_2 \in V_2$, we have that
+    \begin{align}
+       \| h_{\theta,G_1} - h_{\theta,G_2}\|_2 &\leq \|h_{\theta,G_1}  -  g_1 \1 +  g_1 \1 -  g_2 \1 +  g_2\1  - h_{\theta,G_2} \|_2 \\
+        & \leq \| h_{\theta,G_1} -  g_1\|_2 + \sqrt{|V|} \; |  g_1 -  g_2|  + \| g_2  - h_{\theta,G_2}\|_2\\
+        & \leq \frac{1}{\lambda_2(G_1)} \EE(G_1) + \sqrt{|V|} \; |  g_1 -  g_2|  + \frac{1}{\lambda_2(G_2)} \EE(G_2)
+    \end{align}
+
+    
+\end{proof}
+
+
+\paragraph{Bi-Lipschitz  2-layer GIN under specific conditions}
+
+Consider a fixed (undirected) graph with adjacency matrix \(A\) and maximum degree \(d_{\max}\).
+A single GIN aggregation can be written
+\[
+M \;=\; (1+\varepsilon)I + A, 
+\qquad
+Z = M\,X ,
+\]
+followed by an MLP with weight matrices \(W_1,\,W_2\) and element-wise activation
+\(\phi\).
+
+Sufficient conditions for a positive lower-Lipschitz constant are the fact that the aggregator 
+Aggregator \(M\) is full-rank and its minimal eigenvalue is greater than  \(\kappa>0\). In GIN, taking $\epsilon>0$ M become positive-definite provided $1+ \epsilon > | \lambda_{min}(A)|$
+The MLP layer \(W_1\) and \( W_2 \) have full rank and their minimum eigenvalue is larger than $m_1$, $m_2$ respectively.  Write \(D_1=D_1(X)\) and \(D_2=D_2(X)\) for the diagonal matrices whose
+entries are the point-wise derivatives \(\phi'\) evaluated at the pre-activations
+\(W_1 M X\) and \(W_2\,\phi(W_1 M X)\) respectively.
+The activation \(\phi\) is or leaky-ReLU with parameter $\alpha$ or it is ReLU with margin; that is, there exists a $\delta>0$ such that all coordinates of the pre-activations of every point on the line segment $\gamma(t)$ stay above $\delta$. In both cases $\sigma_{\min} (D_1), \sigma_{\min}(D_2) \geq \alpha $ 
+If the condition defined before are satisfied, we proved the lower lipschtzianity holds.
+Because \(\phi\) is ReLU with margin or leaky-ReLU, every diagonal entry
+of \(D_1,D_2\) lies in \([\alpha,1]\); hence, denoting by $\sigma(B)$ a singular value of a matrix $B$.
+we have \(\sigma (D_1),\sigma(D_2)\ge\alpha\).
+For any \(X\) the Jacobian of \(h_{\theta}\) is
+\(J(X)=W_2 D_2 W_1 D_1 M\).
+The chain rule for singular values gives
+\[
+\sigma_{\min}\bigl(J(X)\bigr)
+\;\ge\;
+\sigma_{\min}(W_2)
+\sigma_{\min}(D_2)
+\sigma_{\min}(W_1)
+\sigma_{\min}(D_1)
+\sigma_{\min}(M)
+\;\ge\;
+m_2\,\alpha\,m_1\,\alpha\,\kappa
+\;=:\;
+c_{\textnormal{lower}} .
+\]
+
+\medskip\noindent
+For the segment
+\(
+\gamma(t)=X+t\Delta X,\;t\in[0,1],
+\)
+the fundamental theorem of calculus yields
+\[
+h_{\theta}(X+\Delta X)-h_{\theta}(X)
+   =\int_{0}^{1} J\!\bigl(\gamma(t)\bigr)\,\Delta X\;dt .
+\]
+Taking norms and using the lower bound on \(\matsigma\bigl(J(\gamma(t))\bigr)\)
+for all \(t\) gives
+\[
+\|{h_{\theta}(X+\Delta X)-h_{\theta}(X)}\|
+   \;\ge\;
+\int_{0}^{1} c_{\textnormal{lower}}\,
+           \| {\Delta X} \| \;dt
+   \;=\;
+c_{\textnormal{lower}}\,
+\| {\Delta X} \|.
+\]
+
+
+\bigskip
+Under these four conditions, for every perturbation \(\Delta X\) of the node features
+\[
+\| {h_{\theta}(X+\Delta X)-h_{\theta}(X)}\|
+\;\;\ge\;\;
+\underbrace{\alpha^{2}\,m_{2}\,m_{1}\,\kappa^{2}}_{\displaystyle c_{\text{lower}}}
+\;\|\Delta X\|,
+\]
+so the 2-layer GIN is \emph{bi-Lipschitz} on that graph with lower constant
+\(c_{\text{lower}}>0\).
+
+
+So with this assumptiosn whe have : 
+\[ \| \Delta X\| c_{\text{lower}} \le \| h_{\theta( X +  \Delta X )} - h_{\theta( X)}   \| \le \sqrt{|V|}  \; |  g_1 -  g_2| + \frac{1}{\lambda_2(G_1)} \EE(G_1)  + \frac{1}{\lambda_2(G_2)} \EE(G_2) \]
+Under these additional constraint GIN on this graph is lower lipsichtz, so we  can also lower bound the distance of the signals by the distance of initial features vector. So we would have if the graphs initial featrues are very different their representation trough $h_{\theta}$ would be different as well (given by bi-lispicithzianity). If the two labels are wrongly classified as having the same label, namely $\| g_1 - g_2| $ very small, then they have that necessarily the sum of the Dirichlet energy should be large. 
+
+
+Also on the other hand, because a GIN’s Lipschitz constant scales with the spectral norms of its weight matrices, any attempt to make two almost-identical graph signals map far apart in the embedding space forces those spectral norms—and thus the Lipschitz constant—to grow; pushing them too high, however, drives the model into the oversharpening regime we observed.
+
+
+
+\begin{theorem}
+      Let $ h_{\theta} $ be a GIN network. We consider two graphs $G_1 = (V_1, E_1) $, $G_2 = (V_2, E_2) $, with $ V_1 = V_2 $.
+   We denote by \( h_i \) the signal induced by $h_{\theta}$ on graph $G_i$. 
+We denote by \(\bar{h}_i \) the constant signal on the graph having value \( g_i = \frac{1}{|V_i|}\sum_{v \in V_i} h_{\theta}(v) \) on every node. In this case they can compute the distance between the two signals because they are computed on the same set of nodes. 
+\[ |g_1 - g_2| \le C \| h - h_2\|_{2} \]
+\end{theorem}
+\begin{proof}
+    \begin{align}
+    \| g_1 - g_2 \| =  \| h_1 - h_2 \| \leq  \| g_1 - g_2 \|
+    \end{align}
+\end{proof}
+
+
+\section{From the Literature}
+
+\cite{chuang2022tree} proposes the Tree Mover’s Distance (TMD), a pseudometric on attributed graphs that
+considers both the tree structure and local distribution of attributes. It achieves this via a hierarchical
+optimal transport problem that defines distances between trees.
+
+\section*{5.1 Lipschitz Constant of Message Passing Graph Neural Networks}
+They consider graph binary classification with the Graph Isomorphism Network (GIN). In particular, they consider the following
+message passing rules of an $L$-layer GIN:
+\begin{align}
+\mathbf{z}_v^{(l)} &= \phi^{(l)}\Bigl(\mathbf{z}*v^{(l-1)} + \epsilon \sum*{u\in N(v)} \mathbf{z}*u^{(l-1)}\Bigr), \\
+h(G) &= \phi^{(L+1)}\Bigl(\sum*{u\in V} \mathbf{z}*u^{(L)}\Bigr)
+\end{align}
+where $\phi^{(l)}: \mathbb{R}^d\to\mathbb{R}^d$ and $\phi^{(L+1)}: \mathbb{R}^d\to\mathbb{R}$ are learnable functions with Lipschitz constant $K^{(l)}*{\phi}$, and the initial state is set to the node feature $\mathbf{z}_v^{(0)} = \mathbf{x}_v$. The $\epsilon>0$ is a weighting term between the center node and the neighbors. Note that the original formulation of GIN  weights the center node with layer-dependent $\epsilon$ instead of neighbors. They adopt the form above to simplify notation for TMD. One can derive an equivalent form by changing the weight function $w(\cdot)$ of TMD to recover the original formulation of GIN. They set $\epsilon = 1$ in all experiments. This does not affect the empirical performance of GIN, as the original paper shows. A graph-level binary classifier is constructed based on the logits $h(G)$.
+
+The next theorem bounds the Lipschitz constant of GIN with respect to TMD. Although TMD is a pseudometric, it satisfies that $\mathrm{TMD}_w^{L}(G_a,G_b)>0$ if $G_a,G_b$ are distinguished by $L$ iterations of the WL test. Since $\mathrm{GIN}(G_a)=\mathrm{GIN}(G_b)$ for all graphs where WL fails, it holds that, if $\mathrm{GIN}(G_a)\neq\mathrm{GIN}(G_b)$ then $\mathrm{TMD}_w^{L}(G_a,G_b)>0$. That is, for all triples of graphs that GIN distinguishes pairwise, TMD is a metric.
+
+\begin{theorem}[Lipschitz Constant of GIN]
+Given an $L$-layer graph neural network $h: \mathcal{X}\to\mathbb{R}$ and two graphs $G_a,G_b\in\mathcal{G}$, they have
+\begin{equation}
+|h(G_a)-h(G_b)| \le \sum_{l=1}^{L+1} K^{(l)}_{\phi},\mathrm{TMD}_w^{L+1}(G_a,G_b),
+\end{equation}
+where
+$ w^{(l)} = \epsilon\cdot\frac{P^{l-1}_{L+1}}{P^l_{L+1}} \quad\text{for all }l\le L,$
+and $P^L_l$ is the $l$-th number at level $L$ of Pascal’s triangle.
+\end{theorem}
+
+\section*{Yair Davidson and Nadav Dym}
+\paragraph{Standing assumptions:} Throughout the rest of this section, they will say that $(n,d,p,\Omega,z)$ satisfy our standing assumptions if $n,d$ are natural numbers, $p\ge1$, the set $\Omega$ is a compact subset of $\mathbb{R}^d$, and $z$ is a point in $\mathbb{R}^d\setminus\Omega$. A multiset ${x_1,\ldots,x_k}$ is a collection of unordered elements where repetitions are allowed. They denote by $S_{\le n}(\Omega)$ and $S_{=n}(\Omega)$ the space of all multisets with at most $n$ elements (respectively, exactly $n$ elements), which reside in $\Omega$.
+
+A popular choice of a metric on $S_{=n}(\Omega)$ is the Wasserstein metric:
+\begin{equation}
+W_1({x_1,\ldots,x_n},{y_1,\ldots,y_n}) = \min_{\tau\in S_n} \sum_{j=1}^n |x_j - y_{\tau(j)}|^p.
+\end{equation}
+They extend the Wasserstein metric to $S_{\le n}(\Omega)$ by applying the augmentation map which adds the vector $z$ to a given multiset until it is of maximal size $n$:
+\begin{equation*}
+\rho(z)({x_1,\ldots,x_k}) = {x_1,\ldots,x_k,x_{k+1}=z,\ldots,x_n=z}.
+\end{equation*}
+This induces the augmented Wasserstein metric $W^z_1$ on $S_{\le n}(\Omega)$:
+\begin{equation}
+W^z_1(S_1,S_2) = W_1\bigl(\rho(z)(S_1),\rho(z)(S_2)\bigr), \quad S_1,S_2\in S_{\le n}(\Omega).
+\end{equation}
+
+They have introduced the augmented Wasserstein metric for multisets, they analyze multiset neural networks of interest. A popular building block in multi-set architectures and MPNNs is based on summation of element-wise neural network application. For an activation $\sigma: \mathbb{R}\to\mathbb{R}$, define a parametric function $m_\sigma$ on multisets in $S_{\le n}(\Omega)$ with parameters $(a,b)\in\mathbb{R}^d\oplus\mathbb{R}$:
+\begin{equation}
+m_\sigma({x_1,\ldots,x_r};a,b) = \sum_{i=1}^r \sigma(a\cdot x_i - b).
+\end{equation}
+They focus on $m_\sigma$ with scalar outputs, since the vector-output variant has the same Hölder properties.
+
+\subsection*{3.0.1 ReLU summation}
+They set out to understand the expected Hölder continuity of $m_\sigma$, starting from $\sigma = \mathrm{ReLU}$:
+
+\begin{theorem}[ReLU summation]
+For $(n,d,p,\Omega,z)$ satisfying our standing assumptions, assume $a\sim S^{d-1}$ and $b\sim[-B,B]$. Then $m_{\mathrm{ReLU}}$ is uniformly Lipschitz. Moreover:
+\begin{enumerate}
+\item $m_{\mathrm{ReLU}}$ is not $\alpha$-lower-Hölder continuous in expectation for any $\alpha<\tfrac{p+1}{p}$.
+\item If $|x|<B$ for all $x\in\Omega$, 
+then $m_{\mathrm{ReLU}}$ is $\frac{p+1}{p}$
+-lower-Holder continuous in expectation.
+\end{enumerate}
+\end{theorem}
+
+\section*{4.2 MPNN analysis}
+It would seem natural that if the AGGREGATE, COMBINE, and READOUT functions in the MPNN are Hölder in expectation, then the overall MPNN is Hölder in expectation. The following theorem proves this. They assume graphs have at most $n$ nodes with features in compact $\Omega\subset\mathbb{R}^d$. Denote $\mathcal{G}_{\le n}(\Omega)$ the space of such graphs.
+
+\begin{theorem}[Hölder MPNN embeddings, informal version]
+Let $p\ge1$. Given an MPNN $f:\mathcal{G}*{\le n}(\Omega)\to\mathbb{R}^m$ with $K$ message passing layers followed by a READOUT layer:
+\begin{enumerate}
+\item If aggregation $\varphi^{(k)}$, combine $\psi^{(k)}$, and readout $\eta$ are $\alpha_k,\beta_k,\gamma$ lower-Hölder continuous in expectation, then $f$ is lower-Hölder continuous in expectation with exponent $\gamma\prod*{k=1}^K(\alpha_k\beta_k)$.
+\item If all above functions are uniformly upper Lipschitz, then $f$ is uniformly upper Lipschitz.
+\end{enumerate}
+\end{theorem}
+
+To prove for both ReluMPNN and SmoothMPNN that the Hölder exponent increases with depth:
+
+\begin{theorem}
+Assume ReluMPNN with depth $K$ is $\alpha$-lower-Hölder in expectation, then $\alpha \ge 1 + \tfrac{K+1}{p}$. If SmoothMPNN with depth $K$ is $\alpha$-lower-Hölder in expectation, then $\alpha\ge2K+1$.
+\end{theorem}
+
+\section*{Tight Lipschitz Constraint in GNNs (Simona Juvină \emph{et al.})}
+For semi-supervised node classification on a large graph with continuous features, let $G=(V,E)$ be directed, $V={v_1,\ldots,v_K}$, and each $v\in V$ has features $x_v\in\mathbb{R}^{N_0}$ and label $c_v\in{1,\ldots,C}$. The neighborhood $N(v)={u:(u,v)\in E}$. A generic graph convolution at node $v$ and layer $i=1,\ldots,m$ is:
+\begin{equation}
+y_v^{(i)} = R_i\Bigl(w_0^{(i)}y_v^{(i-1)} + w_1^{(i)}\sum_{u\in N(v)}\rho_{v,u},y_u^{(i-1)} + b_v^{(i)}\Bigr),
+\end{equation}
+where $y_v^{(i)}\in\mathbb{R}^{N_i}$, $b_v^{(i)}\in\mathbb{R}^{N_i}$, $w_0^{(i)},w_1^{(i)}\in\mathbb{R}^{N_i\times N_{i-1}}$, and $R_i$ is 1-Lipschitz activation (ReLU, sigmoid), applied componentwise except possibly last layer. For $y_v^{(0)}=x_v$, $N_0=N$, and $N_m=C$.
+
+Define weighted adjacency $A^\epsilon=(A^\epsilon_{u,v})*{1\le u,v\le K}$:
+\begin{equation}
+A^\epsilon*{u,v} = \begin{cases} \epsilon_{u,v}, & u\in N(v),\\ 0, & \text{otherwise}. \end{cases}
+\end{equation}
+Equation in vector form:
+\begin{equation}
+y^{(i)} = R_i\bigl(W_0^{(i)}y^{(i-1)} + W_1^{(i)}y^{(i-1)} + b^{(i)}\bigr),
+\end{equation}
+with $W_0^{(i)}=I_K\otimes w_0^{(i)}$, $W_1^{(i)}=M\otimes w_1^{(i)}$, where $\otimes$ is Kronecker product and $M$ varies by choice of weights:
+\begin{itemize}
+\item $\rho_{v,u}=1/d(u)$: $M=A^\top D^{-1}$.
+\item $\rho_{v,u}=1/\sqrt{d(v)d(u)}$: $M=D^{-1/2}A^\top D^{-1/2}$.
+\item $\rho_{v,u}=\epsilon_{v,u}$: $M=(A^\epsilon)^\top$.
+\item $\rho_{v,u}=1/\sqrt{d^\epsilon(v)d^\epsilon(u)}$: $M=(D^\epsilon)^{-1/2}(A^\epsilon)^\top(D^\epsilon)^{-1/2}$.
+\end{itemize}
+Hence each layer is a feed-forward network:
+\begin{align}
+y^{(i)} &= R_i(W^{(i)}y^{(i-1)} + b^{(i)}), \\
+W^{(i)} &= W_0^{(i)} + W_1^{(i)} = I_K\otimes w_0^{(i)} + M\otimes w_1^{(i)}.
+\end{align}
+
+The zero elements of $W^{(i)}$ match those of
+\begin{equation}
+\Gamma^{(i)} = (A^\top + I_K)\otimes \mathbf{1}*{N_i}\mathbf{1}^\top*{N_{i-1}}.
+\end{equation}
+
+\subsection*{3.2 Robustness quantification}
+The forward pass through an $m$-layer fully connected network $T$ obeys:
+\begin{equation}
+|T(x+\delta)-T(x)| \le \theta|\delta|,
+\end{equation}
+where $|\cdot|$ is the Euclidean norm and $\theta$ the network Lipschitz constant. If $\theta_i$ is the $i$th layer Lipschitz, then
+\begin{equation}
+\theta \le \prod_{i=1}^m \theta_i.
+\end{equation}
+However, this bound can be loose.
+
+Theorem 3.1 (tight bound). Consider the generic GCN model with symmetric non-negative $M$ having max eigenvalue $\lambda_K\ge0$. Assume $w_0^{(i)},w_1^{(i)}\ge0$. Define
+$(\forall\mu\in\mathbb{R})\quad \phi(\mu) = \| (w_0^{(m)}+\mu w_1^{(m)})\cdots(w_0^{(1)}+\mu w_1^{(1)}) \|_S,$
+where $|\cdot|_S$ is the spectral norm. Then a Lipschitz constant of the network is
+$\vartheta = \phi(\lambda_K).$
+Moreover, $\vartheta$ is optimal when no bias and ReLU activations are used.
+
+\subsection*{3.3 Robust GraphSAGE}
+With symmetric GraphSAGE mean aggregator:
+\begin{equation}
+y_v^{(i)} = R_i\Bigl(w_0^{(i)}y_v^{(i-1)} + w_1^{(i)}\frac{1}{d(v)}\sum_{u\in N(v)} y_u^{(i-1)} + b_v^{(i)}\Bigr),
+\end{equation}
+so
+$M = D^{-1/2}A^\top D^{-1/2}.$
+Then by Theorem\~3.1,
+$\vartheta = \phi(1) = \| (w_0^{(m)}+w_1^{(m)})\cdots(w_0^{(1)}+w_1^{(1)})\|_S.$
+
+\subsection*{3.4 Robust Graph Convolutional Network (GCN)}
+For GCN 
+$W^{(i)} = M\otimes w_1^{(i)},$
+with
+$M = D^{-1/2}A^\top D^{-1/2},$
+and
+$\vartheta = \|w_1^{(m)}\cdots w_1^{(1)}\|_S.$
+
+
+
+
+
+
+\section*{Stability Properties of Graph Neural Networks}
+Fernando Gama, Joan Bruna, and Alejandro Ribeiro stated:
+
+\subsection*{III. STABILITY PROPERTIES OF GRAPH NEURAL NETWORKS}
+ To increase the representation power of GNNs, we consider that at layer $\ell$ there are $F_{\ell}$ graph signals $x^{\ell}*f \in \mathbb{R}^N$, $f=1,\dots,F*{\ell}$ instead of a single one, as was the case in the previous section. Each graph signal $x^{\ell}*f$ is called a \emph{feature}. The input to layer $\ell$ is then the $F*{\ell-1}$ signals $x^{\ell-1}*g$ that were the output of layer $\ell-1$, $g=1,\dots,F*{\ell-1}$. To compute the $F_{\ell}$ features $x^{\ell}*f$ we first process the $F*{\ell-1}$ input signals with a bank of $F_{\ell-1}F_{\ell}$ graph filters denoted by $H^{(\ell)}*{fg}(S)$ [cf.\~(2)], defined by coefficients $h^{(\ell)}*{fg,k}$:
+\begin{equation}\label{eq:filterbank}
+z^{(\ell)}*{fg} = \sum*{k=0}^{\infty} h^{(\ell)}*{fg,k} S^k x^{\ell-1}*g = H^{(\ell)}*{fg}(S),x^{\ell-1}*g \end{equation}
+for $f=1,\dots,F*{\ell}$ and $g=1,\dots,F*{\ell-1}$. All of these intermediate features $z^{(\ell)}*{fg}$ for a given $f$ are summed together to linearly yield $F*{\ell}$ features, and passed through a pointwise nonlinear function $\sigma: \mathbb{R}\to\mathbb{R}$ to produce the output feature:
+\begin{equation}\label{eq:nonlin}
+x^{\ell}*f = \sigma\Bigl(\sum*{g=1}^{F_{\ell-1}} z^{(\ell)}*{fg}\Bigr)\quad\text{for }f=1,\dots,F*{\ell}.
+\end{equation}
+
+We note that, in an abuse of notation, the application of $\sigma$ to the vector $(z^{(\ell)}*{f1},\dots,z^{(\ell)}*{fF_{\ell-1}})^\top$ implies entrywise application of the nonlinearity. The input to the GNN is the 0th layer signal $x = x^0_1$ and the output of the GNN is the $L$th layer feature $x^L_1$.
+
+Equations~\eqref{eq:filterbank}--\eqref{eq:nonlin} can be compactly written as:
+\begin{equation}\label{eq:matrixform}
+X^{\ell} = \sigma\Bigl(\sum_{k=0}^{\infty} S^k X^{\ell-1} H^{(\ell)}*k\Bigr),
+\end{equation}
+for $X^{\ell}\in\mathbb{R}^{N\times F*{\ell}}$ the matrix whose columns are the graph signal features $x^{\ell}*f$, and where $H^{(\ell)}*k\in\mathbb{R}^{F*{\ell-1}\times F*{\ell}}$ collects the $k$th coefficients of all filters in the bank, $[H^{(\ell)}*k]*{gf} = h^{(\ell)}_{fg,k}$.
+
+\subsection*{Theorem 4 (GNN Stability)}
+\begin{theorem}[GNN Stability]
+Let $S$ and $\hat S$ be graph shift operators related by a perturbation matrix $E$ [cf.~~(7) or (18)] such that $|E|\le\epsilon$. Given a bank of filters ${h^{(\ell)}*{fg}}$ such that $|h^{(\ell)}*{fg}(\lambda)|\le1$ [cf.~~(11)] and a pointwise nonlinearity $\sigma$ that is Lipschitz continuous [cf.~~(28)], define GNNs $\Phi(S,\cdot)$ and $\Phi(\hat S,\cdot)$ [cf.~~(25)--(26)]. If the corresponding filter banks satisfy $|H^{(\ell)}*{fg}(S)-H^{(\ell)}*{fg}(\hat S)|_P\le\Delta\epsilon$, then
+
+$$
+\|\Phi(S,\cdot) - \Phi(\hat S,\cdot)\|_P \le \Delta\,L\,F^{L-1}\,\epsilon + O(\epsilon^2),
+$$
+
+for a GNN with a single input feature, a single output feature, and $F$ features in each hidden layer.
+\end{theorem}
+
+\section*{Dirichlet Energy Constrained Learning for Deep Graph Neural Networks}
+Kaixiong Zhou states:
+Let $A := A + I_n$ and $\tilde D := D + I_n$ be the adjacency and degree matrices of the graph augmented with self-loops. The augmented normalized Laplacian is then given by $\tilde \Delta := I_n - \tilde P$, where
+
+$$
+\tilde P := \tilde D^{-1/2}\,\tilde A\,\tilde D^{-1/2}
+$$
+
+is the augmented normalized adjacency matrix used for neighborhood aggregation in GNN models.
+
+\paragraph{Node classification task.} GNNs have been adopted in many applications \cite{6,11,34}. Without loss of generality, we take node classification as an example. Given a graph $\mathcal{G}=(A,X)$ and a set of nodes with labels for training, the goal is to predict labels of nodes in a test set.
+
+We now use the graph convolutional network (GCN) \cite{15} as a typical example. Formally, the layer-wise forward-propagation in GCN at the $k$th layer is defined as:
+\begin{equation}\label{eq:gcn}
+X^{(k)} = \sigma\bigl(\tilde P,X^{(k-1)} W^{(k)}\bigr).
+\end{equation}
+
+\textbf{Definition}
+Given node embedding matrix $X^{(k)} = [x^{(k)}_1,\dots,x^{(k)}_n]^T\in\mathbb{R}^{n\times d}$ learned from GCN at layer $k$, the \emph{Dirichlet energy} $E(X^{(k)})$ is defined as:
+
+$$
+E(X^{(k)}) = \mathrm{tr}\bigl((X^{(k)})^T \tilde \Delta\,X^{(k)}\bigr) = \tfrac12 \sum_{i,j} a_{ij} \biggl\|\frac{x^{(k)}_i}{\sqrt{1+d_i}} - \frac{x^{(k)}_j}{\sqrt{1+d_j}}\biggr\|^2.
+$$
+
+
+
+\begin{lemma}
+The Dirichlet energy at layer $k$ is bounded as:
+
+$$
+(1-\lambda_1)^2 s^{(k)}_{\min} E(X^{(k-1)}) \le E(X^{(k)}) \le (1-\lambda_0)^2 s^{(k)}_{\max} E(X^{(k-1)}),
+$$
+
+where $\lambda_1,\lambda_0$ are the non-zero eigenvalues of $\tilde \Delta$ closest to 1 and 0, and $s^{(k)}*{\min},s^{(k)}*{\max}$ are the min/max singular values of $W^{(k)}$.
+\end{lemma}
+
+\begin{lemma}
+The bounds can be relaxed to:
+
+$$
+0 \le E(X^{(k)}) \le s^{(k)}_{\max} E(X^{(k-1)}).
+$$
+
+\end{lemma}
+
+\begin{proposition}
+Dirichlet energy constrained learning defines lower/upper limits at layer $k$ as:
+
+$$
+c_{\min} E(X^{(k-1)}) \le E(X^{(k)}) \le c_{\max} E(X^{(0)}),
+$$
+
+where $X^{(0)} = f(X)$ and $c_{\min},c_{\max}\in(0,1)$.
+\end{proposition}
+
+\section*{Graph Neural Networks Do Not Always Oversmooth}
+\subsection*{The non-oversmoothing phase of GCNs}
+We establish the chaotic, non-oversmoothing phase of GCNs and show it can be reached by tuning weight variance $\sigma_w^2$ at initialization. A GCN is at zero feature distance $\mu(X^{(l)})=0$ if the covariance matrix has constant entries $K^{(l)}_{\alpha\beta}=k^{(l)}$, implying all preactivations equal. The state of zero distance is a fixed point. Linearizing around it yields eigenvalue condition:
+
+$$
+\max_i |\lambda^p_i| > 1,
+$$
+
+where instability implies non-oversmoothing.
+
+\section*{Spectral Gap and Edge Addition (Eldan \emph{et al.}, 2017)}
+\begin{lemma}[Eldan \emph{et al.}]
+Let $G=(V,E)$ with spectral gap $\lambda_1(L_G)$ and eigenvector $f$. Add edge $(u,v)$ to form $\hat G$. If
+
+$$
+g(u,v,L_G) = -\frac{P_f^2}{\lambda_1(L_G)-2(1-\lambda_1(L_G))}\frac{\sqrt{d_u+1}-\sqrt{d_u}}{\sqrt{d_u+1}}f_u^2 + \frac{\sqrt{d_v+1}-\sqrt{d_v}}{\sqrt{d_v+1}}f_v^2 >0,
+$$
+
+then $\lambda_1(L_G)>\lambda_1(L_{\hat G})$.
+\end{lemma}
+
+\section*{Graph Neural Networks (with Proper Weights) Can Escape Oversmoothing}
+\textbf{Assumption}
+The graph $G$ is connected and each node has a self-loop.
+
+
+\subsection*{Oversmoothing without Weights}
+Consider $X^{(k+1)} = \sigma(PX^{(k)})$. Under Assumption 1, $X^{(k)}$ converges exponentially to a constant.
+
+\subsection*{Oversmoothing with Freely Learnable Weights}
+Consider $X^{(k+1)} = P X^{(k)} W^{(k)}$. There exist proper weights avoiding oversmoothing. Construct $\hat W^{(k)}$ via whitening: $\hat W^{(k)} = \Sigma^{-1/2}$ where $\Sigma = (X^{(k)})^T X^{(k)}$.
+
+
+
+
+
+
+\begin{theorem}
+Let us consider two graphs $G_1 = (V_1, E_1) $, $G_2 = (V_2, E_2) $, with $ |V_1| = n_1, \; |V_2| = n_2$.
+They define by \(
+g_i:=g_\theta(G_i):=\frac1{|V_i|}\sum_{v\in V_i} h_\theta(v)\in\RR^{d},\) the average of the output of a GIN network $h_\theta$. 
+They denote the logits produced by the last linear layer as 
+\(
+s_i:=s_\theta(G_i)=w^{\top} g_i+b, \qquad w\in\RR^{d}.\)
+If 
+\[
+|s_1-s_2|\;\ge\;\Delta>0.\]
+They have that 
+    \begin{equation}\displaystyle\EE_{G_1}+\EE_{G_2}\ge \frac{ \lambda_2^{\operatorname{min}} \Delta^{2}}{\|w \|^2_2}  \frac{n_1 + n_2 }{n_1 n_2}.\end{equation}
+With $\lambda_2^{\operatorname{min}}  = \operatorname{min} \{ \lambda_2(G_1), \lambda_2(G_2) \}$. 
+\end{theorem}
+\begin{proof}
+ A GIN yields node embeddings $h_\theta(v)\in\RR^{d}$ and the graph mean
+\[
+g_i:=g_\theta(G_i):=\frac1{|V_i|}\sum_{v\in V_i} h_\theta(v)\in\RR^{d}.\]
+A last linear layer produces the logit
+\[
+s_i:=s_\theta(G_i)=w^{\top} g_i+b, \qquad w\in\RR^{d}.\]
+ Assume the classifier must satisfy the margin condition
+\[
+|s_1-s_2|\;\ge\;\Delta>0.\]
+They have that 
+\[
+\Delta \le |s_1-s_2| \le \|w\|_2\,\|g_1-g_2\|_2  \]
+\paragraph{Bounding the difference of means} Fix any coordinate $k$.  Let us consider the graph obtain by the union of the two graphs $G_1$ and $G_2$. The set of vertices will be $V = V_1 \cup V_2$ with the set of two vertices being disjoint among them. They denote by $n_1 = |V_1|$ and $n_2 = |V_2|$. They define the function
+\[
+f(v):= h_\theta^{(k)}(v) \; \text{ for } \; v \in V. \qquad \psi(v) = \begin{cases}
+    +\frac{1}{n_1} \; v \in V_1 \\
+    -\frac{1}{n_2}  \; v \in V_2
+\end{cases}\]
+Considering the constant signal on all vertices $V_i \cup V_2$, $\ip{\psi}{\1}=0$, indeed $\sum_{ v \in {V_1 \cup V_2}} \psi(v) = 1-1 = 0$. 
+Moreover \[ \| \psi \|_2  = \sqrt{\frac{n_1}{n_1^2} + \frac{n_2}{n_2^2}} = \sqrt{\frac{1}{n_1} + \frac{1}{n_2}} \]
+Now \( \psi^{\top}f = \frac{1}{n_1} \sum_{v \in V_1} h_{\theta}^k(v) - \frac{1}{n_1} \sum_{v \in V_2} h_{\theta}^k(v)  = g_1 - g_2 \). 
+The function $f$ can be decomposed in 
+\[ f = f - \ip{f}{\1} \1 +  \underbrace{\ip{f}{\1}}_{\bar{f} } \1 = \underbrace{(f - \bar{f} \1)}_{\tilde{f}} +  \bar{f}  \1 \]
+Notice that $\bar{f} $ is a scalar, while $\tilde{f}$ is $d-$dimensional vecotr. 
+ 
+Since \(\ip{\psi}{\1} = \psi^T \1 = 0\). 
+They have \( \psi^{\top}f = \psi^{\top} \tilde{f}  \). 
+By Cauchy Schwarz
+\[ |\psi^{\top} f  | = |\psi^{\top} \tilde{f} | \leq \|\psi \|_2  \|\tilde{f} \|_2 \leq   \|\tilde{f} \|_2 \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}. \]
+Hence 
+\[ | g_1 - g_2 | \leq  \|\tilde{f} \|_2 \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}. \]
+\paragraph{Bound \( \|\tilde{f} \|_2\) }
+\[  \|\tilde{f} \|^2_2  =   \|f - \bar{f} \1 \|^2_2 \leq \frac{1}{\lambda_{3 G_1,G_2}} \EE_{G_1 \cup G_2}(f)  \]
+Since the two graphs are disjoint: \( \EE_{G_1 \cup G_2}(f) = \EE_{G_1}(f) + \EE_{G_2}(f)   \)
+Also, as seen in Theorem \textcolor{red}{????} The first non zero eigenvalues is 
+$\lambda_{3 G_1,G_2} = \operatorname{min} \{ \lambda_{2 G_1} , \lambda_{2 G_2}\}: = \lambda_2^{\operatorname{min}}$
+Rearranging yields the bound\begin{equation}\displaystyle\EE_{G_1}+\EE_{G_2}\ge \frac{ \lambda_2^{\operatorname{min}} \Delta^{2}}{\|w \|^2_2}  \frac{n_1 + n_2 }{n_1 n_2}.\end{equation}
+% ============================================================\section{Gradient‑Descent Increment: Every Step Raises Energy (Early Epochs)}They now compute $\bar\EE_{t+1}-\bar\EE_{t}$ for a vanilla gradient step with stepsize $\eta$.
+\end{proof}
+
+
+\bibliographystyle{apalike}
+\bibliography{main}
+\end{document}
+
+
+

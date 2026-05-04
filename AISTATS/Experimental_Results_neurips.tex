@@ -1,0 +1,440 @@
+% \begin{table}[htbp]
+% \caption{ PPA Dataset.  Number of classes 6. 30 \% of. In red and bold the model that performs the best on test accuracy. In blue the one that performs as the second wrt to test accuracy. The mean and standard deviation are calculated from 4 runs of each. }
+%     \label{tab:ppa_30_perc_6_classes}
+%     \centering
+%     %\setlength\extrarowheight{4pt}
+%      \renewcommand{\arraystretch}{1.2} %default value 1
+%     \resizebox{0.5\textwidth}{!}{
+%     \begin{tabular}{c c c c c c }
+%         \toprule
+%         %\rowcolor{white}
+%            \textbf{Noise}  & \textbf{Method} &  \multicolumn{2}{c}{\textbf{Test Accuracy}} & \multicolumn{2}{c }{\textbf{Train Accuracy}}  \\ 
+%            \cline{3-6}
+%          &  &   \textbf{Best} & \textbf{Last} & \textbf{Best} & \textbf{Last} \\
+%          \hline
+%         %\rowcolor{white}
+%         %\multirow{3}{*}{\rotatebox[origin=c]{90}{\shortstack{  0 \% }}}
+%        \multirow{3}{*}{0\% } &   CE &     96.25 $\pm$ 0.05& 91.25 &  1  & 99.33 \\ 
+%        &  \method &  96.65 $ \pm$ 0.52& 93.25 & 99.23 & 99.03  \\
+%         &  CE+ W2 &     96.50 $ \pm$ 1.12 & 86.5  & 99.76 & 99.29 \\
+%         \hline
+%         \hline
+%        \multirow{5}{*}{20\% }  &  CE   \textcolor{gray}{clean only}&    \textcolor{gray}{96.15 $ \pm$+.09} &  \textcolor{gray}{90.66 }  &  \textcolor{gray}{84.50} &  \textcolor{gray}{84.07} \\
+%        \cline{3-6} 
+%         &  CE &     88.66 $ \pm$0.16 & 62.58  & 94.98 & 93.45 \\ 
+%         & \textcolor{blue}{SOP} &    \textcolor{blue}{91.01 $ \pm$ 0.44} & \textcolor{blue}{85.50 }  & \textcolor{blue}{79.17 } & \textcolor{blue}{77.64 } \\
+%          & \textcolor{red}{\method} & \textbf{\textcolor{red}{93.91 $ \pm$ 0.26}} & \textbf{\textcolor{red}{92.58}} & \textcolor{red}{80.11} & \textcolor{red}{79.52 } \\ 
+%         & CE + W2&       89.83 $ \pm$ 1.23 & 76.66  & 84.90 & 83.68 \\
+%         \hline \hline
+%          \multirow{5}{*}{40\% }  &  CE  \textcolor{gray}{clean only}  &   \textcolor{gray}{95.08 $ \pm$ 0.13} &  \textcolor{gray}{80.44} &  \textcolor{gray}{68.15 } &  \textcolor{gray}{67.05}\\
+%          \cline{3-6} 
+%        &   CE &      82.08 $ \pm$ 0.22 & 51.83  & 82.47 & 78.88  \\ 
+%        &   SOP &     82.33 $ \pm$ 1.32  & 65.41    & 58.90  & 57.68 \\ 
+%        &  \textcolor{red}{\method} &    \textbf{\textcolor{red}{93.88 $ \pm$ 0.04}} & \textbf{\textcolor{red}{91.08}}  & \textcolor{red}{65.09 } & \textcolor{red}{64.31} \\  
+%          &  \textcolor{blue}{CE + W2} &      \textcolor{blue}{88.25 $ \pm$ 1.13} & \textcolor{blue}{56.33 }  & \textcolor{blue}{68.78}& \textcolor{blue}{65.88 }\\ 
+%         \bottomrule
+%     \end{tabular}}
+%     % \caption{ PPA Dataset.  Number of classes 6. 30 \% of. In red and bold the model that performs the best on test accuracy. In blue the one that performs as the second wrt to test accuracy. The mean and standard deviation are calculated from 4 runs of each. }
+%     % \label{tab:ppa_30_perc_6_classes}
+% \end{table}
+% Table \ref{tab:ppa_30_perc_6_classes} presents the results of our experiments performed on the PPA dataset, where we randomly selected 30\% of the total data and focused on six specific classes. The experiments utilized a GIN network more in Appendix \ref{}. %with five message-passing layers; details of other hyperparameters and settings are provided in the Appendix.
+% This experimental setup was purposefully designed to study the effect of label noise on the learning process and evaluate how different loss functions contribute to making the network robust against such noise, emphasizing our proposed \textbf{GCOD} loss function. The table shows that the \textbf{GCOD} loss function consistently outperforms other loss functions at all noise levels. Furthermore, \textbf{GCOD} exhibits a smoothing effect that prevents overfitting, which can be observed by examining the small gap between the \textbf{best} and \textbf{last} accuracy values. This demonstrates that the network generalizes better and is not overly reliant on noisy data.
+% In contrast, the \text{CE+W2} method, which removes the negative eigenvalues from the weight matrix $v = 2$, achieves better accuracy than \textbf{SOP} at certain noise levels. However, this method introduces excessive smoothing, which can lead to overfitting even in noise-free settings, as seen in the 0\% noise condition. While \textbf{CE+W2} helps the network avoid learning from noisy samples, the bias introduced by removing the eigenvalues also affects samples that contribute valuable distributional information for class learning, making it less suitable for real-world scenarios with varying noise levels.
+
+% The \textbf{SOP} loss function also demonstrates competitive performance at certain noise rates, particularly at 20\% noise. However, its higher gap between \textbf{best} and \textbf{last} accuracy values indicates that it is more prone to overfitting than \textbf{GCOD}, suggesting that it is less effective in maintaining stable generalization in the presence of noise.
+
+
+% Table~\ref{tab:alldataset} provides a performance comparison across multiple datasets under two different noise conditions (0\% and 20\%) using the \textbf{CE},\textbf{GCOD} and \textbf{NCOD} loss functions. The key metrics include the best and last test accuracies, along with the difference between these values to measure model stability and susceptibility to overfitting.
+
+% The results consistently show that \textbf{GCOD} outperforms \textbf{CE} in terms of both best and last accuracies, especially in the presence of noise. %For example, on the **MNIST** dataset, while **CE** suffers a significant drop in accuracy as noise increases, **GCOD** maintains higher and more stable performance with smaller gaps between best and last accuracies. Similar trends are observed across other datasets like **ENZYMES** and **PROTEINS**, where **GCOD** demonstrates greater resilience to noise, ensuring minimal performance degradation as noise increases.
+
+% Moreover, the smaller differences between best and last accuracies for \textbf{GCOD} across all datasets indicate that our loss function helps reduce overfitting, particularly at higher noise levels. This highlights the effectiveness of \textbf{GCOD} in improving the generalization of the model, even in noisy settings.
+
+% Table~\ref{tab:compare} clearly demonstrates that GCOD consistently outperforms CE in most datasets under 20\% noise. Notably, GCOD achieves substantial gains on datasets such as MNIST (+4.96\%), ENZYMES (+4.53\%), and MSRC\_21 (+4.43\%), where the model is more resilient to noise. The PROTEINS and MUTAG datasets also exhibit improved performance with GCOD, showing gains of +3.15\% and +2.53\%, respectively. On the IMDB-BINARY dataset, GCOD shows a marginal improvement (+0.40\%), while REDDIT-MULTI-12K has a slight drop of -0.07\%, indicating that the dataset is more robust to noise regardless of the loss function used.
+% Table \ref{tab:ppa_30_perc_6_classes} summarizes the results on the PPA dataset, where 30\% of the data across $6$ classes was selected, using a GIN network (details in Appendix \ref{sec:experimental_setting}). The proposed \textbf{GCOD} loss consistently outperforms other loss functions, demonstrating a smaller gap between the best and last accuracies, indicating better generalization and robustness to noise. In contrast, while \textbf{CE+W2} performs better than \textbf{SOP} \cite{liu2022robusttraininglabelnoise} at certain noise levels, it introduces excessive smoothing, leading to overfitting in noise-free scenarios. \textbf{SOP}, though competitive, is more susceptible to overfitting as seen in the wider accuracy gaps.
+
+% The smaller gap between the best and last accuracy for \textbf{GCOD} across all datasets in Table \ref{tab:alldataset} highlights its effectiveness in reducing overfitting and improving performance in noisy environments. Moreover, Table \ref{tab:alldataset} shows that \textbf{GCOD} consistently outperforms \textbf{CE} on most datasets under 20\% noise, with significant improvements in all except for REDDIT-MULTI-12K, which shows a slight decrease of -0.07, demonstrating its robustness to noise regardless of the loss function used.
+%The experimental results presented in this section aim to demonstrate the robustness and effectiveness of the proposed GCOD loss function across diverse datasets and noise conditions. These experiments are essential to evaluate the generalization capability of GCOD, its resilience to label noise, and its practical applicability in real-world noisy environments.
+
+Table \ref{tab:ppa_30_perc_6_classes} summarizes the results on the PPA dataset, where 30\% of the data across $6$ classes was selected, utilizing a GIN network (details provided in Appendix \ref{sec:experimental_setting}). The proposed \textbf{GCOD} loss consistently outperforms other loss functions by achieving a smaller gap between the best and final accuracies, which reflects improved generalization and robustness to noise. In contrast, while \textbf{CE+W2} occasionally surpasses \textbf{SOP} \cite{liu2022robusttraininglabelnoise} at certain noise levels, its excessive smoothing leads to overfitting in noise-free scenarios. Similarly, \textbf{SOP}, despite being competitive, exhibits wider accuracy gaps, indicating its susceptibility to overfitting.
+
+
+% The reduced gap between best and last accuracy for \textbf{GCOD} across all datasets in Table \ref{tab:alldataset} confirms its ability to mitigate overfitting and enhance model performance in noisy settings. Table \ref{tab:alldataset} further shows that \textbf{GCOD} consistently surpasses \textbf{CE} across most datasets under 20\% noise. Notable gains are observed in all datasets except REDDIT-MULTI-12K which shows a minor drop of -0.07\%, indicating its robustness to noise regardless of the loss function used.
+
+% Table  \ref{tab:ppa_30_perc_6_classes} presents experimental results on the PPA dataset, where 30\% of the data and six classes were selected. We used a GIN network (details in Appendix \ref{}) to study the effect of label noise and evaluate the performance of different loss functions, focusing on the proposed \textbf{GCOD}. The \textbf{GCOD} loss consistently outperforms others, showing a smaller gap between best and last accuracies, indicating better generalization and robustness to noise.
+
+% Moreover, the smaller differences between best and last accuracies for \textbf{GCOD} across all datasets indicate that our loss function helps reduce overfitting, particularly at higher noise levels. This highlights the effectiveness of \textbf{GCOD} in improving the model's generalization, even in noisy settings.
+
+% In contrast, \textbf{CE+W2}, though better than \textbf{SOP} at certain noise levels, introduces excessive smoothing, leading to overfitting in noise-free cases. \textbf{SOP} shows competitive performance but is more prone to overfitting, as seen in the larger gap between best and last accuracies.
+
+% Table \ref{tab:alldataset} demonstrates that \textbf{GCOD} consistently outperforms \textbf{CE} in most datasets under $20\%$ noise. Notably, \textbf{GCOD} achieves substantial gains on datasets such as MNIST $+4.96\%$, ENZYMES $+4.53$, and MSRC\_21 $+4.43\%$, where the model is more resilient to noise. The PROTEINS and MUTAG datasets also show improvements with \textbf{GCOD}, with gains of $+3.15\%$ and $0.54\%$, respectively. On the IMDB-BINARY dataset, \textbf{GCOD} shows a marginal improvement $+0.40\%$, while REDDIT-MULTI-12K experiences a slight drop of $-0.07\%$, indicating its robustness to noise regardless of the loss function used.
+
+
+
+
+% \begin{table}[t!]
+% \centering
+% \caption{Performance Comparison by Noise Level and Loss Function}
+% \begin{adjustbox}{max width=0.47\textwidth}
+% \begin{tabular}{lcccccc}
+% \toprule
+% \textbf{Dataset} & \makecell{\textbf{Noise}\\\%} & \makecell{\textbf{Loss}\\\;} &  \makecell{\textbf{Best}\\\%} & \makecell{\textbf{Last}\\\%} & \makecell{\textbf{Diff}\\(Best)} & \makecell{\textbf{Diff}\\ (Last)} \\
+% \midrule
+% \multirow{3}{*}{MNIST}            & 0  & CE   & 72.69 & 69.80 & -     & -     \\
+%                                   & 20 & CE   & 66.30 & 53.64 & -6.39 & -16.16 \\
+%                                   & 20 & GCOD & 71.26 & 67.88 & \textbf{+4.96}  & \textbf{+14.24} \\
+% \midrule
+% \multirow{3}{*}{ENZYMES}          & 0  & CE   & 73.33 & 65.78 & -     & -     \\
+%                                   & 20 & CE   & 64.16 & 62.54 & -9.17 & -3.24 \\
+%                                   & 20 & GCOD & 68.69 & 57.50 & \textbf{+4.53}  & -5.04 \\
+% \midrule
+% \multirow{3}{*}{MSRC\_21}         & 0  & CE   & 96.69 & 93.80 & -     & -     \\
+%                                   & 20 & CE   & 90.26 & 79.64 & -6.43 & -14.16 \\
+%                                   & 20 & GCOD & 94.69 & 90.26 & \textbf{+4.43}  & \textbf{+10.62} \\
+% \midrule
+% \multirow{3}{*}{PROTEINS}         & 0  & CE   & 81.16 & 79.37 & -     & -     \\
+%                                   & 20 & CE   & 76.23 & 62.33 & -4.93 & -17.04 \\
+%                                   & 20 & GCOD & 79.38 & 78.12 & \textbf{+3.15}  & \textbf{+15.79} \\
+% \midrule
+% \multirow{3}{*}{MUTAG}            & 0  & CE   & 94.73 & 84.21 & -     & -     \\
+%                                   & 20 & CE   & 89.47 & 68.42 & -5.26 & -15.79 \\
+%                                   & 20 & GCOD & 90.01 & 86.84 & \textbf{+0.54}  & \textbf{+18.42} \\
+% \midrule
+% \multirow{3}{*}{IMDB-BINARY}      & 0  & CE   & 76.50 & 71.60 & -     & -     \\
+%                                   & 20 & CE   & 75.00 & 71.01 & -1.50 & -0.59  \\
+%                                   & 20 & GCOD & 75.40 & 73.50 & \textbf{+0.40}  & \textbf{+2.49}  \\
+% \midrule
+% \multirow{3}{*}{\makecell[l]{REDDIT-\\MULTI-12K}} & 0  & CE   & 48.15 & 46.01 & -     & -     \\
+%                                   & 20 & CE   & 45.05 & 44.67 & -3.10 & -1.34  \\
+%                                   & 20 & GCOD & 44.98 & 44.89 & \textbf{-0.07} & \textbf{+0.22}  \\
+% \bottomrule
+% \end{tabular}
+% \end{adjustbox}
+% \label{tab:alldataset}
+% \end{table}
+
+
+% \begin{table}[ht]
+% \centering
+% \caption{Summary of Best Accuracy for Different Noise Levels, Ordered by Gain}
+% \begin{adjustbox}{width=0.47\textwidth}
+% \begin{tabular}{lcccc}
+% \toprule
+% \textbf{Dataset} & \makecell{\textbf{0\% Noise} \\ \textbf{CE}} & \makecell{\textbf{20\% Noise} \\ \textbf{CE}} & \makecell{\textbf{20\% Noise} \\ \textbf{GCOD}} & \makecell{\textbf{Gain} \\ \textbf{GCOD-CE}} \\
+% \midrule
+% MNIST            & 72.69 & 66.30 & 71.26 & \textbf{+4.96} \\
+% ENZYMES          & 73.33 & 64.16 & 68.69 & \textbf{+4.53} \\
+% MSRC\_21         & 96.69 & 90.26 & 94.69 & \textbf{+4.43} \\
+% PROTEINS         & 81.16 & 76.23 & 79.38 & \textbf{+3.15} \\
+% MUTAG            & 94.73 & 89.47 & 90.01 & \textbf{+0.54} \\
+% IMDB-BINARY      & 76.50 & 75.00 & 75.40 & \textbf{+0.40} \\
+% \makecell[l]{REDDIT-\\MULTI-12K} & 48.15 & 45.05 & 44.98 & \textbf{-0.07} \\
+% \bottomrule
+% \end{tabular}
+% \end{adjustbox}
+% \label{tab:compare}
+% \end{table}
+
+% \begin{table}[htbp]
+% \caption{Performance comparison across different datasets for 20\% symmetrical noise. The last column shows the difference between 20\% noise with GCOD and 20\% noise with CE.}
+% \label{tab:alldataset}
+% \centering
+% \begin{adjustbox}{width=0.47\textwidth}
+% \begin{tabular}{llcccc}
+% \hline
+% \textbf{Dataset}       & \textbf{Metric}   & \textbf{0\% CE} & \textbf{20\% CE} & \textbf{20\% GCOD} & \makecell[c]{20\% \\(GCOD-CE)} \\ \hline
+% \multirow{3}{*}{MNIST}       & Best              & 72.69         & 66.30          & 71.26            & +4.96                    \\ 
+%                        & Last              & 69.80         & 53.64          & 67.88            & +14.24                   \\ \cline{3-5} 
+%                        & Difference        & 2.89          & 12.66          & 3.38             &                   \\ \hline
+% \multirow{3}{*}{ENZYMES}      & Best              & 73.33         & 64.16          & 68.69            & +4.53                    \\ 
+%                        & Last              & 65.78         & 57.50         & 62.54            & +5.04                    \\ \cline{3-5} 
+%                        & Difference        & 7.55          & 6.66           & 6.15            &                    \\ \hline
+% \multirow{3}{*}{MSRC\_21}     & Best              & 96.69         & 90.26          & 94.69            & +4.43                    \\
+%                        & Last              & 93.80         & 79.64          & 90.26            & +10.62                   \\ \cline{3-5} 
+%                        & Difference        & 2.89          & 10.62          & 4.43             &                   \\ \hline
+% \multirow{3}{*}{PROTEINS}      & Best              & 81.16         & 76.23          & 79.38            & +3.15                    \\ 
+%                        & Last              & 79.18         & 62.32          & 78.12            & +15.80                   \\ \cline{3-5} 
+%                        & Difference        & 1.98          & 13.91          & 1.26             &                    \\ \hline
+% \multirow{3}{*}{MUTAG}     & Best              & 94.73         & 89.47          & 90.01            & +0.54                    \\
+%                        & Last              & 84.21         & 68.42          & 86.84            & +18.42                   \\ \cline{3-5} 
+%                        & Difference        & 10.52         & 21.05          & 3.17            &                    \\ \hline
+% \multirow{3}{*}{\makecell[l]{IMDB-\\BINARY}}   & Best              & 76.50         & 75.00          & 75.40            & +0.40                    \\ 
+%                        & Last              & 71.60         & 71.00          & 73.50            & +2.50                    \\ \cline{3-5} 
+%                        & Difference        & 4.90          & 4.00           & 1.90             &                    \\ \hline
+% \multirow{3}{*}{\makecell[l]{REDDIT-\\MULTI-12K} }& Best           & 48.15         & 45.05          & 44.98            & -0.07                    \\ 
+%                        & Last              & 46.01         & 44.67          & 44.89            & +0.22                    \\ \cline{3-5} 
+%                        & Difference        & 2.14          & 0.38           & 0.09             &                    \\ \hline
+% \end{tabular}
+% \end{adjustbox}
+% % \caption{Performance comparison across different datasets for 20\% symmetrical noise. The last column shows the difference between 20\% noise with GCOD and 20\% noise with CE.}
+% % \label{tab:alldataset}
+% \end{table}
+% \vspace{-5pt}
+
+% The reduced gap between the best and last accuracy achieved by \textbf{GCOD} across all datasets in Table \ref{tab:alldataset} further highlights its ability to mitigate overfitting and maintain robust performance in noisy conditions. Furthermore, Table \ref{tab:alldataset} reveals that \textbf{GCOD} outperforms \textbf{CE} on most datasets under 20\% symmetrical noise, with notable improvements in all data sets except REDDIT-MULTI-12K. This outcome demonstrates the resilience of \textbf{GCOD} to noise regardless of the data set.
+
+
+
+
+% Asymmetric Noise Results Table
+
+
+
+
+
+% Runtime Comparison Table
+
+% In Table~\ref{tab:asymmetric_noise}  a comparison of \textbf{GCOD} and \textbf{CE} under 40\% asymmetric label noise across datasets is presented. \textbf{GCOD} consistently outperforms \textbf{CE}, demonstrating its robustness in handling asymmetric label noise.
+
+
+
+% \begin{table}[htbp]
+% \caption{ Performance on the PPA dataset using 30\% of data from 6 selected classes. The best loss function (test accuracy) is highlighted in \textbf{\textcolor{red}{red and bold}}, and the second-best in \textcolor{blue}{blue}. Results show mean $\pm$ standard deviation over 4 runs.
+%  }
+%     \label{tab:ppa_30_perc_6_classes}
+%     \centering
+%     %\setlength\extrarowheight{4pt}
+%      \renewcommand{\arraystretch}{1.2} %default value 1
+%     \resizebox{0.5\textwidth}{!}{
+%     \begin{tabular}{c c c c c c }
+%         \toprule
+%         %\rowcolor{white}
+%            \textbf{Noise}  & \textbf{Method} &  \multicolumn{2}{c}{\textbf{Test Accuracy}} & \multicolumn{2}{c }{\textbf{Train Accuracy}}  \\ 
+%            \cline{3-6}
+%          &  &   \textbf{Best} & \textbf{Last} & \textbf{Best} & \textbf{Last} \\
+%          \hline
+%         %\rowcolor{white}
+%         %\multirow{3}{*}{\rotatebox[origin=c]{90}{\shortstack{  0 \% }}}
+%        \multirow{3}{*}{0\% } &   CE &     96.25 $\pm$ 0.05& 91.25 &  1  & 99.33 \\ 
+%        &  \method &  96.65 $ \pm$ 0.52& 93.25 & 99.23 & 99.03  \\
+%         &  CE+ W2 &     96.50 $ \pm$ 1.12 & 86.5  & 99.76 & 99.29 \\
+%         \hline
+%         \hline
+%        \multirow{5}{*}{20\% }  &  CE   \textcolor{gray}{clean only}&    \textcolor{gray}{96.15 $ \pm$+.09} &  \textcolor{gray}{90.66 }  &  \textcolor{gray}{84.50} &  \textcolor{gray}{84.07} \\
+%        \cline{3-6} 
+%         &  CE &     88.66 $ \pm$0.16 & 62.58  & 94.98 & 93.45 \\ 
+%         & \textcolor{blue}{SOP} &    \textcolor{blue}{91.01 $ \pm$ 0.44} & \textcolor{blue}{85.50 }  & \textcolor{blue}{79.17 } & \textcolor{blue}{77.64 } \\
+%          & \textcolor{red}{\method} & \textbf{\textcolor{red}{93.91 $ \pm$ 0.26}} & \textbf{\textcolor{red}{92.58}} & \textcolor{red}{80.11} & \textcolor{red}{79.52 } \\ 
+%         & CE + W2&       89.83 $ \pm$ 1.23 & 76.66  & 84.90 & 83.68 \\
+%         \hline \hline
+%          \multirow{5}{*}{40\% }  &  CE  \textcolor{gray}{clean only}  &   \textcolor{gray}{95.08 $ \pm$ 0.13} &  \textcolor{gray}{80.44} &  \textcolor{gray}{68.15 } &  \textcolor{gray}{67.05}\\
+%          \cline{3-6} 
+%        &   CE &      82.08 $ \pm$ 0.22 & 51.83  & 82.47 & 78.88  \\ 
+%        &   SOP &     82.33 $ \pm$ 1.32  & 65.41    & 58.90  & 57.68 \\ 
+%        &  \textcolor{red}{\method} &    \textbf{\textcolor{red}{93.88 $ \pm$ 0.04}} & \textbf{\textcolor{red}{91.08}}  & \textcolor{red}{65.09 } & \textcolor{red}{64.31} \\  
+%          &  \textcolor{blue}{CE + W2} &      \textcolor{blue}{88.25 $ \pm$ 1.13} & \textcolor{blue}{56.33 }  & \textcolor{blue}{68.78}& \textcolor{blue}{65.88 }\\ 
+%         \bottomrule
+%     \end{tabular}}
+%     % \caption{ PPA Dataset.  Number of classes 6. 30 \% of. In red and bold the model that performs the best on test accuracy. In blue the one that performs as the second wrt to test accuracy. The mean and standard deviation are calculated from 4 runs of each. }
+%     % \label{tab:ppa_30_perc_6_classes}
+% \end{table}
+% \begin{table}[htbp]
+% \caption{Performance comparison of CE and GCOD across datasets with 20\% symmetric label noise for the same model. The last column summarizes the test accuracy difference between GCOD and CE for 20\% noise.}
+% \label{tab:alldataset}
+% \centering
+% \begin{adjustbox}{width=0.47\textwidth}
+% \begin{tabular}{llcccc}
+% \hline
+% \textbf{Dataset}       & \textbf{Metric}   & \textbf{0\% CE} & \textbf{20\% CE} & \textbf{20\% GCOD} & \makecell[c]{20\% \\(GCOD-CE)} \\ \hline
+% \multirow{3}{*}{MNIST}       & Best              & 72.69         & 66.30          & 71.26            & +4.96                    \\ 
+%                        & Last              & 69.80         & 53.64          & 67.88            & +14.24                   \\ \cline{3-5} 
+%                        & Difference        & 2.89          & 12.66          & 3.38             &                   \\ \hline
+% \multirow{3}{*}{ENZYMES}      & Best              & 73.33         & 64.16          & 68.69            & +4.53                    \\ 
+%                        & Last              & 65.78         & 57.50         & 62.54            & +5.04                    \\ \cline{3-5} 
+%                        & Difference        & 7.55          & 6.66           & 6.15            &                    \\ \hline
+% \multirow{3}{*}{MSRC\_21}     & Best              & 96.69         & 90.26          & 94.69            & +4.43                    \\
+%                        & Last              & 93.80         & 79.64          & 90.26            & +10.62                   \\ \cline{3-5} 
+%                        & Difference        & 2.89          & 10.62          & 4.43             &                   \\ \hline
+% \multirow{3}{*}{PROTEINS}      & Best              & 81.16         & 76.23          & 79.38            & +3.15                    \\ 
+%                        & Last              & 79.18         & 62.32          & 78.12            & +15.80                   \\ \cline{3-5} 
+%                        & Difference        & 1.98          & 13.91          & 1.26             &                    \\ \hline
+% \multirow{3}{*}{MUTAG}     & Best              & 94.73         & 89.47          & 90.01            & +0.54                    \\
+%                        & Last              & 84.21         & 68.42          & 86.84            & +18.42                   \\ \cline{3-5} 
+%                        & Difference        & 10.52         & 21.05          & 3.17            &                    \\ \hline
+% \multirow{3}{*}{\makecell[l]{IMDB-\\BINARY}}   & Best              & 76.50         & 75.00          & 75.40            & +0.40                    \\ 
+%                        & Last              & 71.60         & 71.00          & 73.50            & +2.50                    \\ \cline{3-5} 
+%                        & Difference        & 4.90          & 4.00           & 1.90             &                    \\ \hline
+% \multirow{3}{*}{\makecell[l]{REDDIT-\\MULTI-12K} }& Best           & 48.15         & 45.05          & 44.98            & -0.07                    \\ 
+%                        & Last              & 46.01         & 44.67          & 44.89            & +0.22                    \\ \cline{3-5} 
+%                        & Difference        & 2.14          & 0.38           & 0.09             &                    \\ \hline
+% \end{tabular}
+% \end{adjustbox}
+% % \caption{Performance comparison across different datasets for 20\% symmetrical noise. The last column shows the difference between 20\% noise with GCOD and 20\% noise with CE.}
+% % \label{tab:alldataset}
+% \end{table}
+% % Table~\ref{tab:asymmetric_noise} presents the performance of \textbf{GCOD} and \textbf{CE} under 40\% asymmetric noise across several datasets. \textbf{GCOD} consistently achieves higher accuracy than \textbf{CE}, particularly in challenging asymmetric noise conditions, reinforcing its reliability in real-world noisy scenarios.
+
+% \begin{table}[htbp]
+%  \caption{Performance comparison across different datasets for 40\% asymmetric label noise using CE and GCOD.}
+%     \label{tab:asymmetric_noise}
+%     \centering
+%     \begin{tabular}{lccc}
+%         \hline
+%         \textbf{Dataset} & \textbf{0\% CE} & \textbf{40\% CE} & \textbf{40\% GCOD} \\
+%         \hline
+%         Proteins & 81.16 & 72.90 & 76.19 \\
+%         MNIST    & 72.69 & 71.15 & 72.61 \\
+%         Enzymes  & 73.33 & 65.80 & 69.81 \\
+%         IMDB/Binary & 76.50 & 68.18 & 72.89 \\
+%         Mutag    & 94.73 & 91.16 & 93.19 \\
+%         Reddit   & 48.15 & 48.01 & 47.94 \\
+%         MSRC/21  & 96.69 & 94.39 & 95.57 \\
+%         \hline
+%     \end{tabular}
+%     % \caption{Performance comparison across different datasets for 40\% asymmetric noise using CE and GCOD.}
+%     % \label{tab:asymmetric_noise}
+% \end{table}
+
+% \begin{table}[htbp]
+%  \caption{Runtime comparison on PPA dataset (30\% of data, 6 classes).}
+%     \label{tab:runtime_comparison}
+%     \centering
+%     \begin{tabular}{lc}
+%         \hline
+%         \textbf{Method} & \textbf{Runtime (Normalized)} \\
+%         \hline
+%         GIN  & 1.00 \\
+%         SOP  & 1.048 \\
+%         GCOD & 1.029 \\
+%         CE+W2 & 1.33 \\
+%         \hline
+%     \end{tabular}
+%     % \caption{Runtime comparison on PPA dataset (30\% of data, 6 classes).}
+%     % \label{tab:runtime_comparison}
+% \end{table}
+
+% Learning Rate Sensitivity Table
+% To evaluate the  impact $lr_u$, we conducted a sensitivity analysis with two learning rates for $u$, $lr_u$ : 1 and 0.1.
+% results under 40\% asymmetric noise across multiple datasets, illustrating the percentage change in accuracy.
+
+
+
+To analyze computational efficiency of our method, Table~\ref{tab:runtime_comparison} compares the percentage runtime increase for various methods relative to GIN trained with cross-entropy loss, normalized to 1, \textbf{CE+W2} incurs a 33\% increase in training time. 
+Lastly,Table~\ref{tab:omg_table} compares the percentage accuracy improvements of the OMG \cite{omg7} and other methods across three datasets (MUTAG, IMDB-B, and PROTEINS) under experimental conditions similar to those in the OMG paper.
+% \begin{table}[htbp]
+%  \caption{Runtime comparison on PPA dataset (30\% of data, 6 classes).}
+%     \label{tab:runtime_comparison}
+%     \centering
+%     \begin{tabular}{lc}
+%         \hline
+%         \textbf{Method} & \textbf{Runtime} \\
+%         \hline
+%         GIN  & 1.00 \\
+%         SOP  & 1.048 \\
+%         GCOD & 1.029 \\
+%         CE+W2 & 1.33 \\
+%         \hline
+%     \end{tabular}
+%     % \caption{Runtime comparison on PPA dataset (30\% of data, 6 classes).}
+%     % \label{tab:runtime_comparison}
+% \end{table}
+
+% Table~\ref{tab:asymmetric_noise} presents the performance of \textbf{GCOD} and \textbf{CE} under 40\% asymmetric noise across several datasets. \textbf{GCOD} consistently achieves higher accuracy than \textbf{CE}, particularly in challenging asymmetric noise conditions, reinforcing its reliability in real-world noisy scenarios.
+\begin{table}[htbp]
+ \caption{Performance comparison across different datasets for 40\% asymmetric label noise using CE and GCOD.}
+    \label{tab:asymmetric_noise}
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Dataset} & \textbf{0\% CE} & \textbf{40\% CE} & \textbf{40\% GCOD} \\
+        \hline
+        Proteins & 81.16 & 72.90 & 76.19 \\
+        MNIST    & 72.69 & 71.15 & 72.61 \\
+        Enzymes  & 73.33 & 65.80 & 69.81 \\
+        IMDB/Binary & 76.50 & 68.18 & 72.89 \\
+        Mutag    & 94.73 & 91.16 & 93.19 \\
+        Reddit   & 48.15 & 48.01 & 47.94 \\
+        MSRC/21  & 96.69 & 94.39 & 95.57 \\
+        \hline
+    \end{tabular}
+    % \caption{Performance comparison across different datasets for 40\% asymmetric noise using CE and GCOD.}
+    % \label{tab:asymmetric_noise}
+\end{table}
+\begin{table}[htbp]
+  \caption{Sensitivity analysis of $lr_u$ for $u$ under 40\% asymmetric noise, $\% \textbf{Change}$ shows the percentage difference of test Accuracy using GCOD with two different learning rates for $u$.}
+    \label{tab:lr_sensitivity}
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Dataset} & \textbf{$lr_u=1$} & \textbf{$lr_u=0.1$} & \textbf{\% Change} \\
+        \hline
+        Proteins    & 76.19 & 75.89 & -0.39\% \\
+        MNIST       & 72.61 & 72.48 & -0.18\% \\
+        Enzymes     & 69.81 & 68.33 & -2.12\% \\
+        IMDB/Binary & 72.89 & 71.94 & -1.30\% \\
+        Mutag       & 93.19 & 92.61 & -0.62\% \\
+        Reddit      & 47.94 & 48.08 & +0.29\% \\
+        MSRC/21     & 95.57 & 95.45 & -0.13\% \\
+        \hline
+    \end{tabular}
+% \begin{table}[htbp]
+%   \caption{Sensitivity analysis of learning rate $lr_u$ for $u$ under 40\% asymmetric noise, $\% \textbf{Change}$ shows the percentage difference using GCOD with two different learning rates for $u$.}
+%     \label{tab:lr_sensitivity}
+%     \centering
+%     \begin{tabular}{lccccccc}
+%         \hline
+%         \textbf{Metric}    & \textbf{Proteins} & \textbf{MNIST} & \textbf{Enzymes} & \textbf{\makecell[l]{IMDB-\\BINARY}} & \textbf{Mutag} & \textbf{Reddit} & \textbf{MSRC/21} \\
+%         \hline
+%         $lr_u=1$           & 76.19            & 72.61          & 69.81            & 72.89               & 93.19          & 47.94           & 95.57           \\
+%         $lr_u=0.1$         & 75.89            & 72.48          & 68.33            & 71.94               & 92.61          & 48.08           & 95.45           \\
+%         \% Change          & -0.39\%          & -0.18\%        & -2.12\%          & -1.30\%             & -0.62\%        & +0.29\%         & -0.13\%         \\
+%         \hline
+%     \end{tabular}
+% \end{table}
+
+    
+    % \caption{Sensitivity analysis of learning rate for $u$ under 40\% asymmetric noise, including the percentage difference using GCOD with two different learning rates for $u$.}
+    % \label{tab:lr_sensitivity}
+\end{table}
+% State-of-the-Art Comparison Table
+% \begin{table}[htbp]
+% \caption{Comparison of GCOD with OMG across selected datasets.}
+%     \label{tab:state_of_art}
+%     \centering
+%     \begin{tabular}{lccc}
+%         \hline
+%         \textbf{Methods} & \textbf{MUTAG} & \textbf{IMDB-B} & \textbf{PROTEINS} \\
+%         \hline
+%         OMG              & 0.061          & 0.047           & 0.039 \\
+%         Ours (GCOD)      & 0.062          & 0.049           & 0.041 \\
+%         \hline
+%     \end{tabular}
+%     % \caption{Comparison of GCOD with OMG across selected datasets.}
+%     % \label{tab:state_of_art}
+% \end{table}
+\begin{table}[htbp]
+    \begin{minipage}{0.5\linewidth}
+        \caption{Runtime comparison on PPA (30\% of data, 6 classes).}
+        \label{tab:runtime_comparison}
+        \centering
+        \begin{tabular}{lc}
+            \hline
+            \textbf{Method} & \textbf{Runtime} \\
+            \hline
+            GIN  & 1.00 \\
+            SOP  & 1.048 \\
+            GCOD & 1.029 \\
+            CE+W2 & 1.33 \\
+            \hline
+        \end{tabular}
+       
+    \end{minipage}%
+    %\hspace{0.004\textwidth}
+    \begin{minipage}{0.5\linewidth}
+        \centering
+        \caption{Comparison of GCOD with OMG across selected datasets.}
+        \label{tab:omg_table}
+        \begin{tabular}{lcc}
+            \hline
+            \textbf{Datasets} & \textbf{OMG} & \textbf{GCOD} \\
+            \hline
+            MUTAG              & 0.061        & 0.062 \\
+            IMDB-B             & 0.047        & 0.049 \\
+            PROTEINS           & 0.039        & 0.041 \\
+            \hline
+        \end{tabular}
+       
+    \end{minipage}
+\end{table}
+
+

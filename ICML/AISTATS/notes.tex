@@ -1,0 +1,22 @@
+
+Best performing method:
+- Our loss (ppa)
+
+Second best performing method:
+- Two networks
+
+-Third : 
+only removing negative eigenvalues W2 (GIN) leads to unstable learning we remove the negative eigenvalues every epoch 
+
+(not learning the noisy samples at all, having great accuracy on clean samples but does not generalize, we are somehow just "forcing the network to learn from the pure samples in training". 
+we're going to zero variance, so smoothing too much probably. 
+
+
+The 2 network methods: 
+
+We have two networks, in one we do the training with cross-entropy but removing negative eigenvalues 
+
+
+We use method 3 to give a score to the samples 0 or 1, every epoch. 
+
+For the second model, you only backpropagate on the samples that are labeled as 1 by the first model. 

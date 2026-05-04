@@ -1,0 +1,44 @@
+% In this Section, we propose a method for the direct manipulation of the Dirichlet energy during the training process. We test our hypothesis that constraining the Dirichlet energy to low values makes models robust to label noise in a graph classification task. Specifically, we introduce an upper bound $U_c \in \mathbb R$ on the Dirichlet energy for each class $c$. We enforce this with a regularization term to penalize training samples whose Dirichlet energy, $E^{dir}(\mathcal G)$, exceeds the set threshold. The regularization term is defined as:
+% \begin{equation}
+% \label{eq: regularization term}
+%    \mathcal L_{DE}(\mathcal D) = \frac 1 N \sum_{i=1}^N \max(0, E_i - U_{c_i})^2
+% \end{equation}
+% where $N$ is the number of training samples in set $\mathcal D$, $E_i = E^{dir}(\mathcal G_i)$ is the Dirichlet energy of the graph $\mathcal G_i$, and $U_{c_i}$ is defined as the energy threshold of the class $c_i$ to which the graph belongs. 
+% This formulation is designed to encourage the model to learn smoother node features by suppressing high-frequency components. 
+
+
+% To achieve the primary classification objective, the total loss combines the standard classification loss $\mathcal L_{CE}$ (cross-entropy) with the energy regularization term $\mathcal  L_{DE}$. We scale the regularization term to prevent its domination with a balancing factor $\lambda$, which is updated during training to ensure that the regularization term remains a magnitude smaller than the classification loss:
+% \(
+%    \mathcal L = \mathcal L_{CE} + \lambda \mathcal  L_{DE}
+% \)
+
+% We explore two approaches to define the target energy threshold $U_c$:  \textbf{(i) Fixed bound:} A global upper $U$ is applied uniformly to all classes, $U_c = U \forall c$. This approach provides a simple control mechanism, but may ignore class-specific variability in energy distributions.  \textbf{(ii) Class-specific bounds:} Here, the threshold $U_c$ is computed at the end of each epoch as the average Dirichlet energy of all validation graphs assigned to class $c$, we choose the noise-free validation set to obtain precise bounds. This dynamic approach allows the energy constraint to adapt over time to the evolving feature representations, and reflects variability of different classes and datasets.
+
+% To evaluate how the approaches control the energy per class and improve robustness, we performed experiments on the PPA dataset using the GIN network and varying levels of symmetric label noise.
+% % Our primary questions were: \textit{\textbf{Energy Control:} Does $\mathcal L_{DE}$ successfully constrain the Dirichlet energy below the thresholds $U_c$? \textbf{Robustness:} Does $\mathcal L_{DE}$ improve the model robustness to label noise?}
+
+% \textbf{Fixed bound results:} we empirically tested a range of threshold values for $U$ by progressively lowering it until excessive smoothing became evident (characterized by worse accuracy). In such cases, the model fits on the noise again due to the loss of expressive power. The final value of $U$ was chosen to balance smoothness and discriminative capacity.
+
+% Experiments showed that this method constrained the energy for most samples below the threshold $U$. The introduction of $\mathcal L_{DE}$ induces robustness as notable improvements in test accuracy under noisy labels (Table~\ref{tab:ppa_30_perc_6_classes}). However, gains were small in the absence of noise, where this method restricts learning by over-regularizing some classes.
+
+
+% \textbf{Class-specific bounds results:} the threshold $U_c$ was recalculated after each epoch based on the average Dirichlet energy of the validation graphs per class. This mechanism allows for adaptive regularization that aligns with the natural complexity of each class.
+
+% Although not all graphs maintained their energy below their $U_c$ thresholds, regularization successfully reduced the overall energy and stabilized over epochs. Importantly, relative to the base $GIN+\mathcal L_{CE}$ model, this method improved accuracy not only for noisy data sets, but also in the absence of noise. Suggesting that the class-specific method improves model generalization as well induces robustness.
+
+In this Section, We introduce a training method that explicitly constrains Dirichlet energy. By penalizing graphs with energy above a threshold, the model is encouraged to learn smoother, low-frequency representations, which we hypothesize improves robustness to label noise. Our approach is motivated by the empirical observations presented in Section \ref{sec:dir_energy_fitting_noise} and Appendix \ref{sec:Additional_studies}, which show that Dirichlet energy increases under overfitting and grows proportionally with label noise. 
+
+Formally, for a training set $\mathcal{D} = \{ \mathcal{G}_1, \ldots, \mathcal{G}_N \}$ with associated Dirichlet energies $E_i = E^{dir}(\mathcal{G}_i)$ and class labels $c_i$, we define the regularization term:
+\begin{equation}
+\label{eq: regularization term}
+    \mathcal{L}_{DE}(\mathcal{D}) = \frac{1}{N} \sum_{i=1}^{N} \left[\max(0, E_i - U_{c_i})\right]^2,
+\end{equation}
+where $U_{c_i} \in \mathbb{R}$ is the energy threshold for class $c_i$. The overall training loss becomes \(
+    \mathcal{L} = \mathcal{L}_{CE} + \lambda \mathcal{L}_{DE},\)
+where $\lambda$ balances the smoothness constraint against the classification objective.
+We explore two strategies for setting $U_c$ (see also Section~\ref{appendix:details_dirichlet_regularization_bounds} for more details on these strategies):\\
+\textbf{Class-specific bound:} A dynamic threshold $U_c$ computed after each epoch as the average Dirichlet energy of clean validation graphs in class $c$. The validation set must be clean to provide a reliable reference for estimating class-dependent energy levels. When noise is high, especially symmetric noise, the class-specific upper bounds $U_c$ may lose discriminative power as energy distributions across classes become similar, reducing the method’s effectiveness. Using clean validation data preserves the class-specificity of the thresholds.\\
+\textbf{Fixed bound:} A global threshold $U_c = U$ for all classes. In this case, the approach is not dynamic; instead $U$ is kept fixed during training and treated as a hyperparameter tuned to balance the need to prevent excessive smoothing while still limiting energy growth under noise.
+
+On the PPA dataset with symmetric label noise, both variants of $\mathcal{L}_{DE}$ improved test accuracy over standard $\mathcal{L}_{CE}$. The fixed bound effectively constrained energy but occasionally over smoothed representations, particularly under clean labels. In contrast, class-specific bounds yielded better generalization and stability, improving accuracy under both noisy and clean conditions (Table~\ref{tab:ppa_30_perc_6_classes}). These results confirm that Dirichlet energy regularization helps stabilize feature evolution and enhances robustness by limiting harmful high frequency components.
+

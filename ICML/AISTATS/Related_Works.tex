@@ -1,0 +1,46 @@
+% % \textbf{Learning under label noise.} 
+% A large body of work is devoted to the challenge of learning with noisy labels. Several methods are based on \textbf{robust loss functions}, using symmetric losses \cite{ghosh2017robust}, or loss correction methods \cite{patrini2017making}. Other works are the \textbf{Neighboring-based noise identification} approaches \cite{zhu2022detecting}.
+% Several approaches are based on the \textbf{early learning phenomenon} \cite{arpit2017closer}, and others proposed to improve the quality of training data by treating samples with a small loss value as correctly labeled during the training process \cite{gui2021towards}. 
+% Additional methods for learning in the presence of noisy labels are in Appendix~\ref{sec:learningundernoise}.
+% % \textbf{Graph Learning in noisy scenarios.} 
+
+% The methods discussed above focus mainly on learning from noisy labels in image datasets. Unlike images, graphs exhibit noise in labels, graph topology (e.g., adding/removing edges or nodes), and node features. Most prior work discusses noisy node labels \cite{graphC1, contrastivelearning5, omg7, ssl8, cl9, nrgnn11,Kang2018RobustGL}, while noise at the edge and feature levels have also been explored \cite{structuralnoise2, structuralnoise3, ssl8}.
+% However, fewer studies investigate graph classification under noise, limiting progress in applying and improving graph classification tasks. The seminal work of \cite{graphC1} addresses graph classification with label noise, proposing a surrogate loss to discard noisy labels under certain assumptions, without comparison to clean label scenarios. More recently, \cite{omg7} introduces a method combining contrastive learning and MixUp \cite{mixup2} within the loss function to improve generalization, along with a curriculum learning strategy to dynamically discard noisy samples.
+% In contrast, we propose tackling noisy labels using an effective loss function inspired by \cite{wani2023combining} or by enhancing graph smoothness. Additional discussion can be found at Appendix~\ref{sec:graphlearningundernoise}
+
+
+% % \textbf{Dirichlet Energy, Smoothing bias and Sharpening}  
+% Dirichlet energy is a key measure in GNN, quantifying the smoothness or variation of features across nodes \cite{dirichlet}. 
+% Most GNNs function as low pass filters, emphasizing low frequency components while diminishing high frequency ones \cite{nt2019revisiting, rusch2023survey}. Specifically, \cite{nt2019revisiting} showed this phenomenon holds for graphs without non trivial bipartite components, with self loops further shrinking eigenvalues. \cite{noteonoversmoothing, oversmoothing2} prove that GNN Dirichlet energy exponentially decreases with additional layers when the product of the largest singular value of the weight matrix and the largest eigenvalue of the normalized Laplacian is less than one. GNN learnable weight matrices fundamentally control whether features are smoothed or sharpened \cite{GRAFF}. 
+% While Dirichlet energy evolution has been studied in relation to oversmoothing \cite{noteonoversmoothing, nt2019revisiting}, and various mitigation approaches leveraging energy properties exist \cite{FAGCN, dirichlet_constraint, EEConv}, these work has primarily focused on node classification, where oversmoothing significantly impacts performance \cite{2sides}. The role of energy dynamics in graph classification, especially with label noise, remains less explored.
+% In this work, we provide theoretical and practical insights on leveraging Dirichlet energy to enhance graph classification performance, even in the presence of label noise (comprehensive discussion in Appendix \ref{sec:dir_additional_related}).
+
+
+
+
+\paragraph{Learning under label noise.}
+A large body of work addresses learning with noisy labels in image classification. 
+\textbf{Robust loss functions} use symmetric losses~\cite{ghosh2017robust} or loss correction~\cite{patrini2017making}. 
+\textbf{Sample selection methods} exploit the early learning phenomenon---where networks fit clean patterns before memorizing noise~\cite{arpit2017closer}---to identify likely clean samples via small loss values~\cite{gui2021towards}. 
+\textbf{Neighborhood-based approaches} detect outliers in feature space~\cite{zhu2022detecting}.
+However, these methods were developed for images and do not exploit graph structure. Our GCOD loss adapts sample reweighting to graphs using graph-level representation centroids, while our energy-based methods leverage a graph-specific inductive bias: the smoothness of node representations induced by message passing.
+Additional methods are discussed in Appendix~\ref{sec:learningundernoise}.
+
+\paragraph{Graph learning under noise.}
+Unlike images, graphs exhibit noise in labels, topology, and node features. 
+Most prior work focuses on \emph{node classification}---labeling individual nodes within a single graph---where methods mainly exploit homophily (connected nodes sharing labels) to detect corrupted nodes~\cite{graphC1, contrastivelearning5, omg7, ssl8, cl9, nrgnn11, Kang2018RobustGL}. Noise at edge and feature levels has also been explored~\cite{structuralnoise2, structuralnoise3, ssl8}.
+In contrast, \emph{graph classification} assigns a single label to an entire graph, where within-graph homophily/heterophily does not directly inform the graph-level label. 
+Fewer studies address this setting: \cite{graphC1} propose a surrogate loss to discard noisy labels under restrictive assumptions, and \cite{omg7} combine contrastive learning with MixUp~\cite{mixup2} and curriculum learning to filter noisy samples.
+Unlike these sample-selection approaches, we identify \emph{representation smoothness}---quantified by Dirichlet energy---as the mechanism governing robustness in graph classification, enabling both a diagnostic signal for overfitting and principled interventions. Our loss function is inspired by~\cite{wani2023combining} but adapted for graphs with energy-aware modifications. Additional discussion is in Appendix~\ref{sec:graphlearningundernoise}.
+
+\paragraph{Dirichlet energy in GNNs.}
+Dirichlet energy quantifies smoothness of node features across graph edges~\cite{dirichlet}. 
+Most GNNs act as low-pass filters, causing energy to \emph{decrease} across layers~\cite{nt2019revisiting, rusch2023survey}. 
+\cite{nt2019revisiting} showed this for graphs without non-trivial bipartite components. 
+\cite{noteonoversmoothing, oversmoothing2} prove that energy decays exponentially with depth under certain spectral conditions, while \cite{GRAFF} show that weight matrix eigenvalues control smoothing versus sharpening.
+This energy decay causes \textbf{oversmoothing}---a problem in \emph{node classification} where node representations collapse and become indistinguishable~\cite{2sides}. Various mitigation approaches exist~\cite{FAGCN, zhou2021dirichlet, EEConv}, all focused on node classification.
+
+We reveal a complementary phenomenon in \emph{graph classification}: fitting noisy graph labels causes Dirichlet energy to \textbf{increase}, not decrease. 
+Intuitively, misclassifying a graph requires its pooled representation to differ from correctly-labeled graphs, which necessitates sharp (high-frequency) node features.
+While prior work addresses energy \emph{decay} harming node classification, we show that energy \emph{growth} signals noise memorization in graph classification---a novel connection enabling new robustness methods.
+Comprehensive discussion is in Appendix~\ref{sec:dir_additional_related}.

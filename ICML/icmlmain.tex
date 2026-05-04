@@ -1,0 +1,276 @@
+%%%%%%%% ICML 2026 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs} % for professional tables
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2026} with \usepackage[nohyperref]{icml2026} above.
+\usepackage{hyperref}
+
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\newcommand{\method}{GCOD }
+% Use the following line for the initial blind version submitted for review:
+\usepackage{icml2026}
+
+% For preprint, use
+% \usepackage[preprint]{icml2026}
+
+% If accepted, instead use the following line for the camera-ready submission:
+% \usepackage[accepted]{icml2026}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+
+
+
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts   
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{amsmath}
+\usepackage{graphicx} 
+\usepackage{natbib}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{mathtools}
+\usepackage{makecell}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{subcaption}
+\usepackage{xurl}
+% \usepackage[hyphens]{url}
+
+
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+%\usepackage[disable,textsize=tiny]{todonotes}
+\usepackage[textsize=tiny]{todonotes}
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Energy Guided smoothness to improve Robustness in Graph Classification}
+
+\begin{document}
+
+\twocolumn[
+  \icmltitle{Energy Guided smoothness to improve Robustness in Graph Classification}
+
+  % It is OKAY to include author information, even for blind submissions: the
+  % style file will automatically remove it for you unless you've provided
+  % the [accepted] option to the icml2026 package.
+
+  % List of affiliations: The first argument should be a (short) identifier you
+  % will use later to specify author affiliations Academic affiliations
+  % should list Department, University, City, Region, Country Industry
+  % affiliations should list Company, City, Region, Country
+
+  % You can specify symbols, otherwise they are numbered in order. Ideally, you
+  % should not use this facility. Affiliations will be numbered in order of
+  % appearance and this is the preferred way.
+  \icmlsetsymbol{equal}{*}
+
+  \begin{icmlauthorlist}
+    \icmlauthor{Firstname1 Lastname1}{equal,yyy}
+    \icmlauthor{Firstname2 Lastname2}{equal,yyy,comp}
+    \icmlauthor{Firstname3 Lastname3}{comp}
+    \icmlauthor{Firstname4 Lastname4}{sch}
+    \icmlauthor{Firstname5 Lastname5}{yyy}
+    \icmlauthor{Firstname6 Lastname6}{sch,yyy,comp}
+    \icmlauthor{Firstname7 Lastname7}{comp}
+    %\icmlauthor{}{sch}
+    \icmlauthor{Firstname8 Lastname8}{sch}
+    \icmlauthor{Firstname8 Lastname8}{yyy,comp}
+    %\icmlauthor{}{sch}
+    %\icmlauthor{}{sch}
+  \end{icmlauthorlist}
+
+  \icmlaffiliation{yyy}{Department of XXX, University of YYY, Location, Country}
+  \icmlaffiliation{comp}{Company Name, Location, Country}
+  \icmlaffiliation{sch}{School of ZZZ, Institute of WWW, Location, Country}
+
+  \icmlcorrespondingauthor{Firstname1 Lastname1}{first1.last1@xxx.edu}
+  \icmlcorrespondingauthor{Firstname2 Lastname2}{first2.last2@www.uk}
+
+  % You may provide any keywords that you find helpful for describing your
+  % paper; these are used to populate the "keywords" metadata in the PDF but
+  % will not be shown in the document
+  \icmlkeywords{Machine Learning, ICML}
+
+  \vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column listing the
+% affiliations and the copyright notice. The command takes one argument, which
+% is text to display at the start of the footnote. The \icmlEqualContribution
+% command is standard text for equal contribution. Remove it (just {}) if you
+% do not need this facility.
+
+% Use ONE of the following lines. DO NOT remove the command.
+% If you have no special notice, KEEP empty braces:
+\printAffiliationsAndNotice{}  % no special notice (required even if empty)
+% Or, if applicable, use the standard equal contribution text:
+% \printAffiliationsAndNotice{\icmlEqualContribution}
+\begin{abstract}
+% 
+Graph Neural Networks (GNNs) are vulnerable to label noise in graph classification, yet the mechanisms underlying this vulnerability remain poorly understood.
+% 
+We discover that GNN robustness is governed by representation smoothness, as measured by Dirichlet energy: energy decreases while learning true patterns but sharply increases when memorizing noisy labels, particularly in high-frequency components.
+% 
+Based on this insight, we propose three complementary methods---spectral weight constraints, explicit energy regularization, and a novel GCOD loss---that limit harmful high-frequency energy growth through different mechanisms.
+% 
+Experiments across seven benchmarks under both symmetric and asymmetric noise demonstrate consistent improvements while preserving clean-data performance.
+% 
+Together, these results establish Dirichlet energy as both a diagnostic signal for noise overfitting and a principled target for robust GNN design.
+% 
+\end{abstract}
+
+% \begin{abstract}
+% Graph Neural Networks (GNNs) perform well on graph classification tasks but are notably susceptible to label noise, leading to compromised generalization and overfitting. We investigate GNNs' robustness, identify generalization failure modes and causes, and prove our hypothesis with three robust GNN training methods. Specifically, GNN generalization is compromised by label noise in simpler tasks (few classes), low-order graphs (few nodes), or highly parameterized models. Focusing on graph classification, we show the link between GNN robustness and the smoothness of learned node representations, as quantified by the Dirichlet energy. We show that GNN learns smoother representations with decreasing Dirichlet energy during training, until the model fits on noisy labels, adding high-frequency components to the representations. To verify our analysis, we propose three robust training strategies for GNNs: (a) a spectral inductive bias by enforcing positive eigenvalues in GNN weight matrices to demonstrate the link between smoothness and robustness; (b) a Dirichlet energy overfitting control mechanism, which relies on a noise-free validation set; (c) a noise-robust loss function tailored for GNNs to induce smooth representations. Crucially, our methods do not degrade performance in noise-free data, reinforcing our central hypothesis that GNNs’ smoothness bias defines their robustness to label noise.
+% \end{abstract}
+
+\section{Introduction}
+\input{ICML/AISTATS/Introduction}
+
+\section{Related Works}
+\label{sec:related_work}
+\input{ICML/AISTATS/Related_Works}
+
+\section{Background}
+\input{ICML/AISTATS/Background}
+
+\section{GNN Robustness to Noisy Graph Labels, and its Failures Modes}
+\label{sec:failure}
+\input{ICML/AISTATS/GNN_failure_modes}
+
+\section{Representation Dirichlet Energy indicates Overfitting on Noisy Labels}
+\label{sec:Dirichlet_meet_GC}
+\input{ICML/AISTATS/Dirichlet_Energy}
+
+% \section{Dirichlet Energy Amplification in High-Frequency Components Under Label Noise: A Theoretical and Empirical Analysis}
+% \label{sec:Amplification}
+% \input{AISTATS/Dirchiletamplication}
+\section{Robust Strategies Based on Smoothing}
+\label{sec:two_smoothing_methods}
+\subsection{Method 1: Robust GNN by enforcing positive Eigenvalues of transformations}
+\label{sec:positive_eigens}
+\input{ICML/AISTATS/Mehod_1}
+%\titlespacing*{\section}{0pt}{5pt}{5pt}
+
+\subsection{Method 2: Robust GNN by direct energy manipulation}
+\label{sec:regularization}
+\input{ICML/AISTATS/Regularization}
+
+
+\section{Method 3: Robust GNN with GCOD Loss Function}
+\label{sec:GNNrobustnessLoss}
+\input{ICML/AISTATS/Method_2}
+\section{Experimental Results}
+\input{ICML/AISTATS/Experimental_Results}
+
+\section{Conclusions}
+
+We established Dirichlet energy as both a diagnostic signal for noise overfitting and a principled intervention target in graph classification. 
+% 
+Our key finding—that noise memorization manifests as energy \emph{increase} rather than the energy decay seen in node classification—suggests that the smoothness bias of GNNs provides implicit robustness that practitioners can leverage.
+% 
+Among our three methods, we recommend \method for general use: it achieves the strongest results, requires no clean validation data, and adds negligible overhead.
+% 
+For practitioners who can access clean validation samples, class-specific $\mathcal{L}_{DE}$  offers an interpretable alternative with explicit energy control.
+% 
+Beyond noisy labels, Dirichlet energy may serve as a general diagnostic for GNN training dynamics. 
+% % 
+We anticipate applications to domain shift detection, adversarial robustness, and architecture design.
+\textbf{Limitations.} Our analysis is primarily empirical; theoretical characterization of when and why noise induces sharpening remains open. 
+% 
+The class-specific regularization variant requires clean validation data, limiting its applicability in fully noisy settings.
+% 
+% \textbf{Broader Impact.} Beyond noisy labels, Dirichlet energy may serve as a general diagnostic for GNN training dynamics. 
+% % 
+% We anticipate applications to domain shift detection, adversarial robustness, and architecture design.
+% 
+
+\section*{Broader Impact}
+
+This work addresses robustness to label noise in graph classification, relevant to many fields like molecular screening, protein analysis, and network classification. 
+
+\textbf{Positive impacts.} Improved robustness could reduce costly false predictions in drug discovery pipelines and enable reliable learning from imperfectly curated scientific datasets.
+
+\textbf{Potential concerns.} Graph classification methods, including ours, could in principle be applied to social network analysis for purposes such as user profiling. However, our contribution—robustness to label noise—does not expand the capability frontier of such applications; it merely improves reliability of existing methods.
+
+% \textbf{Limitations as safeguards.} Our class-specific regularization requires clean validation data, which may be unavailable in adversarial or privacy-sensitive contexts, naturally limiting misuse in those settings.
+
+
+
+
+% In the unusual situation where you want a paper to appear in the
+% references without citing it in the main text, use \nocite
+\nocite{langley00}
+
+\bibliography{main}
+\bibliographystyle{icml2026}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\appendix
+\input{Appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was created
+% by Iain Murray in 2018, and modified by Alexandre Bouchard in
+% 2019 and 2021 and by Csaba Szepesvari, Gang Niu and Sivan Sabato in 2022.
+% Modified again in 2023 and 2024 by Sivan Sabato and Jonathan Scarlett.
+% Previous contributors include Dan Roy, Lise Getoor and Tobias
+% Scheffer, which was slightly modified from the 2010 version by
+% Thorsten Joachims & Johannes Fuernkranz, slightly modified from the
+% 2009 version by Kiri Wagstaff and Sam Roweis's 2008 version, which is
+% slightly modified from Prasad Tadepalli's 2007 version which is a
+% lightly changed version of the previous year's version by Andrew
+% Moore, which was in turn edited from those of Kristian Kersting and
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.

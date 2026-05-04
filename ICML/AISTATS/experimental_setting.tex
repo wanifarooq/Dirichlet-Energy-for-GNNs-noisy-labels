@@ -1,0 +1,164 @@
+\label{sec:experimental_setting}
+{
+In our experimental setup, we performed tests on several datasets to evaluate performance. The first dataset, ogbg-ppa \cite{PPA}, consists of undirected protein association neighborhoods derived from the protein-protein association networks of 1,581 species, spanning 37 broad taxonomic groups. Another dataset, ENZYMES \cite{proteins}, includes 600 protein tertiary structures from the BRENDA enzyme database, representing six different enzyme classes. The MSRC\_21 dataset \cite{Neumann2016} contains 563 graphs across 20 categories, with an average of 77.52 nodes per graph. The PROTEINS \cite{proteins} dataset is a binary classification set with 1,113 graphs, having an average node count of 39.06 per graph. The MUTAG \cite{mutag} dataset is another small binary graph dataset, consisting of 188 graphs, each with an average of 18 nodes. The IMDB-BINARY \cite{imdbbinary} dataset, as the name suggests, is a binary graph classification dataset containing 1,000 graphs with an average node count of 20 per graph, and no node features. Similarly, the REDDIT-MULTI-12K dataset \cite{imdbbinary} includes 11,929 graphs spread across 11 classes, with an average of 391 nodes per graph and no node features.
+
+Additionally, we utilized the MNIST graph dataset, which is derived from the MNIST computer vision dataset. This dataset contains 55,000 images divided into 10 classes, where each image is represented as a graph. 
+%Furthermore, we created a synthetic dataset where the nodes of each graph, corresponding to a specific class $c$, were generated from a shared normal distribution \( \mathcal{N}(\mu, \sigma_c) \). The number of nodes in each graph was randomly determined while maintaining a consistent mean node count across graphs, achieved using the Poisson distribution. This mean node count, referred to as the average node order, was used to control experimentation. We examine synthetic datasets with varying numbers of nodes or sample sizes per class, allowing us to investigate the effects of sample density and graph order.
+%\\
+
+Our experimental investigations were primarily conducted employing Graph Convolutional Networks (GCN)  \cite{gcn} and Graph Isomorphism Networks (GIN) \cite{WL1} networks. Notably, the experimental methodology adopted possesses a generality that extends to encompass all Message Passing Neural Networks (MPNNs). Our study centers on observing the learning dynamics of networks during graph classification, particularly examining their adaptability to label noise. We aim to enhance robustness by employing tailored loss functions. Notably, the selection of hyperparameters remains unrestricted, as these parameters depend on both the model architecture and the dataset employed, ensuring a nuanced and generalized approach. In each experiment, we initialize with hyperparameters suited for clean, non-noisy conditions, ensuring optimal model performance. These parameters are subsequently held constant as we introduce varying levels of noise, sample density, or graph order. This approach ensures fair comparisons across experiments and facilitates a comprehensive exploration of model capacities. The synthetic label noise is generated following the methodologies described in \cite{https://doi.org/10.48550/arxiv.1804.06872} and \cite{xia2021robust} which are considered to be standard techniques for generating synthetic label noise.
+
+%\textcolor{red}{Further information about the experimental setup can be found in section \ref{sec:implementation_details} in the Appendix.}
+
+
+\subsection{Hyperparameters}
+We employed the standard GIN \cite{WL1} and GCN \cite{gcn} architectures for most of our experiments. However, to investigate the impact of positive eigenvalues on weight matrices, as outlined in \ref{sec:positive_eigens}, we applied targeted modifications to both the GIN and GCN models \ref{app: weightmatrice_eigens}.
+
+The table below summarizes the key hyperparameters used for the experiments.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Parameter}        & \textbf{Value}                                    \\ \hline
+\textbf{Architecture}     & GCN, GIN                                     \\ \hline
+\textbf{Learning Rate}    & 0.001                                     \\ \hline
+\textbf{Optimizer}        & Adam,                                    \\ \hline
+\textbf{Batch Size}       & 32                                               \\ \hline
+\textbf{Loss Function}    & CrossEntropy, SOP and GCOD                 \\ \hline
+\textbf{Epochs}           & 200(PPA) to 1000                                              \\ \hline
+\textbf{Noise Percentage} & 0\% to 40\%                   \\ \hline
+\textbf{Weight Decay}     & 1e-4                       \\ \hline
+\textbf{Evaluation Metric} & Accuracy                \\ \hline
+\textbf{GNN Layers } & 5                \\ \hline
+\textbf{Learning Rate $u$ } & 1               \\ \hline
+\textbf{Hidden Units } & 300             \\ \hline
+\end{tabular}
+\caption{Network architecture and hyperparameters.}
+\end{table}
+
+All experiments have been performed over NVIDIA RTX A6000 GPU. For implementation, visit the following anonymous GitHub: 
+\href{https://anonymous.4open.science/r/Robustness_Graph_Classification-E76F}{Robustness Graph Classification Project}.
+
+\subsection{Details on the synthetic dataset used for Figure~\ref{fig:synthetic_data} } \label{appendix:details_synthetic_dataset_varying_nodes}
+Figure~\ref{fig:synthetic_data} presents results from synthetic datasets with varying graph order (i.e., number of nodes per graph). We generate datasets with average graph orders ranging from 5 to 60, sampling actual node counts from a Poisson distribution with mean equal to the target graph order. Each dataset contains 6 classes, with 1400 graphs per class, a fixed average degree of 2, and edges sampled uniformly at random.
+
+Node features are sampled from a Gaussian distribution with a mean determined by the class label and a standard deviation of 1.5. For all graph orders, we apply a consistent label noise rate of 35\% using uniform class flipping. Results demonstrate that GNNs become increasingly sensitive to noise as the graph order decreases. Small graphs lack sufficient internal structure and aggregation capacity, making them vulnerable to treating noisy labels as signal. Conversely, larger graphs provide more nodes and connectivity over which the model can average, diluting the influence of noisy samples.
+
+
+
+\section{Additional Details on the three proposed Methods}
+
+
+\subsection{Spectral Bias Implementation Details}
+\label{app: weightmatrice_eigens}
+\subsubsection{GNN Update Rules and Spectral Analysis Setup}
+
+To operationalize spectral bias in GNNs, we evaluate both GCN~\citep{gcn} and GIN~\citep{WL1} layer update mechanisms. For each input graph $\mathcal{G}_i$, we define the GCN update rule as:
+
+\begin{equation}
+    \text{GCN: \hspace{0.5cm}}
+    \mathbf{H}_i^{l+1} = \sigma(\mathbf{\Delta} \mathbf{H}_i^l \mathbf{W}^1_l)\mathbf{W}^2_l, \quad \forall i \in \{1, \ldots, n\},
+\end{equation}
+
+and the GIN update rule as:
+
+\begin{equation}
+\begin{aligned}
+    \text{GIN: \hspace{0.5cm}} \mathbf{H}_i^{l+1} = \sigma\left( \sigma\left((1 + \epsilon)\mathbf{H}_i^l + \mathbf{A}_i \mathbf{H}_i^l \right) \mathbf{W}_l^1 \right) \mathbf{W}_l^2, \\
+    \forall i \in \{1, \ldots, n\}.
+\end{aligned}
+\end{equation}
+
+Here, $\epsilon$ is a scalar hyperparameter and both $\mathbf{W}_l^1$ and $\mathbf{W}_l^2$ are square matrices of size $\mathbb{R}^{m' \times m'}$, allowing direct eigendecomposition. $\mathbf{W}_l^2$ is used as a shallow projection matrix after message aggregation.
+
+\subsection{ Weight Matrix Spectrum and Clipping Procedure}
+\label{app: eigendecomp}
+For each layer $l$ and each weight matrix $v \in \{1, 2\}$, let the eigenvalues and eigenvectors be denoted:
+\[
+\{\mu_{0,l}^{v}, \ldots, \mu_{m'-1,l}^{v} \}, \quad \{\bm{\Phi}_{0,l}^{v}, \ldots, \bm{\Phi}_{m'-1,l}^{v} \}.
+\]
+
+Unlike the graph Laplacian $\mathbf{\Delta}$, these eigenvalues $\mu_{i,l}^v$ can be negative, which enables feature "sharpening" effects. As shown in \cite{GRAFF}, weight matrices with negative eigenvalues can amplify high frequency components often associated with noisy or irregular node signals.
+
+To counteract this, we enforce a spectral bias by eliminating the influence of negative eigenvalues. The procedure is as follows:
+\begin{enumerate}
+    \item Compute the eigendecomposition:
+    \[
+    \mathbf{W}_l^v = \bm{\Phi}_l^v \bm{\mu}_l^v (\bm{\Phi}_l^{v})^{-1},
+    \]
+    where $\bm{\mu}_l^v$ is a diagonal matrix of eigenvalues.
+    
+    \item Apply element-wise ReLU to retain only non-negative eigenvalues:
+    \[
+    \bm{\mu}_l^{v+} = [\bm{\mu}_l^v]^+ = \max(\bm{\mu}_l^v, 0).
+    \]
+
+    \item Reconstruct the filtered weight matrix:
+    \[
+    \mathbf{W}_l^{v+} = \bm{\Phi}_l^v \bm{\mu}_l^{v+} (\bm{\Phi}_l^{v})^{-1}.
+    \]
+\end{enumerate}
+
+This process removes sharpening components from the learned transformations, effectively biasing the GNN towards smooth solutions.
+
+\subsubsection{ Training Integration and Backpropagation Handling}
+
+In practice, we apply this spectral projection **after each gradient update**, treating it as a deterministic architectural constraint rather than part of the loss. The operation is not included in the computational graph—no gradients are propagated through the eigendecomposition or clipping.
+
+This ensures that the model learns using unconstrained gradients, but the actual transformation used in forward passes remains positive-semidefinite.
+
+
+\subsection{Detail on the Design of our \method }
+\label{appendix:details_GCOD_method}
+In our notation, $f_{\theta}: \mathbb{R}^{N \times m'} \rightarrow \mathbb{R}^{|C|}$ maps the final node representations \(\mathbf{Z}\in\mathbb{R}^{N \times m'}\) to the class probabilities.
+% with slight modifications applied in our approach. 
+We apply $f_{\theta}$ to batches of size $ \mathbf{B}$, and introduce $\mathbf{u}_B \in \mathbb{R}^B$ as a trainable parameter, with \(\mathbf{\hat{y}}_B \) as one-hot encoded class predictions, and $\mathbf{\tilde{y}}_B$ as calculated soft labels and as in \cite{wani2023combining}.
+
+
+The \( \mathbf{Z_B}\) is the tensor containing node representation for each graph in the batch, 
+$\text{diag}_{\text{mat}}(M)$  Extracting the diagonal elements of a matrix $M$, while 
+$\text{diag}_{\text{vec}}(\mathbf{v})$ construct  a diagonal matrix from a vector $\mathbf{v}$. Here we offer its extension to Graph tasks with a new \method:
+
+\begin{align}
+\label{eq: eq_L1}
+& \mathcal{L}_1(\mathbf{u}_B, f_{\theta}(\mathbf{Z}_B), \mathbf{y}_B, \mathbf{\tilde{y}}_B, a_{\text{train}}) = \mathcal{L}_{\text{CE}}( f_{\theta}(\mathbf{Z}_B) + a_{\text{train}} \text{diag}_\text{vec}(\mathbf{u}_B) \cdot \mathbf{y}_B, \mathbf{\tilde{y}}_B),  \\
+\label{eq: eq_L2} 
+& \mathcal{L}_2(\mathbf{u}_B, \mathbf{\hat{y}}_B, \mathbf{y}_B)  = \frac{1}{|C|} \left\| \mathbf{\hat{y}}_B + \text{diag}_\text{vec}(\mathbf{u}_B) \cdot \mathbf{y}_B - \mathbf{y}_B \right\|^2, \\
+\label{eq: eq_L3}
+& \mathcal{L}_3(\mathbf{u}_B, f_{\theta}(\mathbf{Z}_B), \mathbf{y}_B, a_{\text{train}}) = (1 - a_{\text{train}}) \mathcal{D}_{KL} \left\{ \mathfrak{L}, \sigma\left(-\log\left(\mathbf{u}_B\right)\right) \right\}
+\end{align}
+
+where  $\mathfrak{L}$ is $\log(\sigma \left( \text{diag}_\text{mat}(f_{\theta}(\mathbf{Z}_B)\mathbf{{y}_B}^T) \right))$ and $a_{\text{train}}$ is training accuracy. 
+
+Equation \ref{eq: eq_L3}, is an additional term w.r.t vanilla NCOD, where we employ the Kullback-Liebler divergence as a regularization term to regulate the alignment of model predictions with the true class for clean samples (small $u$) while preventing alignment for noisy samples (large $u$). Moreover in \eqref{eq: eq_L1}, \ref{eq: eq_L2}, we insert $a_{train}$ as a feedback term.\\
+
+The parameters of the losses are updated using stochastic gradient descent as follows:
+\begin{align}
+\mathbf{\theta}^{t+1} \gets \mathbf{\theta}^t - \alpha \nabla_\theta (\mathcal{L}_1 + \mathcal{L}_3) \qquad \qquad \mathbf{u}^{t+1} \gets \mathbf{u}^t - \beta \nabla_u \mathcal{L}_2
+\end{align}
+The parameter \( \mathbf{u} \) helps to reduce the importance of noisy labels during training, allowing the model to focus more on clean data. The computation of the soft label $\mathbf{\tilde{y}}_i \in \mathbb{R}^{|C|}$ (i.e. the $i$-th row of $\mathbf{\tilde{y}}$) relies on the concept of class embedding \cite{wani2023combining}. 
+
+
+\subsection{Details on the Definition of the Bounds for $\mathcal L_{DE}$}
+\label{appendix:details_dirichlet_regularization_bounds}
+We defined two strategies for defining the upper bound for the regularization term $\mathcal L_{DE}$: a fixed global threshold and a class-dependent adaptive threshold.
+
+\textbf{Class-dependent.} This approach is motivated by the observation that Dirichlet energy is influenced by factors that can be inherent to each class, such as graph topology. As a result, graphs from different classes may naturally exhibit distinct Dirichlet energy distributions.
+
+To address this variability, as stated in the main text, we proposed the class-specific bound formulation. For each class $c$, the upper bound $U_c$ is computed at each epoch as the average Dirichlet energy over the clean validation graphs belonging to class $c$. Formally, given $\mathcal D^{val}_c$ the set of validation graphs in class c, and $E_i$ the Dirichlet energy of graph $\mathcal G_i$, the bound $U_c$ is computed as:
+\begin{equation}
+    U_c = \frac 1 {|\mathcal D^{val}_c|} \sum_{\mathcal G_i \in \mathcal D^{val}_c} E_i
+\end{equation}
+
+The use of clean validation data is essential for ensuring that the thresholds $U_c$ are reliable indicators of the intrinsic smoothness or complexity associated with each class. Relying on noisy samples to compute $U_c$, especially in the case of high symmetric label noise, would distort the energy, causing different class thresholds to collapse toward similar values. This would reduce the discriminative power of the regularization and lead $U_c$ to not be reflective of the true underlying structure of each class. \\
+This adaptive strategy, then, ensures the regularization remains sensitive to plausible class-dependent variations between the distributions of the energy, which prevents the over penalization of inherently complex classes and under penalization of simpler ones.
+
+
+\textbf{Fixed.} For the fixed settings, a constant threshold $U$ was applied uniformly across all the training samples, regardless of the class. This approach simplifies the regularization term and, by enforcing uniform penalization, provides a consistent regularization framework.. 
+
+However, careful tuning of $U$ was necessary. If set too high, the regularization effect is negligible, allowing the model to overfit noise; if set too low, excessive smoothing occurs, causing a notable drop in accuracy due to the model’s reduced ability to capture and distinguish important variations in the data. Consequently, $U$ was progressively decreased during experimentation until such a performance drop became evident. The selected value of $U$  thus represents a trade-off: energy is sufficiently reduced to prevent overfitting on noisy labels, while maintaining the model's capacity to distinguish between classes.
+
+}
+
+

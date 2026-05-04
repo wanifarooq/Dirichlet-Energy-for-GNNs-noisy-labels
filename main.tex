@@ -1,0 +1,201 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{ctable} 
+\usepackage{xr-hyper}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{subcaption} 
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{makecell}
+\usepackage{enumitem}
+
+% \usepackage{aistats2025}
+
+
+
+\usepackage{titlesec}
+
+
+% \usepackage[colorlinks=false, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+
+% If your paper is accepted, change the options for the package
+% aistats2025 as follows:
+%
+\usepackage[accepted]{aistats2025}
+
+%
+% This option will print headings for the title of your paper and
+% headings for the authors names, plus a copyright note at the end of
+% the first column of the first page.
+
+% If you set papersize explicitly, activate the following three lines:
+%\special{papersize = 8.5in, 11in}
+%\setlength{\pdfpageheight}{11in}
+%\setlength{\pdfpagewidth}{8.5in}
+
+% If you use natbib package, activate the following three lines:
+\usepackage[round]{natbib}
+%\renewcommand{\bibname}{References}
+%\renewcommand{\bibsection}{\subsubsection*{\bibname}}
+
+% If you use BibTeX in apalike style, activate the following line:
+% \bibliographystyle{apalike}
+
+
+\usepackage{xcolor}
+
+\usepackage{graphicx}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage{xr}
+\usepackage{graphicx}
+
+\renewenvironment{abstract}
+{\centerline{\large\bfseries Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
+
+
+\newcommand{\method}{GCOD }
+\externaldocument{AISTATS/supplement}
+\begin{document}
+\runningtitle{Robustness of Graph Classification}
+\runningauthor{Robustness of Graph Classification}
+% If your paper is accepted and the title of your paper is very long,
+% the style will print as headings an error message. Use the following
+% command to supply a shorter title of your paper so that it can be
+% used as heading.
+%
+%\runningtitle{I use this title instead because the last one was very long}
+
+% If your paper is accepted and the number of authors is large, the
+% style will print as headings an error message. Use the following
+% command to supply a shorter version of the authors names so that
+% they can be used as headings (for example, use only the surnames)
+%
+%\runningauthor{Surname 1, Surname 2, Surname 3, ...., Surname n}
+
+\twocolumn
+[
+
+% We want to say:
+% - smoothness importance for robustness
+% - we introduce a new robusness method
+\aistatstitle{Robustness of Graph Classification: failure modes, causes, and noise-resistant loss in Graph Neural Networks}
+% \aistatstitle{Mitigating Overfitting in Noisy Graphs: A Loss Function Approach to Dirichlet Energy Reduction}
+
+%Enhancing GNN Robustness to Noisy Labels Through the Lens of Smoothness Inductive Bias
+
+%Investigating the Impact of Label Noise on Graph Classification and Strategies for Robustness
+
+
+\aistatsauthor{
+\begin{tabular}{c}
+    Farooq Ahmad Wani$^{1}$ \hspace{2em}  \hspace{2em} 
+    Maria Sofia Bucarelli$^{1}$ \hspace{2em}  \hspace{2em} 
+    Andrea Giuseppe Di Francesco$^{1}$ \\ 
+    Oleksandr Pryymak$^{2}$ \hspace{2em}  \hspace{2em} 
+    Fabrizio Silvestri$^{1}$
+\end{tabular}
+}
+
+\aistatsaddress{
+\begin{tabular}{c}
+    $^{1}$Sapienza University of Rome, Italy \hspace{5em}  \hspace{5em} 
+    $^{2}$mindthehuman.ai, London, England
+\end{tabular}
+}
+]
+
+
+\begin{abstract}
+Graph Neural Networks (GNNs) are powerful at solving graph classification tasks, yet applied problems often contain noisy labels. In this work, we study GNN robustness to label noise, demonstrate GNN failure modes when models struggle to generalise on low-order graphs, low label coverage, or when a model is over-parameterized.
+We establish both empirical and theoretical links between GNN robustness and the reduction of the total Dirichlet Energy of learned node representations, which encapsulates the hypothesized GNN smoothness inductive bias. % Additionally, we propose a practical test to detect when a GNN overfits noisy labels. 
+Finally, we introduce two training strategies to enhance GNN robustness: (1) by incorporating a novel inductive bias in the weight matrices through the removal of negative eigenvalues, connected to Dirichlet Energy minimization; (2) by extending to GNNs a loss penalty that promotes learned smoothness. %While both methods improve robustness, the first method was discarded due to training instability, despite showing that inducing smoothness enhances classification performance. 
+Importantly, neither approach negatively impacts performance in noise-free settings, supporting our hypothesis that the source of GNNs robustness is their smoothness inductive bias.
+\end{abstract}
+
+\section{Introduction}
+\input{AISTATS/Introduction}
+
+\section{Related Works}
+\label{sec:related_work}
+\input{AISTATS/Related_Works}
+
+\section{Background}
+\input{AISTATS/Background}
+
+\section{GNN Robustness to Noisy Graph Labels, and its Failures Modes}
+\input{AISTATS/GNN_failure_modes}
+
+\section{Representation Dirichlet Energy indicates Overfitting on Noisy Labels}
+\label{sec:Dirichlet_meet_GC}
+\input{AISTATS/Dirichlet_Energy}
+%\titlespacing*{\section}{0pt}{5pt}{5pt}
+\section{Method 1: Robust GNN by enforcing positive Eigenvalues of transformations}
+\label{sec:positive_eigens}
+\input{AISTATS/Mehod_1}
+%\titlespacing*{\section}{0pt}{5pt}{5pt}
+% \section{Method 2: Robust GNN by inducing representation Smoothness with GCOD Loss Function}
+% \label{sec:GNNrobustnessLoss}
+% \input{AISTATS/Method_2}
+
+\section{Experimental Results}
+\input{AISTATS/Experimental_Results}
+
+%\section{Experiments Farooq performed}
+%\input{AISTATS/Notes}
+%\titlespacing*{\section}{0pt}{0pt}{5pt}
+\section{Conclusions}
+\label{sec: conclusions}
+In this paper, we examined GNN performance on graph classification under label noise. We identified robust scenarios where label noise has minimal impact but also highlighted vulnerabilities where overly expressive models or low label coverage lead to performance drops. Unlike previous work, we explored robustness through an energy-based lens, using Dirichlet Energy as a measure of feature smoothness. Our findings show that learned smoother representations correlate with better performance, while sharpness is linked to lower performance and noisy sample memorization. To make GNNs robust, we proposed two effective methods: (1) based on relation between graph Laplacian and weight matrix spectra; and (2) by suggesting \method loss function to enhance feature smoothness. Both methods showed promising results, without degrading performance in the absence of noise.\\
+\textbf{Limitations:} While we provide insights into factors affecting GNN performance, our experiments relied on limited theoretical foundations and limited datasets. Future work should focus on formalizing the interactions between Laplacian and weight matrix spectra in closed-form equations to improve noise resilience and help identify dataset susceptibility to noise in advance.
+% Additionally, we aim to extend our analysis to better predict GNN robustness to noise, helping identify dataset susceptibility to noise in advance.
+% In this paper, we analyzed how GNNs perform within the task of graph classification under label noise. We found robust settings where label noise does not affect GNN performance, yet we demonstrated GNN fault modes with performance dropping when models are overly expressive, or data had low label coverage or space graphs. 
+% %Then we illustrate where instead GNNs are more sensitive to label noise and drop their performance. 
+% Conversely from the previous work, we investigate robustness from an energy-based point of view, relying on the Dirichlet Energy of representations as a measure of the learned features' smoothness. Our analysis lets us understand that smoothing node features as the training phase advances is associated with performance improvement. On the other hand, sharpening effects are detrimental and related to the noisy sample memorization, affecting negatively the overall performance of the model. Having become aware of this, we proposed two effective methodologies that promote the smoothness of the average Dirichlet Energy, to prevent noise effects on the training procedure. One is based on the hidden interactions that exist between the spectrum of the graphs Laplacian, with the spectrum of the weight matrices. The other is an adaptation of the NCOD loss function to graph classification. Our empirical evidence suggests that this loss intrinsically enhances the smoothness of the features.
+
+% \textbf{Limitations. }Even though we shed light on what influences GNNs' performance in graph classification, there is still some space for future work. In fact, we based our experiments on a few theoretical supports and using a limited number of instances. We plan in the future to formalize with closed-form equations the evident interactions that take place between the spectra of the Laplacians and the model's weights, as they are relevant for energy evolution. This would help to provide more efficient and determining bias to contrast noise relying only on the weight matrix design. We also want to extend our analysis to categorize better to what degree GNNs are robust to noise, in order to know in advance for a dataset how much training on it could be susceptible to noise.
+
+
+
+
+
+\bibliographystyle{apalike} 
+\bibliography{main}
+
+
+% \section*{Checklist}
+% \input{AISTATS/checklist}
+
+\newpage
+% \appendix
+
+\input{Appendix}
+
+\end{document}

@@ -1,0 +1,258 @@
+\documentclass[twoside]{article}
+\usepackage[T1]{fontenc}
+\usepackage{xr-hyper}
+\usepackage{ctable} 
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{subcaption} 
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{makecell}
+\usepackage{enumitem}
+
+
+
+\usepackage{titlesec}
+
+
+
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\usepackage{aistats2025}
+% If your paper is accepted, change the options for the package
+% aistats2025 as follows:
+%
+%\usepackage[accepted]{aistats2025}
+%
+% This option will print headings for the title of your paper and
+% headings for the authors names, plus a copyright note at the end of
+% the first column of the first page.
+
+% If you set papersize explicitly, activate the following three lines:
+%\special{papersize = 8.5in, 11in}
+%\setlength{\pdfpageheight}{11in}
+%\setlength{\pdfpagewidth}{8.5in}
+
+% If you use natbib package, activate the following three lines:
+%\usepackage[round]{natbib}
+%\renewcommand{\bibname}{References}
+%\renewcommand{\bibsection}{\subsubsection*{\bibname}}
+
+% If you use BibTeX in apalike style, activate the following line:
+%\bibliographystyle{apalike}
+
+\begin{document}
+
+% If your paper is accepted and the title of your paper is very long,
+% the style will print as headings an error message. Use the following
+% command to supply a shorter title of your paper so that it can be
+% used as headings.
+%
+%\runningtitle{I use this title instead because the last one was very long}
+
+% If your paper is accepted and the number of authors is large, the
+% style will print as headings an error message. Use the following
+% command to supply a shorter version of the authors names so that
+% they can be used as headings (for example, use only the surnames)
+%
+%\runningauthor{Surname 1, Surname 2, Surname 3, ...., Surname n}
+
+% Supplementary material: To improve readability, you must use a single-column format for the supplementary material.
+\onecolumn
+\aistatstitle{Supplementary Materials}
+
+
+\externaldocument{AISTATS/main}
+\section{ Experimental_Settings} 
+\input{AISTATS/experimental setting} 
+\label{sec:experimental_setting}
+
+\section{Additional Related Works}
+\label{sec:additional_related_works}
+\textbf{Learning under label noise.}
+Some methods focus on sample relabelling instead \cite{reed2014training, arazo2019unsupervised, reed2014training}.
+Another family of techniques address noisy labels using two networks, splitting the training set and training two models for mutual assessment \cite{jiang2018mentornet, han2018co, li2020dividemix, kim2023crosssplit}. 
+Regarding \textbf{regularization} for noisy labels, mixup augmentation \cite{mixup} is a widely used method that generates extra instances through linear interpolation between pairs of samples in both image and label spaces. Additionally, exist also \textbf{Reweighting techniques} aiming to improve the quality of training data by using adaptive weights in the loss for each sample \cite{liu2015classification, zhang2020decoupling, han2018co,pleiss2020identifying}.\\
+\textbf{Graph Learning in noisy scenarios.} 
+
+Works on node classification under label noise attempt to learn to predict the correct node label when a certain proportion of labels of the graph nodes are corrupted. 
+In \cite{pairwiseinteraction4}, authors exploit the pairwise interactions existing among nodes to regularize the classification.
+Other approaches use different types of regularizers that typically aim at detecting those nodes that are associated with the wrong information. Among these are contrastive losses \cite{contrastivelearning5, cl9}, to mitigate the impact of a false supervised signal. Then in \cite{ssl8}, it was also proposed a self-supervised learning method to produce pseudo-labels assigned to each node. Other mechanisms that employ pseudo-labels are discussed in \cite{noisegovernance6, unionnet10, nrgnn11}, showing different policies to down-weight the effect of noisy candidates into the final loss function.\\
+The parallel line of work concerning GNN under noise is related to noise coming from missing or additional edges, and also noisy features. 
+In \cite{structuralnoise2}, they focus on structural noise. They show that adding edges to the graph degrades the performance of the architecture. And propose a node augmentation strategy that repairs the performance degradation. However, this method is only tested with synthetic graphs. In \cite{structuralnoise3}, they develop a robust GNN for both noisy graphs and label sparsity issues (RS-GNN). Specifically, they simultaneously tackle the two issues by learning a link predictor that down-weights noisy edges, so as to connect nodes with high similarity and facilitate the message-passing. RS-GNN uses a link predictor instead of direct graph learning to save computational cost.
+The link predictor is MLP-based since edges can be corrupted. Their assumption is that node features of adjacent nodes will be similar. Once the dense adjacency matrix is reconstructed it is used to classify nodes through GCN. Even though these methods achieve state-of-the-art performance they are specifically designed for node classification and have some assumptions on the input graph, such as the homophily property \cite{structuralnoise3, pairwiseinteraction4, contrastivelearning5, nrgnn11}. Moreover, some of these are validated only within graphs with the same semantics \cite{structuralnoise3, pairwiseinteraction4, ssl8, cl9, unionnet10, nrgnn11} (e.g. citation networks), where the homophily assumption could be valid, but limiting for the overall research impact.\\
+
+
+% \section{Experimental Details}
+% \label{sec:experimental_details}
+% All experiments were performed on A600 GPUs with 8 cores. 
+
+% All the code was written in Python 3.10.9.  We utilize PyTorch Geometric for implementing the message passing layers.
+
+
+
+
+\section{Robust GNN by enforcing positive Eigenvalues of transformations }
+\subsection{Proof of Section \ref{sec:positive_eigens}}
+\label{app: proof}
+\textit{Proof of Theorem} \ref{theorem: avg_dirichlet}. Let us denote $\Lambda = \{\lambda_u^i, 0 \leq u \leq N^i \wedge 1 \leq i \leq n\}$ as the set of the all graph frequencies in $\mathcal{D}$ and we rewrite it as $\Lambda = \{\lambda_k | 0 \leq k \leq N_{tot} \wedge N_{tot} = \sum_{i = 0}^{n} N^i\}$. This formalization is agnostic to the specific graph in the dataset. \\
+From this we can easily rewrite equation \eqref{eq: spectral_avg_dirichlet} as follows:
+\begin{equation}
+\label{eq: spectral_avg_dirichlet_onegraph}
+   E^{dir}(\mathcal{D}) := \frac{1}{|\mathcal{D}|} \sum_{r = 1}^{m} \sum_{u = 1}^{N_{tot}} \lambda_u(\bm{\psi}_u^{\top} \mathbf{Z}^{tot}_{r})^2,
+\end{equation}
+having $\mathbf{Z}^{tot} \in \mathbb{R}^{N_{tot} \times m'}$ and $\bm{\psi}_u \in \mathbb{R}^{N_{tot} \times 1}$. \\
+Let us assume now the case of a graph $\mathcal{G} = (\mathbf{Z}, \mathbf{A})$, where $\mathbf{Z} = [\mathbf{Z^1} \|\ldots \| \mathbf{Z^n}] \in \mathbb{R}^{N_{tot} \times m'}$, and $\mathbf{A} \in \mathbb{R}^{N_{tot} \times N_{tot}}$ is a diagonal block matrix, where each block $i$ in the diagonal is $\mathbf{A}^i$. The resulting $E^{dir}(\mathbf{Z})$ can be computed as: 
+\begin{equation}
+\label{eq: spectral_dirichlet_onegraph}
+   E^{dir}(\mathbf{Z}) := \sum_{r = 1}^{m} \sum_{u = 1}^{N_{tot}} \lambda_u'(\bm{\psi}_u'^{\top} \mathbf{Z}^{tot}_{r})^2,
+\end{equation}
+Let's notice that Equation \eqref{eq: spectral_dirichlet_onegraph} differs from Equation \eqref{eq: spectral_avg_dirichlet_onegraph} in their set of eigenvalues and eigenvectors, and the scaling factor $|D|$.\\
+Let us now define the graph Laplacian of $\mathcal{G}$ as $\mathbf{\Delta} = \mathbf{I_{N_{tot}}} - \mathbf{D}^{-\frac{1}{2}}\mathbf{A}\mathbf{D}^{-\frac{1}{2}}$. Being $\mathcal{G}$ composed by disconnected graphs we can write its Laplacian as the following diagonal block matrix:
+\begin{equation}
+\label{eq: unique_laplacian}
+\mathbf{\Delta} = \begin{bmatrix}
+\mathbf{I}_{N^1} - (\mathbf{D}^1)^{-\frac{1}{2}}\mathbf{A}^1(\mathbf{D}^1)^{-\frac{1}{2}} & \cdots & 0 \\
+\vdots & \ddots & \vdots \\
+0 & \cdots & \mathbf{I}_{N^n} - (\mathbf{D}^n)^{-\frac{1}{2}}\mathbf{A}^n(\mathbf{D}^n)^{-\frac{1}{2}}
+\end{bmatrix} = \begin{bmatrix}
+\mathbf{\Delta}^1 & \cdots & 0 \\
+\vdots & \ddots & \vdots \\
+0 & \cdots & \mathbf{\Delta}^n
+\end{bmatrix}
+\end{equation}
+From \ref{eq: unique_laplacian}, we can evince that the eigenvalues set of eigenvalues $\Lambda'$ of $\mathbf{\Delta}$ corresponds to the union of the eigenvalues for each Laplacian of the disconnected graphs s.t. $\Lambda' = \{\Lambda^i| 1 \leq i \leq n\}$. This derives from the property that $det(\Delta - \lambda\mathbf{I}_{N_{tot}}) = \prod_{i = 1}^n det(\Delta^i - \lambda\mathbf{I}_{N^i})$ \cite{linear_algebra}. So this proves that $\lambda_u \equiv \lambda_u', \forall u$ in Equations \ref{eq: spectral_avg_dirichlet_onegraph} and \ref{eq: spectral_dirichlet_onegraph}. 
+
+For the eigenvectors, suppose $\bm{\psi}_j^i$ is the $j$-th eigenvector of $\mathbf{\Delta}^i$ corresponding to eigenvalue \( \lambda_j^i \) (e.g. $j \in \{0, \ldots, N^i\}$). We construct the corresponding eigenvector of $\mathbf{\Delta}$ through the diagonal block matrix properties. Formally, the corresponding eigenvector $\bm{\psi}_u'$ of $\mathbf{\Delta}$ corresponding to \( \lambda_j^i \) is given by:
+\[
+\bm{\psi}_u' = \begin{bmatrix}
+0 \\
+\vdots \\
+0 \\
+\bm{\psi}_j^{i} \\
+0 \\
+\vdots \\
+0
+\end{bmatrix} = \begin{bmatrix}
+0 \\
+\vdots \\
+0 \\
+\bm{\psi}_u \\
+0 \\
+\vdots \\
+0
+\end{bmatrix}
+\]
+This vector $\bm{\psi}_u'$ satisfies the eigenvector equation for $\mathbf{\Delta}$:
+\[
+\mathbf{\Delta} \bm{\psi}_u' = \lambda_u \bm{\psi}_u' = \lambda'_u \bm{\psi}_u'
+\]
+From this, it follows always that $\bm{\psi}_u^{\top} \mathbf{Z}^{tot}_{r} = \bm{\psi}_j^{i\top} \mathbf{Z}^{i}_{r}, \forall r$. \\Thus, it follows that $E^{dir}(\mathcal{D}) = |\mathcal{D}| \cdot E^{dir}(\mathbf{Z})$.
+
+\subsection{Experimental Setup and Details \ref{sec:positive_eigens}}
+\label{app: weightmatrice_eigens}
+To answer \textbf{RQ2} we conduct the following experiment.
+Let us take the GCN \cite{gcn} update rule for each graph $i$ according to our notation, and write it as: 
+\begin{equation}
+    \text{GCN: \hspace{0.5cm}}
+    \mathbf{H}_i^{l+1} = \sigma(\mathbf{\Delta}\mathbf{H}_i^{l}\mathbf{W}^1_l)\mathbf{W}^2_l \text{\hspace{1cm}} \forall i = \{1, \ldots, n\},
+\end{equation}
+where $\sigma$ is a point-wise non-linearity, and $\mathbf{W}_l^v \in \mathbb{R}^{m' \times m'}$, $v \in \{1, 2\}$ are squared matrices. Moreover, we include $\mathbf{W}_l^2$ for the purpose of the experiments, we can think of it as an additional shallow layer after the message-passing update. Then we consider the GIN \cite{WL1} update rule as: 
+\begin{align*}
+    \text{GIN: \hspace{0.5cm}}
+    \mathbf{H}_i^{l+1} = \sigma(\sigma((1 + \epsilon)\mathbf{H}_i^{l} + \mathbf{A}\mathbf{H}_i^{l})\mathbf{W}_{l}^1)\mathbf{W}_{l}^2) \text{\hspace{1cm}} \\
+    \forall i = \{1, \ldots, n\},
+\end{align*}
+also in this case we use the same squared matrices since we want to operate with eigenvalues rather than the singular values. Here we chose $\epsilon$ as a scalar, and a two layers MLP following the aggregation and update steps (i.e. $(1 + \epsilon)\mathbf{H}_i^{l} +\mathbf{A}\mathbf{H}_i^{l}$). 
+Let us now define the set of eigenvalues and eigenvectors respectively for each corresponding weight matrix $v$ as $\{\mu_{0,l}^{v}, \ldots \mu_{m'-1,l}^{v}\}$, $\{\bm{\Phi}_{0,l}^{v}, \ldots \bm{\Phi}_{m'-1,l}^{v}\}$, $v \in \{1, 2\}$. Let us notice that $\mu_{0,l}^v$ can be also negative, conversely from the eigenvalues of $\mathbf{\Delta}$. We conjecture that the interactions that exist among these sets of eigenvalues, with those of the Laplacian may behave similarly to what is observed and proved in \cite{GRAFF}. For instance, they propose using a symmetric weight matrix (i.e. $\mathbf{W} = \mathbf{W}^{\top}$) having the symmetry property leading to a Dirichlet Energy dynamics that can both sharpen or smooth edge gradients, in particular, the sharpening effect is provided by the influence of the negative eigenvalues of the weight matrix. Assuming that this is true regardless of the message-passing and the weights properties, we know that the sharpening effect is related to noisy samples and is not desired within graph classification. Thus we suggest removing manually such negatives.  \\What we do is: First, we decompose each weight matrix in its eigenvectors and eigenvalues components as follows:
+\begin{equation}
+    \mathbf{W}_l^v = \bm{\Phi}_l^v\bm{\mu}_l^v(\bm{\Phi}_l^{v})^{-1}.
+\end{equation}
+Second, we apply a ReLU function $[\cdot]^+$ to $\bm{\mu_l^{v}}$, in order to keep unchanged the positive eigenvalues and bring the negatives to zero. Then the new $\mathbf{W}_l^{v+}$ will be
+\begin{equation}
+    \mathbf{W}_l^{v+} = \bm{\Phi}_l^v[\bm{\mu}_l^v]^+(\bm{\Phi}_l^{v})^{-1}.
+\end{equation}
+In our experiments we repeat this procedure right after having updated the parameters with gradient descent, excluding it from the gradients computed within the back-propagation algorithm.\\
+
+
+\section{Additional Figures}
+\label{appendix:additional_figures}
+\begin{figure}[t]
+    \centering
+    %\includegraphics[scale = 0.3]{Neurips/Screenshots/synthetic_data/sampleNumber.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig5}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/fig5}
+    \caption{Performance only on noisy labels depending on the size of a synthetic dataset.}
+    \label{fig:varying_samples_synthetic}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+    \centering
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gcn_ogbg_fulldataset/40comp.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig1}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/fig1a.pdf}
+    \caption{The illustration showcases the learning process from both noisy and clean samples of four classes within the PPA dataset, incorporating 40\% symmetrical noise. This analysis was conducted utilizing cross-entropy (CE) and GCN methodologies.}
+    \label{noisy_pure_40_1}
+\end{figure}
+
+
+
+\begin{figure}[t!]
+  \centering
+        %\includegraphics[scale = 0.25]{Neurips/Screenshots/gin_drchi_6Classes_30/differntnoise_Dirchi_CE_NCOD.png}
+        %\includegraphics[page=1,width=1.0\textwidth]{Neurips/figures/fig8b}
+        \includegraphics[width=.5\textwidth]{AISTATS/figures/comapreDataset.pdf}
+        \caption{Comparison of average Dirichlet energy and Accuracy evolution on different datasets using GIN model. (Dirichlet Energy is normalized to scale for comparison)}
+        \label{fig:comparedataset}
+\end{figure}
+
+
+\begin{figure}
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gcn_enzymes/Train_test_comapre.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig7}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/fig7}
+    \caption{In this figure we are showing the comparison of the train and test accuracy for the Enzymes dataset using the GCN network, we are adding here 20\% symmetric noise and also comparing it with zero noise settings.  }
+    \label{fig:NCOD_accuracy}
+\end{figure}
+
+\begin{figure}
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gin_enzymes/20_Test_train.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig6}
+    \includegraphics[page=1,width=0.5\textwidth]{AISTATS/figures/fig6}
+    \caption{Comparison of the train and test accuracy for the Enzymes dataset with GIN model, on clean and 20\% symmetric noise.}
+    \label{fig:gin_enzymes}
+\end{figure}
+
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{refs}
+
+
+
+\end{document}

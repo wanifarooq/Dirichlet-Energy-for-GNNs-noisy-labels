@@ -1,0 +1,39 @@
+
+
+\documentclass[11pt]{article}\usepackage{amsmath,amssymb,amsthm,bbm}
+\usepackage{graphicx,geometry}
+\usepackage{amsmath}
+\geometry{margin=1in}
+\usepackage{xcolor}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newcommand{\EE}{\mathcal{E}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\1}{\mathbbm{1}}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\ip}[2]{\left\langle #1,#2 \right\rangle}
+\newcommand{\laplacian}{\Delta}
+\usepackage{natbib}
+\begin{document}
+\title{}
+\author{}
+\date{\today}
+
+%
+
+
+
+
+
+\section*{Lipschitz Continuity in Graph Neural Networks}
+
+Regarding Lipschitz continuity, a key aspect of model robustness, \cite{chuang2022tree} provides a theoretical bound on the Lipschitz constant of the Graph Isomorphism Network (GIN) with respect to the Tree Mover’s Distance (TMD). The derived bound, $|h(G_a)-h(G_b)| \le \sum_{l=1}^{L+1} K^{(l)}_{\phi} \cdot \mathrm{TMD}_w^{L+1}(G_a,G_b)$, relates the change in the GIN's output to the distance between the input graphs as measured by TMD. This theorem highlights that if the constituent learnable functions $\phi^{(l)}$ have bounded Lipschitz constants $K^{(l)}_{\phi}$, then the entire GIN architecture exhibits a Lipschitz property with respect to TMD. Notably, TMD serves as a pseudometric for graphs that are distinguished by the $L$-iteration Weisfeiler-Leman (WL) test, a crucial property given that GIN's representational power is closely tied to the WL test. \cite{davidson2024h} further contribute to the understanding of Lipschitz properties in neural networks operating on sets of features, which are fundamental building blocks in MPNNs. Their analysis of ReLU summation, a common aggregation function, demonstrates that it is uniformly Lipschitz under certain conditions. Moreover, their informal theorem on Hölder MPNN embeddings suggests that if the aggregation, combination, and readout functions within an MPNN are Lipschitz continuous, then the overall MPNN will also be Lipschitz continuous. \cite{juvina2024training} delve into tight Lipschitz constraints for GNNs in the context of node classification. By analyzing a generic graph convolution operation, they derive an optimal Lipschitz constant $\vartheta = \phi(\lambda_K)$ for the network, where $\lambda_K$ is the maximum eigenvalue of a weighted adjacency matrix $M$, assuming non-negative weights and ReLU activations without bias. This work provides a more precise characterization of the robustness of GNNs to input perturbations. \cite{gama2020stability} examine the stability of GNNs with respect to perturbations in the graph shift operator. Their Theorem 4 establishes that if the graph shift operator $S$ is perturbed by $E$ such that $|E|\le\epsilon$, and the filter banks used in the GNN are bounded and the non-linearity is Lipschitz continuous, then the output of the GNN with the perturbed graph $\hat{S}$ will be close to the output with the original graph $S$, with a bound proportional to $\epsilon$ and the number of layers.
+
+
+\bibliographystyle{apalike}
+\bibliography{main}
+\end{document}
+
+
+

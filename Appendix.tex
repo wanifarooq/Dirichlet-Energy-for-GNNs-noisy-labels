@@ -1,0 +1,369 @@
+% \section{Additional Results}
+% \subsection{Additional Results in Section \ref{sec:Dirichlet_meet_GC}}
+% \subsection{Additional Results in Section \ref{sec:positive_eigens}}
+% \subsection{Additional Results in Section \ref{sec:GNNrobustnessLoss}}
+
+\onecolumn 
+\section{Appendix}
+This appendix provides additional details, extended experiments, and proofs that support the main paper. Section~A describes the experimental settings and datasets. Section~B presents further details on the proposed methods. Section~C reviews additional related works. Section~D–H contain extended experiments, ablation studies, and supplementary figures.
+% \aistatstitle{Supplementary Materials}
+% \setcounter{section}{0}
+\section{ Experimental Settings} 
+\input{AISTATS/experimental_setting} 
+% \label{sec:experimental_setting}
+
+
+\section{Additional Related Works}
+\label{sec:additional_related}
+\subsection{Learning under label noise.}
+\label{sec:learningundernoise}
+Some methods focus on sample relabelling \cite{arazo2019unsupervised, reed2014training}.
+Another family of techniques address noisy labels using two networks, splitting the training set and training two models for mutual assessment \cite{han2018co, li2020dividemix, kim2023crosssplit}. 
+Regarding \textbf{regularization} for noisy labels, mixup augmentation \cite{mixup} is a widely used method that generates extra instances through linear interpolation between pairs of samples in both image and label spaces. Additionally, exist also \textbf{Reweighting techniques} aiming to improve the quality of training data by using adaptive weights in the loss for each sample \cite{liu2015classification, pleiss2020identifying}.
+
+\subsection{Graph Learning in noisy scenarios.} 
+\label{sec:graphlearningundernoise}
+Works on node classification under label noise attempt to learn to predict the correct node label when a certain proportion of labels of the graph nodes are corrupted. 
+In \cite{pairwiseinteraction4}, authors exploit the pairwise interactions existing among nodes to regularize the classification.
+Other approaches use regularizes that detecting those nodes that are associated with the wrong information. Among these are contrastive losses \cite{contrastivelearning5, cl9}, to mitigate the impact of a false supervised signal. Then in \cite{ssl8}, it was also proposed a self supervised learning method to produce pseudo labels assigned to each node. Other mechanisms that employ pseudo-labels are discussed in \cite{noisegovernance6}, showing different policies to down weight the effect of noisy candidates into the final loss function.
+
+The parallel line of work concerning GNN under noise is related to noise coming from missing or additional edges, and also noisy features. In \cite{structuralnoise2}, they focus on structural noise. They show that adding edges to the graph degrades the performance of the architecture. And propose a node augmentation strategy that repairs the performance degradation. However, this method is only tested with synthetic graphs. In \cite{structuralnoise3}, they develop a robust GNN for both noisy graphs and label sparsity issues (RS-GNN). Specifically, they simultaneously tackle the two issues by learning a link predictor that down weights noisy edges, so as to connect nodes with high similarity and facilitate the message passing. RS-GNN uses a link predictor instead of direct graph learning to save computational cost.
+The link predictor is MLP-based since edges can be corrupted. Their assumption is that node features of adjacent nodes will be similar. Once the dense adjacency matrix is reconstructed it is used to classify nodes through GCN. Even though these methods achieve state of the art performance they are specifically designed for node classification and have some assumptions on the input graph, such as the homophily property \cite{structuralnoise3, pairwiseinteraction4, contrastivelearning5, nrgnn11}. Moreover, some of these are validated only within graphs with the same semantics \cite{structuralnoise3, pairwiseinteraction4, ssl8, cl9, nrgnn11} (e.g. citation networks), where the homophily assumption could be valid, but limiting for the overall research impact.
+
+\subsection{Dirichlet Energy.}
+\label{sec:dir_additional_related}
+Graph Neural Networks (GNNs) face several challenges, including limited message passing expressiveness \cite{WL2}, over smoothing \cite{oversmoothing2}, and over-squashing \cite{oversquashing3}. Over-smoothing has been studied using Dirichlet energy \cite{dirichlet}, which quantifies signal smoothness across graph nodes. Previous research explores the relationship between energy evolution and over smoothing \cite{noteonoversmoothing, nt2019revisiting}, highlighting design choices that exacerbate this issue. Various approaches have been proposed to mitigate over-smoothing using energy properties \cite{FAGCN, zhou2021dirichlet, EEConv}, though they are focused on node classification, where over-smoothing severely impacts performance \cite{2sides}. This narrow focus leaves unexplored how energy dynamics affects other graph tasks. In this work, we provide theoretical and practical insights on leveraging Dirichlet energy to enhance graph classification performance, even in the presence of label noise.
+
+
+\textbf{Smoothing bias.} 
+Most GNNs function as low-pass filters, emphasizing low-frequency components while diminishing high-frequency ones \cite{nt2019revisiting, rusch2023survey}. Specifically, \cite{nt2019revisiting} showed this phenomenon holds for graphs without non-trivial bipartite components, with self-loops further shrinking eigenvalues. Similarly, \cite{oversquashing1} finds that non-bipartite graphs, especially without residual connections, exhibit low-frequency dominance. They also show that continuous-time models like CGNN, GRAND, and PDE-GCND maintain low-pass filtering. \cite{noteonoversmoothing, oversmoothing2} prove that GNN Dirichlet energy exponentially decreases with additional GCN layers when the product of the largest singular value of the weight matrix and the largest eigenvalue of the normalized Laplacian is less than one. Here, it is important to emphasize that \cite{Kang2018RobustGL} examines graph classification under label noise using the mix-up technique. While the mix-up may indirectly promote smoothness in the graph, they do not discuss or establish a relationship between graph smoothness and the Dirichlet energy. Furthermore, their work centers on the smoothness of clusters within the graphs, rather than on the overall smoothness of the graph structure.
+
+\subsection{Lipschitz Continuity in Graph Neural Networks}
+
+Regarding Lipschitz continuity, a key aspect of model robustness, \cite{chuang2022tree} provides a theoretical bound on the Lipschitz constant of the Graph Isomorphism Network (GIN) with respect to the Tree Mover’s Distance (TMD). The derived bound, $|h(G_a)-h(G_b)| \le \sum_{l=1}^{L+1} K^{(l)}_{\phi} \cdot \mathrm{TMD}_w^{L+1}(G_a,G_b)$, relates the change in the GIN's output to the distance between the input graphs as measured by TMD. This theorem highlights that if the constituent learnable functions $\phi^{(l)}$ have bounded Lipschitz constants $K^{(l)}_{\phi}$, then the entire GIN architecture exhibits a Lipschitz property with respect to TMD. Notably, TMD serves as a pseudometric for graphs that are distinguished by the $L$-iteration Weisfeiler-Leman (WL) test, a crucial property given that GIN's representational power is closely tied to the WL test. \cite{davidson2024h} further contribute to the understanding of Lipschitz properties in neural networks operating on sets of features, which are fundamental building blocks in MPNNs. Their analysis of ReLU summation, a common aggregation function, demonstrates that it is uniformly Lipschitz under certain conditions. Moreover, their informal theorem on Hölder MPNN embeddings suggests that if the aggregation, combination, and readout functions within an MPNN are Lipschitz continuous, then the overall MPNN will also be Lipschitz continuous. \cite{juvina2024training} delve into tight Lipschitz constraints for GNNs in the context of node classification. By analyzing a generic graph convolution operation, they derive an optimal Lipschitz constant $\vartheta = \phi(\lambda_K)$ for the network, where $\lambda_K$ is the maximum eigenvalue of a weighted adjacency matrix $M$, assuming non-negative weights and ReLU activations without bias. This work provides a more precise characterization of the robustness of GNNs to input perturbations. \cite{gama2020stability} examine the stability of GNNs with respect to perturbations in the graph shift operator. Their Theorem 4 establishes that if the graph shift operator $S$ is perturbed by $E$ such that $|E|\le\epsilon$, and the filter banks used in the GNN are bounded and the non-linearity is Lipschitz continuous, then the output of the GNN with the perturbed graph $\hat{S}$ will be close to the output with the original graph $S$, with a bound proportional to $\epsilon$ and the number of layers.
+% More precisely the Theorem in \cite{davidson2024h} state: 
+
+% \begin{theorem}[Hölder MPNN embeddings, informal version]
+% Let $p\ge1$. Given an MPNN $f:\mathcal{G}*{\le n}(\Omega)\to\mathbb{R}^m$ with $K$ message passing layers followed by a READOUT layer:
+% \begin{enumerate}
+% \item If aggregation $\varphi^{(k)}$, combine $\psi^{(k)}$, and readout $\eta$ are $\alpha_k,\beta_k,\gamma$ lower-Hölder continuous in expectation, then $f$ is lower-Hölder continuous in expectation with exponent $\gamma\prod*{k=1}^K(\alpha_k\beta_k)$.
+% \item If all above functions are uniformly upper Lipschitz, then $f$ is uniformly upper Lipschitz.
+% \end{enumerate}
+% \end{theorem}
+
+
+% The Theorem in \cite{juvina2024training} using the following notation: $G=(V,E)$ be directed, $V={v_1,\ldots,v_K}$, and each $v\in V$ has features $x_v\in\mathbb{R}^{N_0}$ and label $c_v\in{1,\ldots,C}$. The neighborhood $N(v)={u:(u,v)\in E}$. A generic graph convolution at node $v$ and layer $i=1,\ldots,m$ is:
+% \begin{equation}
+% y_v^{(i)} = R_i\Bigl(w_0^{(i)}y_v^{(i-1)} + w_1^{(i)}\sum_{u\in N(v)}\rho_{v,u},y_u^{(i-1)} + b_v^{(i)}\Bigr),
+% \end{equation}
+% where $y_v^{(i)}\in\mathbb{R}^{N_i}$, $b_v^{(i)}\in\mathbb{R}^{N_i}$, $w_0^{(i)},w_1^{(i)}\in\mathbb{R}^{N_i\times N_{i-1}}$, and $R_i$ is 1-Lipschitz activation (ReLU, sigmoid), applied componentwise except possibly last layer. For $y_v^{(0)}=x_v$, $N_0=N$, and $N_m=C$.
+% With symmetric GraphSAGE mean aggregator, by Theorem 3.1 in \cite{juvina2024training},
+% $\vartheta = \phi(1) = \| (w_0^{(m)}+w_1^{(m)})\cdots(w_0^{(1)}+w_1^{(1)})\|_S.$
+% For GCN 
+% $\vartheta = \|w_1^{(m)}\cdots w_1^{(1)}\|_S.$
+
+
+
+
+\subsection{Oversharpening in Graph Neural Networks}
+\label{subsec:oversharpening}
+The primary definition of GNN oversharpening, as introduced in the literature and particularly highlighted by analyses such as \cite{GRAFF}, characterizes it as an asymptotic behavior. Specifically, oversharpening occurs when the node features, after passing through multiple GNN layers, become predominantly determined by their projection onto the eigenvector of the graph Laplacian associated with its highest frequency. This implies that the learned representations capture primarily the most rapidly varying components of the signal over the graph.
+Pioneering work, notably by \cite{GRAFF}, has rigorously established how the eigenvalues of GNN weight matrices directly influence feature dynamics, leading to either smoothing or sharpening effects. This analysis primarily considers linear graph convolutions employing symmetric weight matrices W.
+The key findings are:
+\textbf{Positive eigenvalues of W}: These induce an attractive force between the features of connected nodes. This attraction causes their representations to become more similar, promoting a smoothing effect across the graph. Consequently, features tend to align with the low-frequency components of the graph Laplacian, which is characteristic of oversmoothing.
+\textbf{Negative eigenvalues of W}: Conversely, these induce a repulsive force between the features of connected nodes. This repulsion drives their representations apart, leading to increased differences and thus a sharpening effect. This enhances the high-frequency components of the features. If these negative eigenvalues are sufficiently dominant and interact appropriately with the graph Laplacian's spectrum, this can lead to the oversharpening phenomenon, where node features become primarily aligned with the highest-frequency eigenvector of the graph Laplacian.
+The spectral norm of GNN weight matrices, while not a direct cause of oversharpening in the same way as the sign of eigenvalues, plays a significant modulatory role. It governs the overall "energy" or "scale" of the transformations applied by the GNN layers, thereby influencing the potential for various spectral phenomena, including oversharpening.
+The link between a large spectral norm (or large weight variance) and "oversharpening" (defined as high-frequency dominance) is indirect but significant. 
+A large spectral norm, by definition, allows for eigenvalues of large magnitudes, both positive and negative.
+If learning dynamics or initialization conditions lead to a scenario in which negative eigenvalues of large magnitude become dominant within this expanded spectral envelope, the oversharpening conditions, as described by 
+\cite{GRAFF}, could be met.
+
+\cite{zhou2021dirichlet} analyzes this issue through the lens of Dirichlet energy, a measure of the variance of node embeddings. This work shows that the Dirichlet energy at each layer of a Graph Convolutional Network (GCN) is bounded by the Dirichlet energy of the previous layer, scaled by the singular values of the weight matrix. By imposing constraints on the Dirichlet energy, it is possible to control the smoothness of the learned embeddings. The work titled "Graph Neural Networks Do Not Always Oversmooth" challenges the universality of the oversmoothing problem. It establishes a "chaotic, non-oversmoothing phase" in GCNs that can be reached by appropriately tuning the weight variance at initialization. This suggests that oversmoothing is not an inherent limitation of GCN architectures, but rather a consequence of parameter initialization. \cite{eldan2017braess}'s lemma on the spectral gap and edge addition provides insights into how graph structure influences spectral properties, which are related to information propagation and potentially oversmoothing. Their result shows that adding an edge can decrease the spectral gap of the Laplacian matrix under certain conditions related to the eigenvector and degrees of the connected nodes. Finally, the paper \cite{zhuo2024graph} demonstrates that with carefully chosen weights, GNNs can avoid oversmoothing even in deep architectures. Specifically, by employing a whitening transformation on the node features at each layer, the network can prevent the convergence of node representations to a constant vector, suggesting that learnable weights play a crucial role in mitigating oversmoothing.
+% \section{Experimental Details}
+% \label{sec:experimental_details}
+% All experiments were performed on A600 GPUs with 8 cores. 
+
+% All the code was written in Python 3.10.9.  We utilize PyTorch Geometric for implementing the message passing layers.
+
+
+
+\section{Dirichlet Energy Amplification in High-Frequency Components Under Label Noise: A Theoretical and Empirical Analysis}
+ \label{sec:Amplification}
+\input{AISTATS/Dirchiletamplication}
+
+\section{Robust GNN by enforcing positive Eigenvalues of transformations }
+\subsection{Proof of Section \ref{sec:positive_eigens}}
+\label{app: proof}
+\textit{Proof of Proposition} \ref{theorem: avg_dirichlet}. Let us denote $\Lambda = \{\lambda_u^i, 0 \leq u \leq N^i \wedge 1 \leq i \leq n\}$ as the set of the all graph frequencies in $\mathcal{D}$ and we rewrite it as $\Lambda = \{\lambda_k | 0 \leq k \leq N_{tot} \wedge N_{tot} = \sum_{i = 0}^{n} N^i\}$. This formalization is agnostic to the specific graph in the dataset. \\
+From this we can easily rewrite \eqref{eq: spectral_avg_dirichlet_onegraph} as follows:
+\begin{equation}
+\label{eq: spectral_avg_dirichlet_onegraph}
+   E^{dir}(\mathcal{D}) := \frac{1}{|\mathcal{D}|} \sum_{r = 1}^{m} \sum_{u = 1}^{N_{tot}} \lambda_u(\bm{\psi}_u^{\top} \mathbf{Z}^{tot}_{r})^2,
+\end{equation}
+having $\mathbf{Z}^{tot} \in \mathbb{R}^{N_{tot} \times m'}$ and $\bm{\psi}_u \in \mathbb{R}^{N_{tot} \times 1}$. \\
+Let us assume now the case of a graph $\mathcal{G} = (\mathbf{Z}, \mathbf{A})$, where $\mathbf{Z} = [\mathbf{Z^1} \|\ldots \| \mathbf{Z^n}] \in \mathbb{R}^{N_{tot} \times m'}$, and $\mathbf{A} \in \mathbb{R}^{N_{tot} \times N_{tot}}$ is a diagonal block matrix, where each block $i$ in the diagonal is $\mathbf{A}^i$. The resulting $E^{dir}(\mathbf{Z})$ can be computed as: 
+\begin{equation}
+\label{eq: spectral_dirichlet_onegraph}
+   E^{dir}(\mathbf{Z}) := \sum_{r = 1}^{m} \sum_{u = 1}^{N_{tot}} \lambda_u'(\bm{\psi}_u'^{\top} \mathbf{Z}^{tot}_{r})^2,
+\end{equation}
+Let's notice that \eqref{eq: spectral_dirichlet_onegraph} differs from \eqref{eq: spectral_avg_dirichlet_onegraph} in their set of eigenvalues and eigenvectors, and the scaling factor $|D|$.\\
+Let us now define the graph Laplacian of $\mathcal{G}$ as $\mathbf{\Delta} = \mathbf{I_{N_{tot}}} - \mathbf{D}^{-\frac{1}{2}}\mathbf{A}\mathbf{D}^{-\frac{1}{2}}$. Being $\mathcal{G}$ composed by disconnected graphs we can write its Laplacian as the following diagonal block matrix:
+\begin{equation}
+\label{eq: unique_laplacian}
+\mathbf{\Delta} = \begin{bmatrix}
+\mathbf{I}_{N^1} - (\mathbf{D}^1)^{-\frac{1}{2}}\mathbf{A}^1(\mathbf{D}^1)^{-\frac{1}{2}} & \cdots & 0 \\
+\vdots & \ddots & \vdots \\
+0 & \cdots & \mathbf{I}_{N^n} - (\mathbf{D}^n)^{-\frac{1}{2}}\mathbf{A}^n(\mathbf{D}^n)^{-\frac{1}{2}}
+\end{bmatrix} = \begin{bmatrix}
+\mathbf{\Delta}^1 & \cdots & 0 \\
+\vdots & \ddots & \vdots \\
+0 & \cdots & \mathbf{\Delta}^n
+\end{bmatrix}
+\end{equation}
+From \ref{eq: unique_laplacian}, we can evince that the eigenvalues set of eigenvalues $\Lambda'$ of $\mathbf{\Delta}$ corresponds to the union of the eigenvalues for each Laplacian of the disconnected graphs s.t. $\Lambda' = \{\Lambda^i| 1 \leq i \leq n\}$. This derives from the property that $det(\Delta - \lambda\mathbf{I}_{N_{tot}}) = \prod_{i = 1}^n det(\Delta^i - \lambda\mathbf{I}_{N^i})$ \cite{linear_algebra}. So this proves that $\lambda_u \equiv \lambda_u', \forall u$ in Equations \ref{eq: spectral_avg_dirichlet_onegraph} and \ref{eq: spectral_dirichlet_onegraph}. 
+
+For the eigenvectors, suppose $\bm{\psi}_j^i$ is the $j$-th eigenvector of $\mathbf{\Delta}^i$ corresponding to eigenvalue \( \lambda_j^i \) (e.g. $j \in \{0, \ldots, N^i\}$). We construct the corresponding eigenvector of $\mathbf{\Delta}$ through the diagonal block matrix properties. Formally, the corresponding eigenvector $\bm{\psi}_u'$ of $\mathbf{\Delta}$ corresponding to \( \lambda_j^i \) is given by:
+\[
+\bm{\psi}_u' = \begin{bmatrix}
+0 \\
+\vdots \\
+0 \\
+\bm{\psi}_j^{i} \\
+0 \\
+\vdots \\
+0
+\end{bmatrix} = \begin{bmatrix}
+0 \\
+\vdots \\
+0 \\
+\bm{\psi}_u \\
+0 \\
+\vdots \\
+0
+\end{bmatrix}
+\]
+This vector $\bm{\psi}_u'$ satisfies the eigenvector equation for $\mathbf{\Delta}$:
+\[
+\mathbf{\Delta} \bm{\psi}_u' = \lambda_u \bm{\psi}_u' = \lambda'_u \bm{\psi}_u'
+\]
+From this, it follows always that $\bm{\psi}_u^{\top} \mathbf{Z}^{tot}_{r} = \bm{\psi}_j^{i\top} \mathbf{Z}^{i}_{r}, \forall r$. \\Thus, it follows that $E^{dir}(\mathcal{D}) = |\mathcal{D}| \cdot E^{dir}(\mathbf{Z})$.
+
+
+
+
+
+
+
+% \subsection{Experimental Setup and Details \ref{sec:positive_eigens}}
+% \label{app: weightmatrice_eigens}
+% To answer \textbf{RQ2} we conduct the following experiment.
+% Let us take the GCN \cite{gcn} update rule for each graph $i$ according to our notation, and write it as: 
+% \begin{equation}
+%     \text{GCN: \hspace{0.5cm}}
+%     \mathbf{H}_i^{l+1} = \sigma(\mathbf{\Delta}\mathbf{H}_i^{l}\mathbf{W}^1_l)\mathbf{W}^2_l \text{\hspace{1cm}} \forall i = \{1, \ldots, n\},
+% \end{equation}
+% where $\sigma$ is a point-wise non-linearity, and $\mathbf{W}_l^v \in \mathbb{R}^{m' \times m'}$, $v \in \{1, 2\}$ are squared matrices. Moreover, we include $\mathbf{W}_l^2$ for the purpose of the experiments, we can think of it as an additional shallow layer after the message-passing update. Then we consider the GIN \cite{WL1} update rule as: 
+% \begin{align*}
+%     \text{GIN: \hspace{0.5cm}}
+%     \mathbf{H}_i^{l+1} = \sigma(\sigma((1 + \epsilon)\mathbf{H}_i^{l} + \mathbf{A}\mathbf{H}_i^{l})\mathbf{W}_{l}^1)\mathbf{W}_{l}^2) \text{\hspace{1cm}} \\
+%     \forall i = \{1, \ldots, n\},
+% \end{align*}
+% also in this case we use the same squared matrices since we want to operate with eigenvalues rather than the singular values. Here we chose $\epsilon$ as a scalar, and a two layers MLP following the aggregation and update steps (i.e. $(1 + \epsilon)\mathbf{H}_i^{l} +\mathbf{A}\mathbf{H}_i^{l}$). 
+% Let us now define the set of eigenvalues and eigenvectors respectively for each corresponding weight matrix $v$ as $\{\mu_{0,l}^{v}, \ldots \mu_{m'-1,l}^{v}\}$, $\{\bm{\Phi}_{0,l}^{v}, \ldots \bm{\Phi}_{m'-1,l}^{v}\}$, $v \in \{1, 2\}$. Let us notice that $\mu_{0,l}^v$ can be also negative, conversely from the eigenvalues of $\mathbf{\Delta}$. We conjecture that the interactions that exist among these sets of eigenvalues, with those of the Laplacian may behave similarly to what is observed and proved in \cite{GRAFF}. For instance, they propose using a symmetric weight matrix (i.e. $\mathbf{W} = \mathbf{W}^{\top}$) having the symmetry property leading to a Dirichlet Energy dynamics that can both sharpen or smooth edge gradients, in particular, the sharpening effect is provided by the influence of the negative eigenvalues of the weight matrix. Assuming that this is true regardless of the message-passing and the weights properties, we know that the sharpening effect is related to noisy samples and is not desired within graph classification. Thus we suggest removing manually such negatives.  \\What we do is: First, we decompose each weight matrix in its eigenvectors and eigenvalues components as follows:
+% \begin{equation}
+%     \mathbf{W}_l^v = \bm{\Phi}_l^v\bm{\mu}_l^v(\bm{\Phi}_l^{v})^{-1}.
+% \end{equation}
+% Second, we apply a ReLU function $[\cdot]^+$ to $\bm{\mu_l^{v}}$, in order to keep unchanged the positive eigenvalues and bring the negatives to zero. Then the new $\mathbf{W}_l^{v+}$ will be
+% \begin{equation}
+%     \mathbf{W}_l^{v+} = \bm{\Phi}_l^v[\bm{\mu}_l^v]^+(\bm{\Phi}_l^{v})^{-1}.
+% \end{equation}
+% In our experiments we repeat this procedure right after having updated the parameters with gradient descent, excluding it from the gradients computed within the back-propagation algorithm.
+
+
+
+\section{Additional Empirical Studies on Dirichlet Energy Behaviour}
+\label{sec:Additional_studies}
+\input{AISTATS/Additional_Empirical_Studies}
+
+
+
+\clearpage
+\section{Additional Tables}
+\begin{table}[htbp]
+  \caption{Sensitivity analysis of $lr_u$ for $u$ under 40\% asymmetric noise, $\% \textbf{Change}$ shows the percentage difference of test Accuracy using GCOD with two different learning rates for $u$.}
+    \label{tab:lr_sensitivity}
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Dataset} & \textbf{$lr_u=1$} & \textbf{$lr_u=0.1$} & \textbf{\% Change} \\
+        \hline
+        Proteins    & 76.19 & 75.89 & -0.39\% \\
+        MNIST       & 72.61 & 72.48 & -0.18\% \\
+        Enzymes     & 69.81 & 68.33 & -2.12\% \\
+        IMDB/Binary & 72.89 & 71.94 & -1.30\% \\
+        Mutag       & 93.19 & 92.61 & -0.62\% \\
+        Reddit      & 47.94 & 48.08 & +0.29\% \\
+        MSRC/21     & 95.57 & 95.45 & -0.13\% \\
+        \hline
+    \end{tabular}
+\end{table}
+\begin{table}[htbp]
+        \caption{Relative runtime comparison of GIN trained with standard Cross Entropy (baseline, runtime normalized to 1.00) versus alternative robustness-enhancing methods (SOP, GCOD, and CE+W2) on the PPA dataset (using 30\% data, 6 classes).}
+        \label{tab:runtime_comparison}
+        \centering
+        \begin{tabular}{lc}
+            \hline
+            \textbf{Method} & \textbf{Runtime} \\
+            \hline
+            GIN  & 1.00 \\
+            SOP  & 1.048 \\
+            GCOD & 1.029 \\
+            CE+W2 & 1.33 \\
+            \hline
+        \end{tabular}
+\end{table}
+\begin{table}[htbp]
+\centering
+    \caption{Performance of CE vs.\ GCOD with 20 \% symmetric label noise.
+      The last column reports the difference (GCOD – CE) on test accuracy.}
+    \label{tab:alldataset}
+
+    \begin{adjustbox}{width=0.55\linewidth}
+      \begin{tabular}{llcccc}
+        \hline
+        \textbf{Dataset} & \textbf{Metric} &
+        \textbf{0 \% CE} & \textbf{20 \% CE} & \textbf{20 \% GCOD} &
+        \makecell[c]{20 \%\\(GCOD–CE)} \\ \hline
+
+        \multirow{3}{*}{MNIST}
+          & Best       & 72.69 & 66.30 & 71.26 & +4.96 \\
+          & Last       & 69.80 & 53.64 & 67.88 & +14.24 \\ \cline{3-5}
+          & Difference & 2.89  & 12.66 & 3.38  &        \\ \hline
+
+        \multirow{3}{*}{ENZYMES}
+          & Best       & 73.33 & 64.16 & 68.69 & +4.53 \\
+          & Last       & 65.78 & 57.50 & 62.54 & +5.04 \\ \cline{3-5}
+          & Difference & 7.55  & 6.66  & 6.15  &        \\ \hline
+
+        \multirow{3}{*}{MSRC\_21}
+          & Best       & 96.69 & 90.26 & 94.69 & +4.43 \\
+          & Last       & 93.80 & 79.64 & 90.26 & +10.62 \\ \cline{3-5}
+          & Difference & 2.89  & 10.62 & 4.43  &        \\ \hline
+
+        \multirow{3}{*}{PROTEINS}
+          & Best       & 81.16 & 76.23 & 79.38 & +3.15 \\
+          & Last       & 79.18 & 62.32 & 78.12 & +15.80 \\ \cline{3-5}
+          & Difference & 1.98  & 13.91 & 1.26  &        \\ \hline
+
+        \multirow{3}{*}{MUTAG}
+          & Best       & 94.73 & 89.47 & 90.01 & +0.54 \\
+          & Last       & 84.21 & 68.42 & 86.84 & +18.42 \\ \cline{3-5}
+          & Difference & 10.52 & 21.05 & 3.17 &        \\ \hline
+
+        \multirow{3}{*}{\makecell[l]{IMDB-\\BINARY}}
+          & Best       & 76.50 & 75.00 & 75.40 & +0.40 \\
+          & Last       & 71.60 & 71.00 & 73.50 & +2.50 \\ \cline{3-5}
+          & Difference & 4.90  & 4.00  & 1.90  &        \\ \hline
+
+        \multirow{3}{*}{\makecell[l]{REDDIT-\\MULTI-12K}}
+          & Best       & 48.15 & 45.05 & 44.98 & –0.07 \\
+          & Last       & 46.01 & 44.67 & 44.89 & +0.22 \\ \cline{3-5}
+          & Difference & 2.14  & 0.38  & 0.09  &        \\ \hline
+      \end{tabular}
+    \end{adjustbox}
+\end{table}
+
+
+% \begin{table}[htbp]
+%   \caption{Sensitivity analysis of learning rate $lr_u$ for $u$ under 40\% asymmetric noise, $\% \textbf{Change}$ shows the percentage difference using GCOD with two different learning rates for $u$.}
+%     \label{tab:lr_sensitivity}
+%     \centering
+%     \begin{tabular}{lccccccc}
+%         \hline
+%         \textbf{Metric}    & \textbf{Proteins} & \textbf{MNIST} & \textbf{Enzymes} & \textbf{\makecell[l]{IMDB-\\BINARY}} & \textbf{Mutag} & \textbf{Reddit} & \textbf{MSRC/21} \\
+%         \hline
+%         $lr_u=1$           & 76.19            & 72.61          & 69.81            & 72.89               & 93.19          & 47.94           & 95.57           \\
+%         $lr_u=0.1$         & 75.89            & 72.48          & 68.33            & 71.94               & 92.61          & 48.08           & 95.45           \\
+%         \% Change          & -0.39\%          & -0.18\%        & -2.12\%          & -1.30\%             & -0.62\%        & +0.29\%         & -0.13\%         \\
+%         \hline
+%     \end{tabular}
+% \end{table}
+
+    
+    % \caption{Sensitivity analysis of learning rate for $u$ under 40\% asymmetric noise, including the percentage difference using GCOD with two different learning rates for $u$.}
+    % \label{tab:lr_sensitivity}
+% \twocolumn
+\section{Additional Figures}
+\label{appendix:additional_figures}
+
+\begin{figure}[ht]
+    \centering
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gcn_ogbg_fulldataset/40comp.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig1}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/fig1a.pdf}
+    \caption{Training accuracy for known noisy and clean samples using GCN with CE loss. (4 class form PPA, with 40\% symmetrical noise)
+    }
+    \label{fig:noisy_pure_40_1}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gcn_enzymes/Train_test_comapre.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig7}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/fig7}
+    \caption{Comparison of the train and test accuracy for the Enzymes dataset. GCN model with different losses and noise levels.  }
+    \label{fig:NCOD_accuracy}
+\end{figure}
+
+
+
+
+
+
+\begin{figure}[ht]
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gin_enzymes/20_Test_train.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig6}
+    \includegraphics[page=1,width=0.5\textwidth]{AISTATS/figures/fig6}
+    \caption{Comparison of the train and test accuracy for the Enzymes dataset with GIN model, on clean and 20\% symmetric noise.}
+    \label{fig:gin_enzymes}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gin_enzymes/20_Test_train.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig6}
+    \includegraphics[page=1,width=0.5\textwidth]{AISTATS/figures/ablation_trainingacc.pdf}
+    \caption{Ablation study showing that scaling $u$ by training accuracy prevents it from growing too aggressively. 
+    Without this scaling (GCOD WOT), $u$ dominates early and harms generalization, whereas in GCOD where $u$ is scaled by training accuracy activates $u$ gradually and achieves higher test accuracy.}
+    \label{fig:uablation}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gcn_enzymes/mu}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig7}
+    \includegraphics[page=1,width=.5\textwidth]{AISTATS/figures/mutag.pdf}
+    \caption{Average test accuracy and average Dirichlet energy on the MUTAG dataset with 0\% label noise using the GIN model. The plot illustrates the evolution of accuracy and representation smoothness over training epochs.}
+    \label{fig:mutag}
+\end{figure}
+
+
+
+\begin{figure}[ht]
+    \centering   
+    %\includegraphics[scale = 0.25]{Neurips/Screenshots/gin_enzymes/20_Test_train.png}
+    %\includegraphics[page=1,width=.5\textwidth]{Neurips/figures/fig6}
+    \includegraphics[page=1,width=0.5\textwidth]{AISTATS/figures/unstability .pdf}
+    \caption{Test accuracy on the PPA dataset (30\% subset, 6-class task) using Cross-Entropy (CE) and the CE+W2 method, which enforces positive-semidefinite weight matrices via eigendecomposition. 
+    %While both methods achieve comparable peak accuracy, CE+W2 exhibits unstable convergence, resulting in high variance during training. This instability arises from the spectral constraint applied after each epoch, which disrupts optimization and limits consistent generalization.
+    While comparable peak accuracy, CE+W2 exhibits unstable convergence due to the spectra constraint applied after each epoch disrupts optimization. 
+    }
+    \label{fig:unstability}
+\end{figure}
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+
+Graph Neural Networks (GNNs) are powerful for modeling graph structured data %\cite{dgcnn, diffpool, hgpsl}. 
+\citet{dgcnn}, especially for solving the graph classification task where the objective is to assign a label to each graph in the dataset.  
+% ,\cite {hgpsl}. 
+The applications of graph classification span across domains, including social and citation networks \citet{COLLAB}, bioinformatics \citet{proteins}, and chemical molecule analysis \citep{NCI}. Crucially, in many real world applications, the label acquisition process is noisy.
+Compared to image \citet{algan2021image} or node classification \citet{nrgnn11}, the problem of graph classification with noisy labels is relatively less explored. While initial pioneering works \citet{nt2019revisiting, omg7} have begun to address this challenge, a systematic understanding of when and why GNNs are vulnerable to noisy labels and the development of robust mitigation strategies tailored to the unique inductive biases of GNNs remain active areas of research.
+In this paper, we address this noise robustness challenge and study GNNs' susceptibility to label noise when some samples are labeled incorrectly. The conventional understanding is that cross entropy loss (CE), usually used in GNN classification tasks, typically leads to overfitting in the presence of noisy labels, particularly when the model has sufficient expressivity \citep{memorizenoise}. 
+
+We observed that, for graph classification, GNNs trained with standard CE can show varying degrees of robustness when exposed to label noise.
+We investigate the hypothesis that GNNs leverage smooth representations as an inductive bias for generalization and noise robustness. Through theoretical and empirical analysis, we confirm this link and show that noise overfitting corresponds to latent node features sharpening.  Based on these insights, we develop methods to detect overfitting and propose three distinct strategies to enhance robustness in noisy graph classification.
+Specifically, our contributions are the following: 
+
+
+
+\begin{itemize}
+\item We present the first systematic study linking \textbf{label noise robustness in graph classification}  to the \textbf{spectral dynamics of Dirichlet energy ($E^{\text{dir}}$)}. While prior works have studied oversmoothing  and energy decay in node classification, we reveal how noise memorization in graph classification  corresponds to a characteristic rise in high frequency Dirichlet components.
+\item We propose a \textbf{unifying energy based perspective} on robustness, showing that three seemingly 
+different approaches (i) enforcing positive eigenvalues in GNN weights, (ii) directly regularizing 
+Dirichlet energy, and (iii) introducing the novel GCOD loss can all be understood as mechanisms 
+that constrain harmful high frequency energy.
+\item We provide \textbf{comprehensive empirical evidence} across diverse benchmarks and both symmetric and asymmetric noise, establishing  Dirichlet energy as a reliable signal of overfitting. Crucially, our methods \textbf{improve robustness without degrading clean data performance}.
+\end{itemize}
+
+Together, these contributions introduce a principled framework that connects spectral smoothness, Dirichlet energy, and noise robust learning in GNNs. We believe this perspective opens a new direction for designing graph models that are not only robust to label noise, but also more stable under domain shift and adversarial perturbations.
+%     \textit {
+%    \textbf{A.}  We demonstrate that GNN has robust and faulty modes in a graph classification task in presence of label noise. The fault modes are understood and can be detected:}
+%    \begin{itemize}
+%             \item We empirically show that overfitting on noise in GNNs occurs when the model is over-parameterized, the dataset includes low-order graphs, or there are few labeled examples per class.
+%             \item We establish a theoretical relation between a GNN's robustness to label noise and its ability to reduce the total Dirichlet energy of learned representations, which captures the GNN smoothness inductive bias. 
+%             \item We suggest monitoring the Dirichlet energy during training as a method to detect faulty modes in GNNs to identify overfitting.
+%     \end{itemize}
+%     \textit{\textbf{B.}  We develop three robust training strategies. 
+%     Crucially, our methods do not have a performance penalty, thus confirming our theoretical hypothesis on the sources of GNN robustness:} 
+%     \begin{itemize}
+%             \item Method 1 reinforces the smoothness inductive bias
+%             by removing negative Eigenvalues of GNN weight matrices. We test hypothesis that the Dirichlet energy of representations increases in training due to the negative eigenvalues of the GNN weight matrix, empirically showing how a GNN model can be made robust without changing its loss function. Although we prove our hypothesis that robustness is related to smoothing, the method incurs significant computational overhead in practice.
+%             \item Method 2 bounds the Dirichlet energy of individual graph samples to a target value estimated from a noise-free validation set. This only introduced noise robustness, but also improved performance in the absence of noise.
+%             \item Method 3 is the GCOD loss \eqref{eq: eq_L1}, \eqref{eq: eq_L2}, \eqref{eq: eq_L3}, which is an extension of Noisy Centroids Outlier Discounting (NCOD) \cite{wani2023combining}. We demonstrate that the new components effectively reinforce the GNN smoothness bias.
+%     \end{itemize}
+Overall, this study improves our understanding of the sources of GNNs robustness, its smoothness, and its inductive bias, and offers guidance for practitioners to apply GNNs efficiently to real world applications. The code is available at \url{https://anonymous.4open.science/r/Robustness_Graph_Classification-E76F}.

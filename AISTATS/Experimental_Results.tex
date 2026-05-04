@@ -1,0 +1,81 @@
+% \begin{table}[htbp]
+% \caption{ PPA Dataset.  Number of classes 6. 30 \% of. In red and bold the model that performs the best on test accuracy. In blue the one that performs as the second wrt to test accuracy. The mean and standard deviation are calculated from 4 runs of each. }
+%     \label{tab:ppa_30_perc_6_classes}
+%     \centering
+%     %\setlength\extrarowheight{4pt}
+%      \renewcommand{\arraystretch}{1.2} %default value 1
+%     \resizebox{0.5\textwidth}{!}{
+%     \begin{tabular}{c c c c c c }
+%         \toprule
+%         %\rowcolor{white}
+%            \textbf{Noise}  & \textbf{Method} &  \multicolumn{2}{c}{\textbf{Test Accuracy}} & \multicolumn{2}{c }{\textbf{Train Accuracy}}  \\ 
+%            \cline{3-6}
+%          &  &   \textbf{Best} & \textbf{Last} & \textbf{Best} & \textbf{Last} \\
+%          \hline
+%         %\rowcolor{white}
+%         %\multirow{3}{*}{\rotatebox[origin=c]{90}{\shortstack{  0 \% }}}
+%        \multirow{3}{*}{0\% } &   CE &     96.25 $\pm$ 0.05& 91.25 &  1  & 99.33 \\ 
+%        &  \method &  96.65 $ \pm$ 0.52& 93.25 & 99.23 & 99.03  \\
+%         &  CE+ W2 &     96.50 $ \pm$ 1.12 & 86.5  & 99.76 & 99.29 \\
+%         \hline
+%         \hline
+%        \multirow{5}{*}{20\% }  &  CE   \textcolor{gray}{clean only}&    \textcolor{gray}{96.15 $ \pm$+.09} &  \textcolor{gray}{90.66 }  &  \textcolor{gray}{84.50} &  \textcolor{gray}{84.07} \\
+%        \cline{3-6} 
+%         &  CE &     88.66 $ \pm$0.16 & 62.58  & 94.98 & 93.45 \\ 
+%         & \textcolor{blue}{SOP} &    \textcolor{blue}{91.01 $ \pm$ 0.44} & \textcolor{blue}{85.50 }  & \textcolor{blue}{79.17 } & \textcolor{blue}{77.64 } \\
+%          & \textcolor{red}{\method} & \textbf{\textcolor{red}{93.91 $ \pm$ 0.26}} & \textbf{\textcolor{red}{92.58}} & \textcolor{red}{80.11} & \textcolor{red}{79.52 } \\ 
+%         & CE + W2&       89.83 $ \pm$ 1.23 & 76.66  & 84.90 & 83.68 \\
+%         \hline \hline
+%          \multirow{5}{*}{40\% }  &  CE  \textcolor{gray}{clean only}  &   \textcolor{gray}{95.08 $ \pm$ 0.13} &  \textcolor{gray}{80.44} &  \textcolor{gray}{68.15 } &  \textcolor{gray}{67.05}\\
+%          \cline{3-6} 
+%        &   CE &      82.08 $ \pm$ 0.22 & 51.83  & 82.47 & 78.88  \\ 
+%        &   SOP &     82.33 $ \pm$ 1.32  & 65.41    & 58.90  & 57.68 \\ 
+%        &  \textcolor{red}{\method} &    \textbf{\textcolor{red}{93.88 $ \pm$ 0.04}} & \textbf{\textcolor{red}{91.08}}  & \textcolor{red}{65.09 } & \textcolor{red}{64.31} \\  
+%          &  \textcolor{blue}{CE + W2} &      \textcolor{blue}{88.25 $ \pm$ 1.13} & \textcolor{blue}{56.33 }  & \textcolor{blue}{68.78}& \textcolor{blue}{65.88 }\\ 
+%         \bottomrule
+%     \end{tabular}}
+%     % \caption{ PPA Dataset.  Number of classes 6. 30 \% of. In red and bold the model that performs the best on test accuracy. In blue the one that performs as the second wrt to test accuracy. The mean and standard deviation are calculated from 4 runs of each. }
+%     % \label{tab:ppa_30_perc_6_classes}
+% \end{table}
+% Table \ref{tab:ppa_30_perc_6_classes} presents the results of our experiments performed on the PPA dataset, where we randomly selected 30\% of the total data and focused on six specific classes. The experiments utilized a GIN network more in Appendix \ref{}. %with five message-passing layers; details of other hyperparameters and settings are provided in the Appendix.
+% This experimental setup was purposefully designed to study the effect of label noise on the learning process and evaluate how different loss functions contribute to making the network robust against such noise, emphasizing our proposed \textbf{GCOD} loss function. The table shows that the \textbf{GCOD} loss function consistently outperforms other loss functions at all noise levels. Furthermore, \textbf{GCOD} exhibits a smoothing effect that prevents overfitting, which can be observed by examining the small gap between the \textbf{best} and \textbf{last} accuracy values. This demonstrates that the network generalizes better and is not overly reliant on noisy data.
+% In contrast, the \text{CE+W2} method, which removes the negative eigenvalues from the weight matrix $v = 2$, achieves better accuracy than SOP at certain noise levels. However, this method introduces excessive smoothing, which can lead to overfitting even in noise-free settings, as seen in the 0\% noise condition. While {CE+W2} helps the network avoid learning from noisy samples, the bias introduced by removing the eigenvalues also affects samples that contribute valuable distributional information for class learning, making it less suitable for real-world scenarios with varying noise levels.
+
+% The SOP loss function also demonstrates competitive performance at certain noise rates, particularly at 20\% noise. However, its higher gap between \textbf{best} and \textbf{last} accuracy values indicates that it is more prone to overfitting than \textbf{GCOD}, suggesting that it is less effective in maintaining stable generalization in the presence of noise.
+
+
+% Table~\ref{tab:alldataset} provides a performance comparison across multiple datasets under two different noise conditions (0\% and 20\%) using the CE,\textbf{GCOD} and \textbf{NCOD} loss functions. The key metrics include the best and last test accuracies, along with the difference between these values to measure model stability and susceptibility to overfitting.
+
+% The results consistently show that \textbf{GCOD} outperforms CE in terms of both best and last accuracies, especially in the presence of noise. %For example, on the **MNIST** dataset, while **CE** suffers a significant drop in accuracy as noise increases, **GCOD** maintains higher and more stable performance with smaller gaps between best and last accuracies. Similar trends are observed across other datasets like **ENZYMES** and **PROTEINS**, where **GCOD** demonstrates greater resilience to noise, ensuring minimal performance degradation as noise increases.
+
+% Moreover, the smaller differences between best and last accuracies for \textbf{GCOD} across all datasets indicate that our loss function helps reduce overfitting, particularly at higher noise levels. This highlights the effectiveness of \textbf{GCOD} in improving the generalization of the model, even in noisy settings.
+
+% Table~\ref{tab:compare} clearly demonstrates that GCOD consistently outperforms CE in most datasets under 20\% noise. Notably, GCOD achieves substantial gains on datasets such as MNIST (+4.96\%), ENZYMES (+4.53\%), and MSRC\_21 (+4.43\%), where the model is more resilient to noise. The PROTEINS and MUTAG datasets also exhibit improved performance with GCOD, showing gains of +3.15\% and +2.53\%, respectively. On the IMDB-BINARY dataset, GCOD shows a marginal improvement (+0.40\%), while REDDIT-MULTI-12K has a slight drop of -0.07\%, indicating that the dataset is more robust to noise regardless of the loss function used.
+% Table \ref{tab:ppa_30_perc_6_classes} summarizes the results on the PPA dataset, where 30\% of the data across $6$ classes was selected, using a GIN network (details in Appendix \ref{sec:experimental_setting}). The proposed \textbf{GCOD} loss consistently outperforms other loss functions, demonstrating a smaller gap between the best and last accuracies, indicating better generalization and robustness to noise. In contrast, while {CE+W2} performs better than SOP \cite{liu2022robusttraininglabelnoise} at certain noise levels, it introduces excessive smoothing, leading to overfitting in noise-free scenarios. SOP, though competitive, is more susceptible to overfitting as seen in the wider accuracy gaps.
+
+% The smaller gap between the best and last accuracy for \textbf{GCOD} across all datasets in Table \ref{tab:alldataset} highlights its effectiveness in reducing overfitting and improving performance in noisy environments. Moreover, Table \ref{tab:alldataset} shows that \textbf{GCOD} consistently outperforms CE on most datasets under 20\% noise, with significant improvements in all except for REDDIT-MULTI-12K, which shows a slight decrease of -0.07, demonstrating its robustness to noise regardless of the loss function used.
+This section presents the empirical evaluation of our proposed GCOD loss function, along with the two methods leveraging Dirichlet energy regularization (CE+W2 and a method directly using $\mathcal{L}_{DE}$ with fixed and class-specific bounds), comparing their robustness against label noise across diverse datasets and conditions. In addition to standard Cross Entropy (CE) baselines, we include two recent state of the art methods for robustness: SOP \citet{liu2022robusttraininglabelnoise} and OMG \citep{omg7}. SOP is a leading approach for noise robust image classification based on sample reweighting, while OMG is a graph specific method designed to mitigate overfitting to noisy supervision. Their inclusion provides a strong comparative reference for evaluating the noise robustness of GCOD and our Dirichlet energy methods in both general and graph specific settings.
+\paragraph{Results on PPA}
+Table \ref{tab:ppa_30_perc_6_classes} summarizes the results under 0\%, 20\%, and 40\% label noise on the PPA dataset, where 30\% of the data across $6$ classes was selected, utilizing a 5-layered GIN network (details provided in Appendix \ref{sec:experimental_setting})  \\
+The proposed {GCOD} loss consistently outperforms other methods by achieving a smaller gap between the best and final accuracies, which reflects improved generalization and robustness to noise. 
+SOP, despite being competitive, exhibits wider accuracy gaps, indicating its susceptibility to overfitting. 
+ {CE+W2} occasionally surpasses SOP at certain noise levels; its excessive smoothing leads to overfitting in noise-free scenarios. 
+Precisely {CE+W2} improves test accuracy under moderate noise (e.g., 20\%: 89.83 vs. 88.66 compared to CE) and narrows the gap between training and test performance, indicating reduced overfitting. 
+However, under clean labels (0\%  noise), CE+W2 tends to over-smooth, with slightly degraded final accuracy. The eigen decomposition step introduces a modest training overhead (see Table \ref{tab:runtime_comparison}) and potential instability. However, the findings confirm that controlling the weight matrix spectrum influences Dirichlet energy and robustness. $\mathcal L_{DE}$ with a \emph{Fixed bound} shows results in line with CE+W2: it's able to imporve the performance in the presence of moderate levels of noise, but in noise-free settings the gains were limited due to potential over-smoothing. With the use \emph{Class-specific bounds}, instead, the adaptive mechanism allowed the regularization to align with the intrinsic complexity of each class, which enable the method to improve the accuracy at all levels of label noise, including the absence of noise. This suggests the class specific method improves generalization as well as model robustness.
+% $\mathcal L_{DE}$ with a \emph{fixed bound} showed notable improvements in test accuracy under noisy labels. However, in noise-free settings, gains were limited due to potential over-regularization. 
+% The threshold $U$ was carefully tuned to avoid excessive smoothing while maintaining discriminative capacity; details on this tuning process are discussed in Appendix \ref{appendix:details_dirichlet_regularization_bounds}.\\
+% In the \emph{class-specific bounds}, the threshold $U_c$ was recomputed after each epoch (\ref{appendix:details_dirichlet_regularization_bounds}) with the intent of providing a more precise and adaptive regularization bound. This allowed the method to account for class-dependent variations without requiring additional manual tuning. Regularization successfully reduced the overall energy and stabilized it over epochs. 
+% Importantly, relative to the base CE loss, this method improved accuracy at all levels of label noise, including in the absence of noise. This suggests the class-specific method improves generalization as well as model robustness.
+
+\textbf{Results Across Multiple Datasets (20\% Symmetric Noise)}
+Table \ref{tab:alldataset} compares {GCOD} with standard CE under 20\% symmetrical noise across several datasets.
+ The Table shows that 
+{GCOD} outperforms CE on most datasets, highlighting its resilience regardless of the specific data characteristics (with the exception of REDDIT-MULTI-12K in this specific test).
+
+\textbf{Results under Asymmetric Noise (40\%)}
+In Table~\ref{tab:asymmetric_noise}, a comparison of {GCOD} and CE under 40\% asymmetric label noise across datasets is presented. {GCOD} consistently outperforms CE, demonstrating its robustness in handling asymmetric label noise.
+
+\textbf{Comparison with OMG}
+Lastly, Table~\ref{tab:omg_table} compares the percentage accuracy improvements of the OMG method and our proposed {GCOD} method across three datasets (MUTAG, IMDB-B, and PROTEINS) under experimental conditions similar to those in the OMG paper.It further underscores the superior performance and robustness of {GCOD} in noisy environments.
+
+\textbf{Computational Efficiency and Hyperparameter Sensitivity of GCOD} Table~\ref{tab:runtime_comparison} compares the percentage runtime increase for various methods relative to GIN trained with cross entropy loss, normalized to 1, {CE+W2} incurs a 33\% increase in training time. The GCOD loss function introduces no additional hyperparameters beyond the learning rate for the learnable parameters (the weights and a parameter $u$). Table~\ref{tab:lr_sensitivity} shows the impact of the learning rate of  $u$ on GCOD performances.

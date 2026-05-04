@@ -1,0 +1,45 @@
+
+
+
+Our previous findings established a strong correlation between a GNN's overfitting of noisy labels and a significant increase in the Dirichlet energy of its learned node representations. 
+The spectral properties of the learnable weight matrices within GNN layers fundamentally shape the network's behavior on the graph, particularly concerning smoothing and sharpening of features. Prior work~\cite{noteonoversmoothing, oversmoothing2, GRAFF} has shown that the eigenvalues of learnable weight matrices interact with the graph Laplacian, inducing either smoothing or sharpening effects. In particular, \cite{GRAFF} demonstrates that positive eigenvalues promote attraction between connected nodes, while negative eigenvalues induce repulsion.
+These findings suggest that controlling the sign of the weight spectrum could architecturally enforce a smoothing inductive bias. 
+This lead us to formulate our second research question: \textbf{RQ2} \textit{Does the spectrum of the weight matrices affect the evolution of \eqref{eq: avg_dirichlet} during training?}
+
+
+
+To justify our dataset level analysis of Dirichlet energy, we first present the following result:
+
+\begin{proposition}
+\label{theorem: avg_dirichlet}
+Let $\mathcal{D} = \{ \mathcal{G}^1= (\mathbf{Z}^1, \mathbf{A}^1), \ldots, \mathcal{G}^{n} = (\mathbf{Z}^n, \mathbf{A}^n) \}$ be a set of graphs. Then
+\(
+E^{dir}_\text{set}(\mathcal{D}) = \frac{1}{|\mathcal{D}|} E^{dir}(\mathbf{Z}),
+\)
+where $\mathbf{Z} = [\mathbf{Z^1} \| \ldots \| \mathbf{Z^n}]$ and $\mathbf{A}$ is a block-diagonal matrix with blocks $\mathbf{A}^i$ along the diagonal. That is, the dataset-level Dirichlet energy corresponds to the Dirichlet energy of a single disconnected graph composed of all graphs in $\mathcal{D}$.
+\end{proposition} 
+\begin{remark}
+\label{cor: avg_energy}
+Reducing $E^{dir}_\text{set}(\mathcal{D})$ during training implies that the model is simultaneously enhancing low-frequency representations across all graphs in the dataset.
+\end{remark}
+
+Discussion of Proposition~\ref{theorem: avg_dirichlet} and Remark~\ref{cor: avg_energy} is provided in Appendix~\ref{app: proof}. This result is particularly relevant for graph classification: it shows that controlling node-level smoothness across a dataset of graphs can be achieved through local spectral constraints, without requiring explicit graph-level regularization. Motivated by \cite{GRAFF}, we hypothesize that smoothing can be enhanced by removing negative eigenvalues from the learned weight matrices of the GNN. To test this hypothesis, we constrain the spectrum of the weight matrix \( \mathbf{W}^{(2)} \) in each GNN layer after neighborhood aggregation.
+We refer to this approach as \textbf{CE+W2}, which uses standard cross entropy loss but with post-hoc positive eigenvalue enforcement on \( \mathbf{W}^{(2)} \).
+\textit{The full derivation of the update rules, spectrum filtering, and implementation details are provided in Appendix~ \ref{app: weightmatrice_eigens}.} 
+The performance of the method is reported in Table~\ref{tab:ppa_30_perc_6_classes}. 
+Despite the findings affirm that controlling the weight matrix spectrum influences
+Dirichlet energy and robustness, the eigen decomposition step introduces severe training overhead (Table \ref{tab:runtime_comparison}) and potential instability (Appendix Fig. \ref{fig:unstability}).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
