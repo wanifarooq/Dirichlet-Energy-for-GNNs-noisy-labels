@@ -380,3 +380,4 @@ GCN & CE+W2     & $0.7247$ & $\#5$\\
 \end{table}
 
 Both methods land in the top half of the ranking on each backbone, despite using neither homophily, contrastive losses, pseudo-labels, nor any node-specific machinery. CE+W2 in particular is competitive with the strongest specialized node-classification baselines on GAT. The interpretation, consistent with Theorem~\ref{thm:noise_forces_energy}, is that the spectral mechanism by which noise fitting forces within-graph energy to grow is not specific to graph classification: in node classification, individual labels are also embedded in node-level representations whose Dirichlet energy reflects local smoothness, and constraining that smoothness penalizes the same noise-fitting path. The transfer is therefore not a coincidence but a corollary of the energy-based framing.
+\newpage
