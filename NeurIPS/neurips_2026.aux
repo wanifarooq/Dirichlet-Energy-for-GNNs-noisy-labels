@@ -43,7 +43,7 @@
 \newlabel{sec:failure_modes}{{4}{3}{When GNNs Fit Graph-Label Noise}{section.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Dirichlet Energy as a Diagnostic for Noise Fitting}{3}{section.5}\protected@file@percent }
 \newlabel{sec:diagnostic}{{5}{3}{Dirichlet Energy as a Diagnostic for Noise Fitting}{section.5}{}}
-\citation{exploreOversmoothing}
+\citation{chuang2022tree,davidson2024h,juvina2024training}
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:f1}{{1a}{4}{Effect of class count}{figure.caption.2}{}}
 \newlabel{sub@fig:f1}{{a}{4}{Effect of class count}{figure.caption.2}{}}
@@ -53,13 +53,11 @@
 \newlabel{fig:failure_modes}{{1}{4}{Training accuracy on \emph {noisy labels only}: a higher curve means more memorization. (a) Reducing the number of PPA classes (with $20\%$ symmetric noise) makes a fixed GIN over-parameterized, accelerating noise fitting. (b) Smaller average graph order (synthetic data, $35\%$ noise) leaves less internal structure for averaging, enabling memorization}{figure.caption.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {6}Why a Non-Trivial Energy Decrease Prevents Noise Fitting}{4}{section.6}\protected@file@percent }
 \newlabel{sec:theory}{{6}{4}{Why a Non-Trivial Energy Decrease Prevents Noise Fitting}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Dataset-Level Spectral Identity}{4}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Three Building Blocks}{4}{subsection.6.1}\protected@file@percent }
 \newlabel{prop:dataset_energy}{{1}{4}{Dataset-level Dirichlet energy}{proposition.1}{}}
 \newlabel{eq:spectral_dataset}{{3}{4}{Dataset-level Dirichlet energy}{equation.6.3}{}}
-\citation{exploreOversmoothing}
-\citation{exploreOversmoothing}
-\citation{exploreOversmoothing}
-\citation{exploreOversmoothing}
+\newlabel{lem:poincare}{{1}{4}{Graph Poincar\'e, vector-valued form}{lemma.1}{}}
+\citation{chuang2022tree,davidson2024h,juvina2024training}
 \newlabel{fig:diag_a}{{2a}{5}{Train accuracy (PPA-30\%-6)}{figure.caption.3}{}}
 \newlabel{sub@fig:diag_a}{{a}{5}{Train accuracy (PPA-30\%-6)}{figure.caption.3}{}}
 \newlabel{fig:diag_b}{{2b}{5}{Within-graph $\Edirset $ (PPA-30\%-6)}{figure.caption.3}{}}
@@ -70,37 +68,55 @@
 \newlabel{sub@fig:diag_d}{{d}{5}{Across datasets}{figure.caption.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Within-graph Dirichlet energy of learned representations \emph  {rises during noise memorization}, across architectures (GIN/GCN) and datasets (PPA, MUTAG, MNIST, PROTEINS). Under clean labels, $E^{\text  {dir}}_{\text  {set}}$ steadily decays as accuracy improves; under noise, it follows the same decay until the model starts fitting noisy graphs, after which it sharply rises. GCOD{} suppresses this surge.}}{5}{figure.caption.3}\protected@file@percent }
 \newlabel{fig:diagnostic}{{2}{5}{Within-graph Dirichlet energy of learned representations \emph {rises during noise memorization}, across architectures (GIN/GCN) and datasets (PPA, MUTAG, MNIST, PROTEINS). Under clean labels, $\Edirset $ steadily decays as accuracy improves; under noise, it follows the same decay until the model starts fitting noisy graphs, after which it sharply rises. \method {} suppresses this surge}{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}An Entropy-Based Argument for Graph Classification}{5}{subsection.6.2}\protected@file@percent }
-\newlabel{eq:graph_entropy}{{4}{5}{An Entropy-Based Argument for Graph Classification}{equation.6.4}{}}
-\newlabel{thm:entropy_link}{{1}{5}{Non-trivial role of energy decrease in graph classification}{theorem.1}{}}
+\newlabel{eq:poincare}{{4}{5}{Graph Poincar\'e, vector-valued form}{equation.6.4}{}}
+\newlabel{lem:bilip}{{2}{5}{Bi-Lipschitz lower bound for a GIN, adapted from~\citealp {chuang2022tree, davidson2024h, juvina2024training}}{lemma.2}{}}
+\newlabel{eq:bilip}{{5}{5}{Bi-Lipschitz lower bound for a GIN, adapted from~\citealp {chuang2022tree, davidson2024h, juvina2024training}}{equation.6.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Main Theorem: Noise Fitting Forces Energy Growth}{5}{subsection.6.2}\protected@file@percent }
+\newlabel{thm:noise_forces_energy}{{1}{5}{Graph-level noise fitting forces $\Edir $ to grow}{theorem.1}{}}
+\citation{exploreOversmoothing}
+\citation{exploreOversmoothing}
+\citation{chung1997}
+\citation{exploreOversmoothing}
+\citation{exploreOversmoothing}
 \citation{GRAFF}
-\citation{wani2023combining}
+\newlabel{eq:noise_bound}{{6}{6}{Graph-level noise fitting forces $\Edir $ to grow}{equation.6.6}{}}
+\newlabel{eq:energy_lower}{{7}{6}{Graph-level noise fitting forces $\Edir $ to grow}{equation.6.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Asymmetric Burden on High-Entropy Graphs}{6}{subsection.6.3}\protected@file@percent }
+\newlabel{lem:spectral_count}{{3}{6}{Spectral counting}{lemma.3}{}}
+\newlabel{cor:asymmetric}{{1}{6}{Asymmetric burden}{corollary.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {7}Three Convergent Methods}{6}{section.7}\protected@file@percent }
 \newlabel{sec:methods}{{7}{6}{Three Convergent Methods}{section.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Method 1: Spectral Constraint on Weight Matrices (CE+W2)}{6}{subsection.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal  {L}_{DE}$)}{6}{subsection.7.2}\protected@file@percent }
-\newlabel{eq:lde}{{5}{6}{Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal {L}_{DE}$)}{equation.7.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Method 3: Graph Centroid Outlier Discounting (GCOD{})}{6}{subsection.7.3}\protected@file@percent }
+\citation{GRAFF}
+\citation{wani2023combining}
 \citation{PPA}
 \citation{WL1}
 \citation{gcn}
 \citation{liu2022robusttraininglabelnoise}
 \citation{omg7}
-\citation{omg7}
-\citation{omg7}
-\newlabel{eq:gcod1}{{6}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.6}{}}
-\newlabel{eq:gcod2}{{7}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.7}{}}
-\newlabel{eq:gcod3}{{8}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Experiments}{7}{section.8}\protected@file@percent }
-\newlabel{sec:experiments}{{8}{7}{Experiments}{section.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Main Result: Controlled PPA Subset}{7}{subsection.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Generalization Across Datasets and Noise Types}{7}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Method 1: Spectral Constraint on Weight Matrices (CE+W2)}{7}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal  {L}_{DE}$)}{7}{subsection.7.2}\protected@file@percent }
+\newlabel{eq:lde}{{8}{7}{Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal {L}_{DE}$)}{equation.7.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Method 3: Graph Centroid Outlier Discounting (GCOD{})}{7}{subsection.7.3}\protected@file@percent }
+\newlabel{eq:gcod1}{{9}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.9}{}}
+\newlabel{eq:gcod2}{{10}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.10}{}}
+\newlabel{eq:gcod3}{{11}{7}{Method 3: Graph Centroid Outlier Discounting (\method {})}{equation.7.11}{}}
+\citation{wani2023combining}
+\citation{wani2023combining}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Test accuracy on the PPA-30\%-6 subset (5-layer GIN, mean$\pm $std over 4 runs). \textbf  {Best} is highlighted in red and bold, second-best in blue. ``CE clean only'' shows accuracy on the clean subset of the noisy data, as a reference upper bound. Class-specific $\mathcal  {L}_{DE}^*$ requires a clean validation set.}}{8}{table.caption.4}\protected@file@percent }
 \newlabel{tab:ppa_30_perc_6_classes}{{1}{8}{Test accuracy on the PPA-30\%-6 subset (5-layer GIN, mean$\pm $std over 4 runs). \textbf {Best} is highlighted in red and bold, second-best in blue. ``CE clean only'' shows accuracy on the clean subset of the noisy data, as a reference upper bound. Class-specific $\mathcal {L}_{DE}^*$ requires a clean validation set}{table.caption.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces GCOD{} matches or beats CE across diverse datasets, including domains where the baseline is already strong. Mean$\pm $std over 4 runs. \emph  {Sym$_{20}$:} 20\% symmetric. \emph  {Asym$_{40}$:} 40\% asymmetric. \emph  {Sym$_{60}$:} 60\% symmetric (high-noise stress test).}}{8}{table.caption.5}\protected@file@percent }
-\newlabel{tab:multidataset}{{2}{8}{\method {} matches or beats CE across diverse datasets, including domains where the baseline is already strong. Mean$\pm $std over 4 runs. \emph {Sym$_{20}$:} 20\% symmetric. \emph {Asym$_{40}$:} 40\% asymmetric. \emph {Sym$_{60}$:} 60\% symmetric (high-noise stress test)}{table.caption.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Convergent Evidence for the Energy Story}{8}{subsection.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{8}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Experiments}{8}{section.8}\protected@file@percent }
+\newlabel{sec:experiments}{{8}{8}{Experiments}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Main Result: Controlled PPA Subset}{8}{subsection.8.1}\protected@file@percent }
+\citation{omg7}
+\citation{omg7}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces GCOD{} matches or beats CE across diverse datasets. Mean over 4 runs; $\pm $std reported where available. \emph  {Sym$_{20}$:} 20\% symmetric noise. \emph  {Asym$_{40}$:} 40\% asymmetric noise. The Asym$_{40}$ GCOD{} column reports the std deviations from~\citep  {wani2023combining}'s rebuttal protocol.}}{9}{table.caption.5}\protected@file@percent }
+\newlabel{tab:multidataset}{{2}{9}{\method {} matches or beats CE across diverse datasets. Mean over 4 runs; $\pm $std reported where available. \emph {Sym$_{20}$:} 20\% symmetric noise. \emph {Asym$_{40}$:} 40\% asymmetric noise. The Asym$_{40}$ \method {} column reports the std deviations from~\citep {wani2023combining}'s rebuttal protocol}{table.caption.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces OMG protocol (Yin et al., 2023). Percentage gain over CE.}}{9}{table.caption.6}\protected@file@percent }
+\newlabel{tab:omg_table}{{3}{9}{OMG protocol (Yin et al., 2023). Percentage gain over CE}{table.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Relative training time (CE-GIN $=1.00$).}}{9}{table.caption.6}\protected@file@percent }
+\newlabel{tab:runtime}{{4}{9}{Relative training time (CE-GIN $=1.00$)}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Generalization Across Datasets and Noise Types}{9}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Convergent Evidence for the Energy Story}{9}{subsection.8.3}\protected@file@percent }
 \bibstyle{plainnat}
 \bibdata{main}
 \bibcite{algan2021image}{{1}{2021}{{Algan and Ulusoy}}{{}}}
@@ -110,57 +126,55 @@
 \bibcite{proteins}{{5}{2005}{{Borgwardt et~al.}}{{Borgwardt, Ong, Schönauer, Vishwanathan, Smola, and Kriegel}}}
 \bibcite{noteonoversmoothing}{{6}{2020}{{Cai and Wang}}{{}}}
 \bibcite{EEConv}{{7}{2023}{{Chen et~al.}}{{Chen, Wang, Bodnar, Ying, Lio, and Wang}}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces OMG protocol (Yin et al., 2023). Percentage gain over CE.}}{9}{table.caption.6}\protected@file@percent }
-\newlabel{tab:omg_table}{{3}{9}{OMG protocol (Yin et al., 2023). Percentage gain over CE}{table.caption.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Relative training time (CE-GIN $=1.00$).}}{9}{table.caption.6}\protected@file@percent }
-\newlabel{tab:runtime}{{4}{9}{Relative training time (CE-GIN $=1.00$)}{table.caption.6}{}}
 \bibcite{chuang2022tree}{{8}{2022}{{Chuang and Jegelka}}{{}}}
-\bibcite{nrgnn11}{{9}{2021}{{Dai et~al.}}{{Dai, Aggarwal, and Wang}}}
-\bibcite{structuralnoise3}{{10}{2022}{{Dai et~al.}}{{Dai, Jin, Liu, and Wang}}}
-\bibcite{davidson2024h}{{11}{2025}{{Davidson and Dym}}{{}}}
-\bibcite{pairwiseinteraction4}{{12}{2023}{{Du et~al.}}{{Du, Bian, Rong, Han, Liu, Xu, Huang, Li, and Huang}}}
-\bibcite{structuralnoise2}{{13}{2019}{{Fox and Rajamanickam}}{{}}}
-\bibcite{gama2020stability}{{14}{2019}{{Gama et~al.}}{{Gama, Bruna, and Ribeiro}}}
-\bibcite{ghosh2017robust}{{15}{2017}{{Ghosh et~al.}}{{Ghosh, Kumar, and Sastry}}}
-\bibcite{GRAFF}{{16}{2023}{{Giovanni et~al.}}{{Giovanni, Rowbottom, Chamberlain, Markovich, and Bronstein}}}
-\bibcite{gui2021towards}{{17}{2021}{{Gui et~al.}}{{Gui, Wang, and Tian}}}
-\bibcite{han2018co}{{18}{2018}{{Han et~al.}}{{Han, Yao, Yu, Niu, Xu, Hu, Tsang, and Sugiyama}}}
-\bibcite{juvina2024training}{{19}{2024}{{Juvina et~al.}}{{Juvina, Neacșu, Pesquet, Corneliu, Rony, and Ayed}}}
-\bibcite{Kang2018RobustGL}{{20}{2018}{{Kang et~al.}}{{Kang, Pan, Hoi, and Xu}}}
-\bibcite{kim2023crosssplit}{{21}{2023}{{Kim et~al.}}{{Kim, Baratin, Zhang, and Lacoste-Julien}}}
-\bibcite{gcn}{{22}{2017}{{Kipf and Welling}}{{}}}
-\bibcite{mutag}{{23}{2012}{{Kriege and Mutzel}}{{}}}
-\bibcite{li2020dividemix}{{24}{2020}{{Li et~al.}}{{Li, Socher, and Hoi}}}
-\bibcite{cl9}{{25}{2024}{{Li et~al.}}{{Li, Li, Li, Qian, and Wang}}}
-\bibcite{mixup2}{{26}{2022}{{Lim et~al.}}{{Lim, Erichson, Utrera, Xu, and Mahoney}}}
-\bibcite{liu2022robusttraininglabelnoise}{{27}{2022}{{Liu et~al.}}{{Liu, Zhu, Qu, and You}}}
-\bibcite{liu2015classification}{{28}{2015}{{Liu and Tao}}{{}}}
-\bibcite{Neumann2016}{{29}{2016}{{Neumann et~al.}}{{Neumann, Garnett, Bauckhage, and Kersting}}}
-\bibcite{nt2019revisiting}{{30}{2019}{{NT and Maehara}}{{}}}
-\bibcite{graphC1}{{31}{2019}{{NT et~al.}}{{NT, Choong, and Murata}}}
-\bibcite{oversmoothing2}{{32}{2020}{{Oono and Suzuki}}{{}}}
-\bibcite{patrini2017making}{{33}{2017}{{Patrini et~al.}}{{Patrini, Rozza, Krishna~Menon, Nock, and Qu}}}
-\bibcite{pleiss2020identifying}{{34}{2020}{{Pleiss et~al.}}{{Pleiss, Zhang, Elenberg, and Weinberger}}}
-\bibcite{exploreOversmoothing}{{35}{2025}{{Qian et~al.}}{{Qian, Bai, Cui, Li, Du, Wang, and Hancock}}}
-\bibcite{noisegovernance6}{{36}{2023}{{Qian et~al.}}{{Qian, Ying, Hu, Zhou, Chen, Chen, and Wu}}}
-\bibcite{reed2014training}{{37}{2015}{{Reed et~al.}}{{Reed, Lee, Anguelov, Szegedy, Erhan, and Rabinovich}}}
-\bibcite{rusch2023survey}{{38}{2023}{{Rusch et~al.}}{{Rusch, Bronstein, and Mishra}}}
-\bibcite{PPA}{{39}{2018{a}}{{Szklarczyk et~al.}}{{Szklarczyk, Gable, Lyon, Junge, Wyder, Huerta-Cepas, Simonovic, Doncheva, Morris, Bork, Jensen, and von Mering}}}
-\bibcite{ppa_dataset}{{40}{2018{b}}{{Szklarczyk et~al.}}{{Szklarczyk, Gable, Lyon, Junge, Wyder, Huerta-Cepas, Simonovic, Doncheva, Morris, Bork, Jensen, and Mering}}}
-\bibcite{NCI}{{41}{2006}{{Wale and Karypis}}{{}}}
-\bibcite{wani2023combining}{{42}{2023}{{Wani et~al.}}{{Wani, Bucarelli, and Silvestri}}}
-\bibcite{WL1}{{43}{2019}{{Xu et~al.}}{{Xu, Hu, Leskovec, and Jegelka}}}
-\bibcite{hlffgnn}{{44}{2024}{{Xu et~al.}}{{Xu, Guo, Long, Cui, and Wang}}}
-\bibcite{2sides}{{45}{2022}{{Yan et~al.}}{{Yan, Hashemi, Swersky, Yang, and Koutra}}}
-\bibcite{COLLAB}{{46}{2015{a}}{{Yanardag and Vishwanathan}}{{}}}
-\bibcite{imdbbinary}{{47}{2015{b}}{{Yanardag and Vishwanathan}}{{}}}
-\bibcite{omg7}{{48}{2023}{{Yin et~al.}}{{Yin, Shen, Wang, Luo, Luo, and Tao}}}
-\bibcite{contrastivelearning5}{{49}{2023{a}}{{Yuan et~al.}}{{Yuan, Luo, Qin, Zhao, Ju, and Zhang}}}
-\bibcite{ssl8}{{50}{2023{b}}{{Yuan et~al.}}{{Yuan, Yu, Cao, Song, Xie, and Wang}}}
-\bibcite{memorizenoise}{{51}{2021}{{Zhang et~al.}}{{Zhang, Bengio, Hardt, Recht, and Vinyals}}}
-\bibcite{mixup}{{52}{2017}{{Zhang et~al.}}{{Zhang, Ciss{'{e}}, Dauphin, and Lopez{-}Paz}}}
-\bibcite{dirichlet}{{53}{2005}{{Zhou and Sch{\"o}lkopf}}{{}}}
-\bibcite{zhou2021dirichlet}{{54}{2021}{{Zhou et~al.}}{{Zhou, Huang, Zha, Chen, Li, Choi, and Hu}}}
+\bibcite{chung1997}{{9}{1997}{{Chung}}{{}}}
+\bibcite{nrgnn11}{{10}{2021}{{Dai et~al.}}{{Dai, Aggarwal, and Wang}}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{10}{section.9}\protected@file@percent }
+\bibcite{structuralnoise3}{{11}{2022}{{Dai et~al.}}{{Dai, Jin, Liu, and Wang}}}
+\bibcite{davidson2024h}{{12}{2025}{{Davidson and Dym}}{{}}}
+\bibcite{pairwiseinteraction4}{{13}{2023}{{Du et~al.}}{{Du, Bian, Rong, Han, Liu, Xu, Huang, Li, and Huang}}}
+\bibcite{structuralnoise2}{{14}{2019}{{Fox and Rajamanickam}}{{}}}
+\bibcite{gama2020stability}{{15}{2019}{{Gama et~al.}}{{Gama, Bruna, and Ribeiro}}}
+\bibcite{ghosh2017robust}{{16}{2017}{{Ghosh et~al.}}{{Ghosh, Kumar, and Sastry}}}
+\bibcite{GRAFF}{{17}{2023}{{Giovanni et~al.}}{{Giovanni, Rowbottom, Chamberlain, Markovich, and Bronstein}}}
+\bibcite{gui2021towards}{{18}{2021}{{Gui et~al.}}{{Gui, Wang, and Tian}}}
+\bibcite{han2018co}{{19}{2018}{{Han et~al.}}{{Han, Yao, Yu, Niu, Xu, Hu, Tsang, and Sugiyama}}}
+\bibcite{juvina2024training}{{20}{2024}{{Juvina et~al.}}{{Juvina, Neacșu, Pesquet, Corneliu, Rony, and Ayed}}}
+\bibcite{Kang2018RobustGL}{{21}{2018}{{Kang et~al.}}{{Kang, Pan, Hoi, and Xu}}}
+\bibcite{kim2023crosssplit}{{22}{2023}{{Kim et~al.}}{{Kim, Baratin, Zhang, and Lacoste-Julien}}}
+\bibcite{gcn}{{23}{2017}{{Kipf and Welling}}{{}}}
+\bibcite{mutag}{{24}{2012}{{Kriege and Mutzel}}{{}}}
+\bibcite{li2020dividemix}{{25}{2020}{{Li et~al.}}{{Li, Socher, and Hoi}}}
+\bibcite{cl9}{{26}{2024}{{Li et~al.}}{{Li, Li, Li, Qian, and Wang}}}
+\bibcite{mixup2}{{27}{2022}{{Lim et~al.}}{{Lim, Erichson, Utrera, Xu, and Mahoney}}}
+\bibcite{liu2022robusttraininglabelnoise}{{28}{2022}{{Liu et~al.}}{{Liu, Zhu, Qu, and You}}}
+\bibcite{liu2015classification}{{29}{2015}{{Liu and Tao}}{{}}}
+\bibcite{Neumann2016}{{30}{2016}{{Neumann et~al.}}{{Neumann, Garnett, Bauckhage, and Kersting}}}
+\bibcite{nt2019revisiting}{{31}{2019}{{NT and Maehara}}{{}}}
+\bibcite{graphC1}{{32}{2019}{{NT et~al.}}{{NT, Choong, and Murata}}}
+\bibcite{oversmoothing2}{{33}{2020}{{Oono and Suzuki}}{{}}}
+\bibcite{patrini2017making}{{34}{2017}{{Patrini et~al.}}{{Patrini, Rozza, Krishna~Menon, Nock, and Qu}}}
+\bibcite{pleiss2020identifying}{{35}{2020}{{Pleiss et~al.}}{{Pleiss, Zhang, Elenberg, and Weinberger}}}
+\bibcite{exploreOversmoothing}{{36}{2025}{{Qian et~al.}}{{Qian, Bai, Cui, Li, Du, Wang, and Hancock}}}
+\bibcite{noisegovernance6}{{37}{2023}{{Qian et~al.}}{{Qian, Ying, Hu, Zhou, Chen, Chen, and Wu}}}
+\bibcite{reed2014training}{{38}{2015}{{Reed et~al.}}{{Reed, Lee, Anguelov, Szegedy, Erhan, and Rabinovich}}}
+\bibcite{rusch2023survey}{{39}{2023}{{Rusch et~al.}}{{Rusch, Bronstein, and Mishra}}}
+\bibcite{PPA}{{40}{2018{a}}{{Szklarczyk et~al.}}{{Szklarczyk, Gable, Lyon, Junge, Wyder, Huerta-Cepas, Simonovic, Doncheva, Morris, Bork, Jensen, and von Mering}}}
+\bibcite{ppa_dataset}{{41}{2018{b}}{{Szklarczyk et~al.}}{{Szklarczyk, Gable, Lyon, Junge, Wyder, Huerta-Cepas, Simonovic, Doncheva, Morris, Bork, Jensen, and Mering}}}
+\bibcite{NCI}{{42}{2006}{{Wale and Karypis}}{{}}}
+\bibcite{wani2023combining}{{43}{2023}{{Wani et~al.}}{{Wani, Bucarelli, and Silvestri}}}
+\bibcite{WL1}{{44}{2019}{{Xu et~al.}}{{Xu, Hu, Leskovec, and Jegelka}}}
+\bibcite{hlffgnn}{{45}{2024}{{Xu et~al.}}{{Xu, Guo, Long, Cui, and Wang}}}
+\bibcite{2sides}{{46}{2022}{{Yan et~al.}}{{Yan, Hashemi, Swersky, Yang, and Koutra}}}
+\bibcite{COLLAB}{{47}{2015{a}}{{Yanardag and Vishwanathan}}{{}}}
+\bibcite{imdbbinary}{{48}{2015{b}}{{Yanardag and Vishwanathan}}{{}}}
+\bibcite{omg7}{{49}{2023}{{Yin et~al.}}{{Yin, Shen, Wang, Luo, Luo, and Tao}}}
+\bibcite{contrastivelearning5}{{50}{2023{a}}{{Yuan et~al.}}{{Yuan, Luo, Qin, Zhao, Ju, and Zhang}}}
+\bibcite{ssl8}{{51}{2023{b}}{{Yuan et~al.}}{{Yuan, Yu, Cao, Song, Xie, and Wang}}}
+\bibcite{memorizenoise}{{52}{2021}{{Zhang et~al.}}{{Zhang, Bengio, Hardt, Recht, and Vinyals}}}
+\bibcite{mixup}{{53}{2017}{{Zhang et~al.}}{{Zhang, Ciss{'{e}}, Dauphin, and Lopez{-}Paz}}}
+\bibcite{dirichlet}{{54}{2005}{{Zhou and Sch{\"o}lkopf}}{{}}}
+\bibcite{zhou2021dirichlet}{{55}{2021}{{Zhou et~al.}}{{Zhou, Huang, Zha, Chen, Li, Choi, and Hu}}}
 \citation{arazo2019unsupervised,reed2014training}
 \citation{han2018co,li2020dividemix,kim2023crosssplit}
 \citation{mixup}
@@ -179,23 +193,26 @@
 \citation{GRAFF}
 \citation{zhou2021dirichlet}
 \citation{exploreOversmoothing}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Additional Related Work}{13}{appendix.A}\protected@file@percent }
-\newlabel{app:additional_related}{{A}{13}{Additional Related Work}{appendix.A}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Learning under Label Noise}{13}{subsection.A.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Graph Learning under Noise}{13}{subsection.A.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Dirichlet Energy and Spectral Properties of GNNs}{13}{subsection.A.3}\protected@file@percent }
 \citation{chuang2022tree}
 \citation{davidson2024h}
 \citation{juvina2024training}
 \citation{gama2020stability}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Additional Related Work}{14}{appendix.A}\protected@file@percent }
+\newlabel{app:additional_related}{{A}{14}{Additional Related Work}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Learning under Label Noise}{14}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Graph Learning under Noise}{14}{subsection.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Dirichlet Energy and Spectral Properties of GNNs}{14}{subsection.A.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Lipschitz/Stability Analyses}{15}{subsection.A.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Proofs and Extended Theory}{15}{appendix.B}\protected@file@percent }
+\newlabel{app:proofs}{{B}{15}{Proofs and Extended Theory}{appendix.B}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Proof of Proposition~\ref {prop:dataset_energy}}{15}{subsection.B.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Proof of Lemma~\ref {lem:poincare} (Graph Poincar\'e Inequality)}{15}{subsection.B.2}\protected@file@percent }
+\citation{chung1997}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Proof of Lemma~\ref {lem:bilip} (Bi-Lipschitz Lower Bound for a GIN)}{16}{subsection.B.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Proof of Theorem~\ref {thm:noise_forces_energy} (Noise Forces Energy Growth)}{16}{subsection.B.4}\protected@file@percent }
 \citation{exploreOversmoothing}
 \citation{exploreOversmoothing}
 \citation{exploreOversmoothing}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Lipschitz/Stability Analyses}{14}{subsection.A.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B}Proofs and Extended Theory}{14}{appendix.B}\protected@file@percent }
-\newlabel{app:proofs}{{B}{14}{Proofs and Extended Theory}{appendix.B}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Proof of Proposition~\ref {prop:dataset_energy}}{14}{subsection.B.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Proof of Theorem~\ref {thm:entropy_link}}{14}{subsection.B.2}\protected@file@percent }
 \citation{PPA}
 \citation{ppa_dataset}
 \citation{proteins}
@@ -204,56 +221,67 @@
 \citation{mutag}
 \citation{imdbbinary}
 \citation{imdbbinary}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Proof of Lemma~\ref {lem:spectral_count} (Spectral Counting)}{17}{subsection.B.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}Proof of Corollary~\ref {cor:asymmetric} (Asymmetric Burden)}{17}{subsection.B.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.7}Why a Decrease of $E^{\text  {dir}}_{\text  {set}}$ Is Non-Trivial in Graph Classification}{17}{subsection.B.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Experimental Setting}{17}{appendix.C}\protected@file@percent }
+\newlabel{app:experimental_setting}{{C}{17}{Experimental Setting}{appendix.C}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Datasets}{17}{subsection.C.1}\protected@file@percent }
 \citation{WL1}
 \citation{gcn}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Why a Decrease of $E^{\text  {dir}}_{\text  {set}}$ Is Non-Trivial in Graph Classification}{15}{subsection.B.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {C}Experimental Setting}{15}{appendix.C}\protected@file@percent }
-\newlabel{app:experimental_setting}{{C}{15}{Experimental Setting}{appendix.C}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Datasets}{15}{subsection.C.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Synthetic Datasets for Failure-Mode F2}{15}{subsection.C.2}\protected@file@percent }
-\newlabel{appendix:details_synthetic_dataset_varying_nodes}{{C.2}{15}{Synthetic Datasets for Failure-Mode F2}{subsection.C.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Architectures and Hyperparameters}{15}{subsection.C.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Spectral Bias Implementation Details (CE+W2)}{15}{subsection.C.4}\protected@file@percent }
-\newlabel{app:weights_eigens}{{C.4}{15}{Spectral Bias Implementation Details (CE+W2)}{subsection.C.4}{}}
 \citation{wani2023combining}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Synthetic Datasets for Failure-Mode F2}{18}{subsection.C.2}\protected@file@percent }
+\newlabel{appendix:details_synthetic_dataset_varying_nodes}{{C.2}{18}{Synthetic Datasets for Failure-Mode F2}{subsection.C.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Architectures and Hyperparameters}{18}{subsection.C.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Spectral Bias Implementation Details (CE+W2)}{18}{subsection.C.4}\protected@file@percent }
+\newlabel{app:weights_eigens}{{C.4}{18}{Spectral Bias Implementation Details (CE+W2)}{subsection.C.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Class-Specific and Fixed Bounds for $\mathcal  {L}_{DE}$}{18}{subsection.C.5}\protected@file@percent }
+\newlabel{appendix:details_dirichlet_regularization_bounds}{{C.5}{18}{Class-Specific and Fixed Bounds for $\mathcal {L}_{DE}$}{subsection.C.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Design of GCOD{}}{18}{subsection.C.6}\protected@file@percent }
+\newlabel{app:gcod}{{C.6}{18}{Design of \method {}}{subsection.C.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Failure-Mode Experiments (Extended)}{18}{appendix.D}\protected@file@percent }
+\newlabel{app:failure_modes_extra}{{D}{18}{Failure-Mode Experiments (Extended)}{appendix.D}{}}
+\newlabel{fig:f3_ppa}{{3a}{18}{\relax }{figure.caption.8}{}}
+\newlabel{sub@fig:f3_ppa}{{a}{18}{\relax }{figure.caption.8}{}}
+\newlabel{fig:f3_synth}{{3b}{18}{\relax }{figure.caption.8}{}}
+\newlabel{sub@fig:f3_synth}{{b}{18}{\relax }{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Effect of training-set size on noise memorization (training accuracy on noisy labels only). (a) PPA subsampling at $20\%$ symmetric noise. (b) Synthetic graphs of order 7, 6 classes, $35\%$ noise.}}{18}{figure.caption.8}\protected@file@percent }
 \citation{hlffgnn}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Class-Specific and Fixed Bounds for $\mathcal  {L}_{DE}$}{16}{subsection.C.5}\protected@file@percent }
-\newlabel{appendix:details_dirichlet_regularization_bounds}{{C.5}{16}{Class-Specific and Fixed Bounds for $\mathcal {L}_{DE}$}{subsection.C.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Design of GCOD{}}{16}{subsection.C.6}\protected@file@percent }
-\newlabel{app:gcod}{{C.6}{16}{Design of \method {}}{subsection.C.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Failure-Mode Experiments (Extended)}{16}{appendix.D}\protected@file@percent }
-\newlabel{app:failure_modes_extra}{{D}{16}{Failure-Mode Experiments (Extended)}{appendix.D}{}}
-\newlabel{fig:f3_ppa}{{3a}{16}{\relax }{figure.caption.8}{}}
-\newlabel{sub@fig:f3_ppa}{{a}{16}{\relax }{figure.caption.8}{}}
-\newlabel{fig:f3_synth}{{3b}{16}{\relax }{figure.caption.8}{}}
-\newlabel{sub@fig:f3_synth}{{b}{16}{\relax }{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Effect of training-set size on noise memorization (training accuracy on noisy labels only). (a) PPA subsampling at $20\%$ symmetric noise. (b) Synthetic graphs of order 7, 6 classes, $35\%$ noise.}}{16}{figure.caption.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {E}Dirichlet-Energy Amplification in High-Frequency Components}{16}{appendix.E}\protected@file@percent }
-\newlabel{app:amplification}{{E}{16}{Dirichlet-Energy Amplification in High-Frequency Components}{appendix.E}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Additional Empirical Studies on Energy Behavior}{16}{appendix.F}\protected@file@percent }
-\newlabel{app:additional_studies}{{F}{16}{Additional Empirical Studies on Energy Behavior}{appendix.F}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces HLFF-GNN frequency decomposition on ENZYMES. Solid lines: clean labels. Dashed: $30\%$ symmetric noise. The high-frequency component $Z_2$ is the only one whose energy diverges under noise, supporting the theoretical prediction.}}{17}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:amplification}{{4}{17}{HLFF-GNN frequency decomposition on ENZYMES. Solid lines: clean labels. Dashed: $30\%$ symmetric noise. The high-frequency component $Z_2$ is the only one whose energy diverges under noise, supporting the theoretical prediction}{figure.caption.9}{}}
-\newlabel{fig:enzymes_energy}{{5a}{17}{Clean overfitting on ENZYMES}{figure.caption.10}{}}
-\newlabel{sub@fig:enzymes_energy}{{a}{17}{Clean overfitting on ENZYMES}{figure.caption.10}{}}
-\newlabel{fig:noise_levels_energy}{{5b}{17}{$\Edirset $ vs.\ noise rate on PPA}{figure.caption.10}{}}
-\newlabel{sub@fig:noise_levels_energy}{{b}{17}{$\Edirset $ vs.\ noise rate on PPA}{figure.caption.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces (a) Even without label noise, energy rises during overfitting; the surge under noise is much steeper. (b) Higher noise rates yield monotonically higher final energy.}}{17}{figure.caption.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {G}Additional Tables and Figures}{17}{appendix.G}\protected@file@percent }
-\newlabel{app:additional_tables}{{G}{17}{Additional Tables and Figures}{appendix.G}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Sensitivity of GCOD{} to the learning rate $\eta _u$ of the outlier parameter $\mathbf  {u}$, under $40\%$ asymmetric noise.}}{17}{table.caption.11}\protected@file@percent }
-\newlabel{tab:lr_sensitivity}{{5}{17}{Sensitivity of \method {} to the learning rate $\eta _u$ of the outlier parameter $\mathbf {u}$, under $40\%$ asymmetric noise}{table.caption.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Performance of CE vs.\ GCOD{} with $20\%$ symmetric label noise. Last column reports the absolute gain (GCOD{}$-$CE) on test accuracy.}}{18}{table.caption.12}\protected@file@percent }
-\newlabel{tab:alldataset}{{6}{18}{Performance of CE vs.\ \method {} with $20\%$ symmetric label noise. Last column reports the absolute gain (\method {}$-$CE) on test accuracy}{table.caption.12}{}}
-\newlabel{fig:noisy_pure_40_1}{{6a}{18}{\relax }{figure.caption.13}{}}
-\newlabel{sub@fig:noisy_pure_40_1}{{a}{18}{\relax }{figure.caption.13}{}}
-\newlabel{fig:gin_enzymes}{{6b}{18}{\relax }{figure.caption.13}{}}
-\newlabel{sub@fig:gin_enzymes}{{b}{18}{\relax }{figure.caption.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces (a) Train accuracy on known noisy and clean PPA subsets (4-class, $40\%$ symmetric noise) for GCN with CE: the model never separates noisy from clean training samples without a robust loss. (b) Train/test accuracy on ENZYMES with GIN under clean and $20\%$ symmetric noise.}}{18}{figure.caption.13}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Ablation on the training-accuracy feedback in GCOD{}. Without scaling $u$ by $a_{\text  {train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full GCOD{} activates outlier-discounting gradually.}}{19}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:uablation}{{7}{19}{Ablation on the training-accuracy feedback in \method {}. Without scaling $u$ by $a_{\text {train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full \method {} activates outlier-discounting gradually}{figure.caption.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition.}}{19}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:unstability_app}{{8}{19}{Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition}{figure.caption.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Average test accuracy and average within-graph $E^{\text  {dir}}_{\text  {set}}$ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN.}}{20}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:mutag_app}{{9}{20}{Average test accuracy and average within-graph $\Edirset $ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN}{figure.caption.16}{}}
-\gdef \@abspage@last{21}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Dirichlet-Energy Amplification in High-Frequency Components}{19}{appendix.E}\protected@file@percent }
+\newlabel{app:amplification}{{E}{19}{Dirichlet-Energy Amplification in High-Frequency Components}{appendix.E}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces HLFF-GNN frequency decomposition on ENZYMES. Solid lines: clean labels. Dashed: $30\%$ symmetric noise. The high-frequency component $Z_2$ is the only one whose energy diverges under noise, supporting the theoretical prediction.}}{19}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:amplification}{{4}{19}{HLFF-GNN frequency decomposition on ENZYMES. Solid lines: clean labels. Dashed: $30\%$ symmetric noise. The high-frequency component $Z_2$ is the only one whose energy diverges under noise, supporting the theoretical prediction}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Additional Empirical Studies on Energy Behavior}{19}{appendix.F}\protected@file@percent }
+\newlabel{app:additional_studies}{{F}{19}{Additional Empirical Studies on Energy Behavior}{appendix.F}{}}
+\newlabel{fig:enzymes_energy}{{5a}{19}{Clean overfitting on ENZYMES}{figure.caption.10}{}}
+\newlabel{sub@fig:enzymes_energy}{{a}{19}{Clean overfitting on ENZYMES}{figure.caption.10}{}}
+\newlabel{fig:noise_levels_energy}{{5b}{19}{$\Edirset $ vs.\ noise rate on PPA}{figure.caption.10}{}}
+\newlabel{sub@fig:noise_levels_energy}{{b}{19}{$\Edirset $ vs.\ noise rate on PPA}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces (a) Even without label noise, energy rises during overfitting; the surge under noise is much steeper. (b) Higher noise rates yield monotonically higher final energy.}}{19}{figure.caption.10}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Sensitivity of GCOD{} to the learning rate $\eta _u$ of the outlier parameter $\mathbf  {u}$, under $40\%$ asymmetric noise.}}{20}{table.caption.11}\protected@file@percent }
+\newlabel{tab:lr_sensitivity}{{5}{20}{Sensitivity of \method {} to the learning rate $\eta _u$ of the outlier parameter $\mathbf {u}$, under $40\%$ asymmetric noise}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Performance of CE vs.\ GCOD{} with $20\%$ symmetric label noise. Last column reports the absolute gain (GCOD{}$-$CE) on test accuracy.}}{20}{table.caption.12}\protected@file@percent }
+\newlabel{tab:alldataset}{{6}{20}{Performance of CE vs.\ \method {} with $20\%$ symmetric label noise. Last column reports the absolute gain (\method {}$-$CE) on test accuracy}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Additional Tables and Figures}{20}{appendix.G}\protected@file@percent }
+\newlabel{app:additional_tables}{{G}{20}{Additional Tables and Figures}{appendix.G}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {H}Full ogbg-ppa: Do-No-Harm Check}{20}{appendix.H}\protected@file@percent }
+\newlabel{app:full_ppa}{{H}{20}{Full ogbg-ppa: Do-No-Harm Check}{appendix.H}{}}
+\citation{ghosh2017robust}
+\citation{nrgnn11}
+\citation{contrastivelearning5}
+\newlabel{fig:noisy_pure_40_1}{{6a}{21}{\relax }{figure.caption.13}{}}
+\newlabel{sub@fig:noisy_pure_40_1}{{a}{21}{\relax }{figure.caption.13}{}}
+\newlabel{fig:gin_enzymes}{{6b}{21}{\relax }{figure.caption.13}{}}
+\newlabel{sub@fig:gin_enzymes}{{b}{21}{\relax }{figure.caption.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces (a) Train accuracy on known noisy and clean PPA subsets (4-class, $40\%$ symmetric noise) for GCN with CE: the model never separates noisy from clean training samples without a robust loss. (b) Train/test accuracy on ENZYMES with GIN under clean and $20\%$ symmetric noise.}}{21}{figure.caption.13}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Ablation on the training-accuracy feedback in GCOD{}. Without scaling $u$ by $a_{\text  {train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full GCOD{} activates outlier-discounting gradually.}}{21}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:uablation}{{7}{21}{Ablation on the training-accuracy feedback in \method {}. Without scaling $u$ by $a_{\text {train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full \method {} activates outlier-discounting gradually}{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Cross-Setting Transfer: Cora Node Classification}{21}{appendix.I}\protected@file@percent }
+\newlabel{app:cora}{{I}{21}{Cross-Setting Transfer: Cora Node Classification}{appendix.I}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cross-setting transfer of GCOD{} and CE+W2 to node classification on Cora under $20\%$ symmetric label noise. Numbers are test accuracy; ranks are with respect to the full $13$-method comparison reported in the rebuttal materials. We report only the verified results for our two methods on each backbone; the ``rank'' field indicates their position in the full ranking. The methods are not modified, regularization parameters are kept at their graph-classification defaults.}}{21}{table.caption.17}\protected@file@percent }
+\newlabel{tab:cora_transfer}{{7}{21}{Cross-setting transfer of \method {} and CE+W2 to node classification on Cora under $20\%$ symmetric label noise. Numbers are test accuracy; ranks are with respect to the full $13$-method comparison reported in the rebuttal materials. We report only the verified results for our two methods on each backbone; the ``rank'' field indicates their position in the full ranking. The methods are not modified, regularization parameters are kept at their graph-classification defaults}{table.caption.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition.}}{22}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:unstability_app}{{8}{22}{Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Average test accuracy and average within-graph $E^{\text  {dir}}_{\text  {set}}$ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN.}}{22}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:mutag_app}{{9}{22}{Average test accuracy and average within-graph $\Edirset $ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN}{figure.caption.16}{}}
+\gdef \@abspage@last{24}

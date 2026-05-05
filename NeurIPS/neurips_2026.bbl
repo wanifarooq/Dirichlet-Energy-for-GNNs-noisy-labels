@@ -1,4 +1,4 @@
-\begin{thebibliography}{54}
+\begin{thebibliography}{55}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -76,6 +76,12 @@ Ching-Yao Chuang and Stefanie Jegelka.
 \newblock \emph{proceedings neurips}, 35:\penalty0 2944--2957, 2022.
 \newblock URL
   \url{https://proceedings.neurips.cc/paper_files/paper/2022/file/139ae969f49abd9a113981c1f7fce5ce-Paper-Conference.pdf}.
+
+\bibitem[Chung(1997)]{chung1997}
+Fan R.~K. Chung.
+\newblock \emph{Spectral Graph Theory}.
+\newblock Number~92 in CBMS Regional Conference Series in Mathematics. American
+  Mathematical Society, 1997.
 
 \bibitem[Dai et~al.(2021)Dai, Aggarwal, and Wang]{nrgnn11}
 Enyan Dai, Charu Aggarwal, and Suhang Wang.
