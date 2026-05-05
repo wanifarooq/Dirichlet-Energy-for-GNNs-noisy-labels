@@ -20,84 +20,103 @@ Most graph-related noise work targets node classification, exploiting either hom
 
 \subsection{Proof of Proposition~\ref{prop:dataset_energy}}
 
-Let $\Lambda^i=\{\lambda^i_u\}_{u=1}^{N^i}$ be the spectrum of the per-graph Laplacian $\mathbf{\Delta}^i$. Define the block-diagonal Laplacian
+Let $\Lambda^i=\{\lambda^i_u\}_{u=1}^{N^i}$ be the spectrum of the per-graph combinatorial Laplacian $\mathbf{L}^i=\mathbf{D}^i-\mathbf{A}^i$. Define the block-diagonal Laplacian
 \begin{equation}
-\bar{\mathbf{\Delta}}=\mathrm{blkdiag}(\mathbf{\Delta}^1,\dots,\mathbf{\Delta}^n),\qquad \det(\bar{\mathbf{\Delta}}-\lambda\mathbf{I}_{N_{\text{tot}}})=\prod_{i=1}^n\det(\mathbf{\Delta}^i-\lambda\mathbf{I}_{N^i}),
+\bar{\mathbf{L}}=\mathrm{blkdiag}(\mathbf{L}^1,\dots,\mathbf{L}^n),\qquad \det(\bar{\mathbf{L}}-\lambda\mathbf{I}_{N_{\text{tot}}})=\prod_{i=1}^n\det(\mathbf{L}^i-\lambda\mathbf{I}_{N^i}),
 \end{equation}
-so $\bar{\Lambda}=\bigcup_i\Lambda^i$. Let $\bm{\psi}^i_j$ be the $j$-th eigenvector of $\mathbf{\Delta}^i$ at eigenvalue $\lambda^i_j$. The vector
+so $\bar{\Lambda}=\bigcup_i\Lambda^i$. Let $\bm{\psi}^i_j$ be the $j$-th eigenvector of $\mathbf{L}^i$ at eigenvalue $\lambda^i_j$. The vector
 \begin{equation}
 \bar{\bm{\psi}}_u=\bigl(0,\dots,0,\bm{\psi}^i_j,0,\dots,0\bigr)^\top\in\mathbb{R}^{N_{\text{tot}}}
 \end{equation}
-satisfies $\bar{\mathbf{\Delta}}\bar{\bm{\psi}}_u=\lambda^i_j\bar{\bm{\psi}}_u$. With $\bar{\mathbf{Z}}=[\mathbf{Z}^1\|\dots\|\mathbf{Z}^n]$, the Dirichlet energy of the block-diagonal graph admits the spectral form
+(zero on every block other than $i$) satisfies $\bar{\mathbf{L}}\bar{\bm{\psi}}_u=\lambda^i_j\bar{\bm{\psi}}_u$. With $\bar{\mathbf{Z}}=[\mathbf{Z}^1\|\dots\|\mathbf{Z}^n]$ (vertical concatenation), the combinatorial Dirichlet energy of the block-diagonal graph satisfies
 \begin{equation}
-\Edir(\bar{\mathbf{Z}})=\sum_{r=1}^{m'}\sum_{u=1}^{N_{\text{tot}}}\bar{\lambda}_u(\bar{\bm{\psi}}_u^\top\bar{\mathbf{Z}}_{:,r})^2
+\Edir(\bar{\mathbf{Z}})=\mathrm{tr}(\bar{\mathbf{Z}}^\top\bar{\mathbf{L}}\bar{\mathbf{Z}})=\sum_{r=1}^{m'}\sum_{u=1}^{N_{\text{tot}}}\bar{\lambda}_u(\bar{\bm{\psi}}_u^\top\bar{\mathbf{Z}}_{:,r})^2
 =\sum_i\sum_{r,j}\lambda^i_j(\bm{\psi}^{i\top}_j\mathbf{Z}^i_{:,r})^2=\sum_i\Edir(\mathbf{Z}^i),
 \end{equation}
-hence $\Edirset(\mathcal{D})=\frac{1}{|\mathcal{D}|}\sum_i\Edir(\mathbf{Z}^i)=\frac{1}{|\mathcal{D}|}\Edir(\bar{\mathbf{Z}})$. $\square$
+where the second equality uses the spectral expansion in the orthonormal basis $\{\bar{\bm{\psi}}_u\}$ and the third uses the block-supported structure of each $\bar{\bm{\psi}}_u$. Hence $\Edirset(\mathcal{D})=\frac{1}{|\mathcal{D}|}\sum_i\Edir(\mathbf{Z}^i)=\frac{1}{|\mathcal{D}|}\Edir(\bar{\mathbf{Z}})$. $\square$
 
 \subsection{Proof of Lemma~\ref{lem:poincare} (Graph Poincar\'e Inequality)}
 
-For any feature dimension $r$, denote $\mathbf{z}=\mathbf{Z}_{:,r}\in\mathbb{R}^N$ and $\bar{z}=\frac{1}{N}\sum_v z_v$. Since $\mathcal{G}$ is connected, the normalized Laplacian $\mathbf{\Delta}$ has a one-dimensional kernel spanned by the constant vector $\mathbf{1}/\sqrt{N}$ (writing the eigenproblem on the normalized form, the kernel is $\mathbf{D}^{1/2}\mathbf{1}/\|\mathbf{D}^{1/2}\mathbf{1}\|$; for the unnormalized Poincar\'e inequality used here we work directly with the combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ on the centered vector). By the Courant--Fischer min--max characterization,
+The combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ is real symmetric and positive semi-definite. Because $\mathcal{G}$ is connected, $\ker(\mathbf{L})=\mathrm{span}(\mathbf{1})$, and the eigenvalues are $0=\lambda_1<\lambda_2\le\dots\le\lambda_N$. By the Courant--Fischer min--max characterization,
 \begin{equation}
 \lambda_2(\mathcal{G})=\min_{\substack{\mathbf{x}\perp\mathbf{1}\\\mathbf{x}\neq 0}}\frac{\mathbf{x}^\top\mathbf{L}\mathbf{x}}{\mathbf{x}^\top\mathbf{x}}.
 \end{equation}
-The centered vector $\mathbf{z}-\bar{z}\mathbf{1}$ is orthogonal to $\mathbf{1}$, hence
+Fix any feature dimension $r$ and let $\mathbf{z}=\mathbf{Z}_{:,r}\in\mathbb{R}^N$ with $\bar{z}=\frac{1}{N}\sum_v z_v$. The centered vector $\mathbf{z}-\bar{z}\mathbf{1}$ is orthogonal to $\mathbf{1}$, so
 \begin{equation}
 \lambda_2(\mathcal{G})\,\|\mathbf{z}-\bar{z}\mathbf{1}\|_2^2 \;\le\; (\mathbf{z}-\bar{z}\mathbf{1})^\top\mathbf{L}(\mathbf{z}-\bar{z}\mathbf{1}) = \mathbf{z}^\top\mathbf{L}\mathbf{z}=\sum_{(u,v)\in\mathcal{E}}(z_u-z_v)^2,
 \end{equation}
-using $\mathbf{L}\mathbf{1}=\mathbf{0}$. The right-hand side is the per-feature-dimension contribution to $\Edir(\mathbf{Z})$ in its unnormalized form. The same argument applied to the normalized Laplacian $\mathbf{\Delta}=\mathbf{I}-\mathbf{D}^{-1/2}\mathbf{A}\mathbf{D}^{-1/2}$ via the change of variable $\mathbf{y}=\mathbf{D}^{1/2}\mathbf{z}$ gives, for each $r$,
+using $\mathbf{L}\mathbf{1}=\mathbf{0}$. The right-hand side is the per-feature-dimension contribution to $\Edir(\mathbf{Z})$ in \eqref{eq:edir}. Summing over $r=1,\dots,m'$ yields
 \begin{equation}
-\sum_{v=1}^N(z_v-\bar z)^2 \le \frac{1}{\lambda_2(\mathcal{G})}\sum_{(u,v)\in\mathcal{E}}\Big(\frac{z_u}{\sqrt{d_u}}-\frac{z_v}{\sqrt{d_v}}\Big)^2.
+\sum_{v=1}^N\|\mathbf{Z}_v-\bar{\mathbf{z}}\|_2^2=\sum_{r=1}^{m'}\|\mathbf{z}^{(r)}-\bar z^{(r)}\mathbf{1}\|_2^2 \le \frac{1}{\lambda_2(\mathcal{G})}\sum_{r=1}^{m'}\mathbf{z}^{(r)\top}\mathbf{L}\mathbf{z}^{(r)}=\frac{\Edir(\mathbf{Z})}{\lambda_2(\mathcal{G})},
 \end{equation}
-Summing over $r=1,\dots,m'$ and using \eqref{eq:edir} yields \eqref{eq:poincare}. $\square$
+which is \eqref{eq:poincare}. The constant $1/\lambda_2$ is sharp, attained by the Fiedler vector $\bm{\psi}_2$. The corresponding bound for the normalized Dirichlet energy $\Edir_{\mathrm{sym}}(\mathbf{Z})=\mathrm{tr}(\mathbf{Z}^\top\mathbf{\Delta}\mathbf{Z})$ is obtained by the change of variable $\mathbf{y}_v=\mathbf{Z}_v/\sqrt{d_v}$ and applying the same argument with $\lambda_2(\mathbf{L})$ in the bound. $\square$
 
 \subsection{Proof of Lemma~\ref{lem:bilip} (Bi-Lipschitz Lower Bound for a GIN)}
 
-A 2-layer GIN block on a graph with aggregation operator $\mathbf{M}=(1+\varepsilon)\mathbf{I}+\mathbf{A}$ is, in matrix form,
+The block under analysis is one GIN aggregation followed by a two-layer MLP combine,
 \begin{equation}
-h_\theta(\mathbf{X})=\sigma_2\bigl(\mathbf{M}\,\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\,\mathbf{W}_2\bigr).
+h_\theta(\mathbf{X})=\sigma_2\bigl(\mathbf{W}_2\,\sigma_1(\mathbf{W}_1\,\mathbf{M}\mathbf{X})\bigr),
 \end{equation}
-For the leaky-ReLU/ReLU-with-margin activation, $\sigma_k$ is a piecewise-linear function with slope at least $\alpha>0$ on every active region, so its Jacobian $\mathbf{D}_k$ is diagonal with entries $\geq\alpha$. The chain-rule Jacobian of $h_\theta$ at any input $\mathbf{X}$ reads
+acting on $\mathbf{X}\in\mathbb{R}^{N\times m}$ with $\mathbf{M}\in\mathbb{R}^{N\times N}$ and $\mathbf{W}_k$ acting on the feature dimension. For leaky-ReLU activation (or ReLU with a fixed margin $\delta>0$ along $\gamma(t)=\mathbf{X}+t\Delta\mathbf{X}$, ensuring no piecewise-linear region change occurs), $\sigma_k$ has derivative $\geq\alpha$ everywhere along the path. Differentiating w.r.t. $\mathbf{X}$ in the row-by-row sense (each row of $\mathbf{X}$ propagates through the same MLP, with rows mixed only by $\mathbf{M}$),
 \begin{equation}
-\mathbf{J}(\mathbf{X})=\mathbf{D}_2\,(\mathbf{M}\otimes\mathbf{W}_2^\top)\,\mathbf{D}_1\,(\mathbf{M}\otimes\mathbf{W}_1^\top),
+\frac{\partial h_\theta}{\partial \mathbf{X}}=\mathbf{D}_2\,\mathbf{W}_2\,\mathbf{D}_1\,\mathbf{W}_1\,\mathbf{M},
 \end{equation}
-in vectorized form. Using submultiplicativity of the smallest singular value under Kronecker products and diagonal lower-bounded factors,
+where $\mathbf{D}_k=\mathrm{diag}(\sigma_k')$ are diagonal with entries in $[\alpha,1]$. By submultiplicativity of the smallest singular value for full-rank factors (each factor here is square or has full column rank by hypothesis on $\sigma_{\min}(\mathbf{W}_k),\sigma_{\min}(\mathbf{M})>0$),
 \begin{align}
-\sigma_{\min}(\mathbf{J}(\mathbf{X})) &\geq \sigma_{\min}(\mathbf{D}_2)\,\sigma_{\min}(\mathbf{M})\,\sigma_{\min}(\mathbf{W}_2)\,\sigma_{\min}(\mathbf{D}_1)\,\sigma_{\min}(\mathbf{M})\,\sigma_{\min}(\mathbf{W}_1)\nonumber\\
-&\geq \alpha\cdot\kappa\cdot m_2\cdot \alpha\cdot\kappa\cdot m_1 = \alpha^2 m_1 m_2 \kappa^2.
+\sigma_{\min}(\mathbf{J}(\mathbf{X})) &\geq \sigma_{\min}(\mathbf{D}_2)\,\sigma_{\min}(\mathbf{W}_2)\,\sigma_{\min}(\mathbf{D}_1)\,\sigma_{\min}(\mathbf{W}_1)\,\sigma_{\min}(\mathbf{M})\nonumber\\
+&\geq \alpha\cdot m_2\cdot \alpha\cdot m_1\cdot \kappa = \alpha^2 m_1 m_2 \kappa = c_{\text{lower}}.
 \end{align}
-A more careful single-layer accounting (each layer contributes one $\mathbf{M}$ rather than two) gives the tighter bound $c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa$ stated in \eqref{eq:bilip}. Now for any two inputs, set $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$ and apply the fundamental theorem of calculus:
+For any $\mathbf{X},\Delta\mathbf{X}$, set $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$. Under the activation regularity above, $h_\theta\circ\gamma$ is a piecewise-linear curve with no region change; the fundamental theorem of calculus then gives
 \begin{equation}
 h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})=\int_0^1\mathbf{J}(\gamma(t))\,\Delta\mathbf{X}\,dt.
 \end{equation}
-Taking norms and using $\|\mathbf{J}\Delta\mathbf{X}\|\geq\sigma_{\min}(\mathbf{J})\,\|\Delta\mathbf{X}\|$ pointwise yields
+Taking Frobenius norms and applying $\|\mathbf{J}\,\Delta\mathbf{X}\|_F\geq\sigma_{\min}(\mathbf{J})\,\|\Delta\mathbf{X}\|_F$ pointwise yields
 \begin{equation}
-\|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_2\geq c_{\text{lower}}\,\|\Delta\mathbf{X}\|_2. \quad\square
+\|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_F\geq c_{\text{lower}}\,\|\Delta\mathbf{X}\|_F.
 \end{equation}
+For a true two-layer GIN $\sigma_2(\mathbf{W}_2\,\mathbf{M}\,\sigma_1(\mathbf{W}_1\,\mathbf{M}\mathbf{X}))$, an additional factor of $\sigma_{\min}(\mathbf{M})\geq\kappa$ enters the chain, giving $c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa^2$; the rest of the argument is identical. $\square$
 
 \subsection{Proof of Theorem~\ref{thm:noise_forces_energy} (Noise Forces Energy Growth)}
 
-Let $\mathbf{h}_i\in\mathbb{R}^{N^i\times m'}$ and $\mathbf{h}_j\in\mathbb{R}^{N^j\times m'}$ be the post-message-passing per-node signals of $\mathcal{G}^i$ and $\mathcal{G}^j$. Let $\mathbf{g}_i=\frac{1}{N^i}\sum_v\mathbf{h}_{i,v}$ be the (mean-pooled) graph descriptor and let $\bar{\mathbf{h}}_i=\mathbf{1}\mathbf{g}_i^\top\in\mathbb{R}^{N^i\times m'}$ be its replication to a constant per-node signal. Pad to a common dimension $N=\max(N^i,N^j)$ with zeros if $N^i\neq N^j$; this padding does not change Dirichlet energies of either graph. Then by the triangle inequality,
+Let $\mathbf{h}_i,\mathbf{h}_j\in\mathbb{R}^{N\times m'}$ be the post-message-passing per-node signals of $\mathcal{G}^i$ and $\mathcal{G}^j$ (we assume $N^i=N^j=N$; the unequal-$N$ case is treated in the Remark in the main text). Let $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}\in\mathbb{R}^{m'}$ be the mean-pooled graph descriptor, and let $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$ be its replication to a constant per-node signal. By the Frobenius-norm triangle inequality,
 \begin{equation}
 \|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \|\mathbf{h}_i-\bar{\mathbf{h}}_i\|_F + \|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F + \|\bar{\mathbf{h}}_j-\mathbf{h}_j\|_F.
 \end{equation}
-For the middle term, $\|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F=\sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2$ (after the zero-padding convention; with strict equality when $N^i=N^j$, and bounded above by $\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$ otherwise). For the first term, by Lemma~\ref{lem:poincare} applied per feature dimension and summed,
+\textbf{Middle term.} Because both $\bar{\mathbf{h}}_i,\bar{\mathbf{h}}_j$ are constant signals of size $N\times m'$,
+\begin{equation}
+\|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F^2=\sum_{v=1}^N\|\mathbf{g}_i-\mathbf{g}_j\|_2^2=N\,\|\mathbf{g}_i-\mathbf{g}_j\|_2^2,
+\end{equation}
+so $\|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$.
+
+\textbf{Variance terms.} Identifying $\mathbf{h}_i$ with $\mathbf{Z}^i$ (the layer-$L$ representation whose Dirichlet energy we measure), Lemma~\ref{lem:poincare} applied to $\mathbf{Z}^i$ gives
 \begin{equation}
 \|\mathbf{h}_i-\bar{\mathbf{h}}_i\|_F^2=\sum_v\|\mathbf{h}_{i,v}-\mathbf{g}_i\|_2^2\;\le\;\frac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)},
 \end{equation}
-since $\mathbf{h}_i$ shares the same Dirichlet energy as $\mathbf{Z}^i$ (the message-passing block whose energy we measure produces $\mathbf{h}_i$). Likewise for $\mathcal{G}^j$. Combining,
+and analogously for $\mathcal{G}^j$. Taking square roots and combining,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}.
+\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}},
 \end{equation}
-This is \eqref{eq:noise_bound}. Now suppose the noisy training objective, combined with Lemma~\ref{lem:bilip}, forces $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq\Theta_{\text{noise}}$ at convergence. Concretely, if the readout has Lipschitz constant $L$ and the graph-level outputs differ by at least $\Delta_{\text{out}}$ to assign different (one-hot) classes, then $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq L^{-1}\Delta_{\text{out}}\equiv\Theta_{\text{noise}}$. If additionally $\mathcal{G}^i,\mathcal{G}^j$ are structurally similar so that $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, then rearranging gives
+which is \eqref{eq:noise_bound}.
+
+\textbf{Lower bound from the noisy training objective.} The graph-level prediction is $\hat{\mathbf{y}}=R(\mathbf{h})$ for some permutation-invariant readout $R$ that is $L$-Lipschitz in the Frobenius norm (mean- or sum-pooling followed by an MLP with bounded weights). At convergence, the noisy training objective enforces $\hat{\mathbf{y}}_i$ to lie near a one-hot vector at $c_i$ and $\hat{\mathbf{y}}_j$ near a one-hot at $c_j\neq c_i$, so $\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\geq\Delta_{\mathrm{out}}$ for some $\Delta_{\mathrm{out}}>0$. By the readout's upper-Lipschitz property,
+\begin{equation}
+\|\mathbf{h}_i-\mathbf{h}_j\|_F\;\geq\;L^{-1}\,\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\;\geq\;L^{-1}\Delta_{\mathrm{out}}=:\Theta_{\text{noise}}.
+\end{equation}
+The role of Lemma~\ref{lem:bilip} is to make this lower bound non-vacuous: $c_{\text{lower}}>0$ ensures that the encoder has a positive lower-Lipschitz constant at convergence, so the noisy-label constraint cannot be satisfied by collapsing $(\mathbf{X}^i,\mathbf{A}^i)$ and $(\mathbf{X}^j,\mathbf{A}^j)$ to the same internal representation; equivalently, the encoder remains in a regularity regime where $\|\mathbf{h}_i-\mathbf{h}_j\|_F$ is a meaningful quantity.
+
+\textbf{Combining upper and lower bounds.} Under the structural-similarity assumption $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, substituting $\Theta_{\text{noise}}\leq\|\mathbf{h}_i-\mathbf{h}_j\|_F$ into \eqref{eq:noise_bound} and rearranging,
 \begin{equation}
 \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}\;\geq\;\Theta_{\text{noise}}-\sqrt{N}\,\varepsilon,
 \end{equation}
-which is \eqref{eq:energy_lower}. The role of Lemma~\ref{lem:bilip} is precisely to ensure that the network cannot collapse the input difference into the null space of the Jacobian and so satisfy the noisy-label constraint without paying for it in $\|\mathbf{h}_i-\mathbf{h}_j\|_F$. $\square$
+which is \eqref{eq:energy_lower}. $\square$
 
 \subsection{Proof of Lemma~\ref{lem:spectral_count} (Spectral Counting)}
 
-The normalized graph Laplacian $\mathbf{\Delta}$ is symmetric positive semi-definite with eigenvalues in $[0,2]$, and $\lambda_{\max}=2$ if and only if some connected component is bipartite~\citep[Lemma 1.7, Thm.~1.13]{chung1997}. Denote the eigenvalues of $\mathbf{\Delta}^i$ as $0=\lambda^i_1\leq\dots\leq\lambda^i_{N^i}\leq 2$. The number of distinct eigenvalues is at most $N^i$. For any threshold $\tau\in[0,2]$, define $n^i(\tau)=|\{j:\lambda^i_j\geq\tau\}|$. By the same min--max characterization, $n^i(\tau)$ is non-decreasing as we add edges (which increases $\lambda^i_j$ pointwise via interlacing for the Laplacian) or vertices that participate in the graph at fixed sparsity (which extends the spectrum). Hence sharpening that lifts spectral mass onto eigenvectors with $\bar{\lambda}_u\geq\tau$ in the block-diagonal Laplacian $\bar{\mathbf{\Delta}}$ allocates the share to graph $i$ in proportion to $n^i(\tau)$, which grows with both $N^i$ and edge density. $\square$
+The combinatorial Laplacian $\mathbf{L}^i$ is symmetric positive semi-definite. By Anderson--Morley's bound, every eigenvalue $\lambda^i_j$ of $\mathbf{L}^i$ satisfies $\lambda^i_j\leq\max_{(u,v)\in\mathcal{E}^i}(d_u+d_v)\leq 2 d_{\max}(\mathcal{G}^i)$. Equivalently, the normalized Laplacian $\mathbf{\Delta}^i=\mathbf{D}^{-1/2}\mathbf{L}^i\mathbf{D}^{-1/2}$ has eigenvalues in $[0,2]$, with $\lambda_{\max}(\mathbf{\Delta}^i)=2$ iff $\mathcal{G}^i$ has a bipartite component~\citep[Lemma 1.7, Thm.~1.13]{chung1997}. The number of distinct eigenvalues of $\mathbf{L}^i$ is at most $N^i$.
+
+For any threshold $\tau$, define $n^i(\tau)=|\{j:\lambda^i_j\geq\tau\}|$. We claim $n^i(\tau)$ is non-decreasing under (a) edge addition and (b) vertex addition at fixed sparsity. \emph{(a) Edge addition}: if $\mathcal{G}^{i\prime}=\mathcal{G}^i+e$ is obtained by adding edge $e=(u,v)$, then $\mathbf{L}^{i\prime}=\mathbf{L}^i+\mathbf{e}_{uv}\mathbf{e}_{uv}^\top$, a rank-one positive update where $\mathbf{e}_{uv}=\mathbf{e}_u-\mathbf{e}_v$. By Weyl's interlacing theorem, the eigenvalues of $\mathbf{L}^{i\prime}$ majorize those of $\mathbf{L}^i$ pointwise, so $n^i(\tau)$ does not decrease. \emph{(b) Vertex addition}: adjoining a new vertex with at least one edge enlarges the matrix to $\mathbf{L}^{i\prime}\succeq\mathbf{L}^i\oplus[0]$, again leaving the count $n^i(\tau)$ non-decreasing by Cauchy interlacing for principal submatrices.
+
+Now let $\bar{\mathbf{L}}=\mathrm{blkdiag}(\mathbf{L}^1,\dots,\mathbf{L}^n)$ as in Proposition~\ref{prop:dataset_energy}. By the block-diagonal structure, every eigenpair $(\bar{\lambda}_u,\bar{\bm{\psi}}_u)$ of $\bar{\mathbf{L}}$ is supported on exactly one $\mathcal{G}^i$. Sharpening that lifts spectral mass onto eigenvectors with $\bar{\lambda}_u\geq\tau$ therefore allocates a share to $\mathcal{G}^i$ that is bounded above by $n^i(\tau)/\sum_k n^k(\tau)$, which grows with $N^i$ and connection density of $\mathcal{G}^i$. $\square$
 
 \subsection{Proof of Corollary~\ref{cor:asymmetric} (Asymmetric Burden)}
 
@@ -111,7 +130,7 @@ Three consecutive observations together justify the term ``non-trivial'':
 
 \textbf{(ii)} For a randomly-initialized network, $\Edirset$ is independent of class labels by construction. Any correlation between $\Edirset$ and labels emerges from the optimization process, not from the data.
 
-\textbf{(iii)} By Theorem~\ref{thm:noise_forces_energy} and Corollary~\ref{cor:asymmetric}, the only optimization path that fits incorrect graph-level labels is to lift spectral mass into high-entropy directions of $\bar{\mathbf{\Delta}}$, which are precisely the directions that a clean, generalization-driven network should preserve. Constraining $\Edirset$ therefore selectively blocks the noise-fitting path while allowing the clean-learning path, an alignment that does \emph{not} hold for node classification, where label noise corrupts the same nodes whose smoothness the energy measures, and where decreasing energy can erase the discriminative signal.
+\textbf{(iii)} By Theorem~\ref{thm:noise_forces_energy} and Corollary~\ref{cor:asymmetric}, the only optimization path that fits incorrect graph-level labels is to lift spectral mass into high-entropy directions of $\bar{\mathbf{L}}$, which are precisely the directions that a clean, generalization-driven network should preserve. Constraining $\Edirset$ therefore selectively blocks the noise-fitting path while allowing the clean-learning path, an alignment that does \emph{not} hold for node classification, where label noise corrupts the same nodes whose smoothness the energy measures, and where decreasing energy can erase the discriminative signal.
 
 These three points collectively make the connection between energy reduction and noise robustness in graph classification a non-trivial property. The analogous statement in node classification reduces to ``the model fits homophily, and homophily is what we measured.''
 

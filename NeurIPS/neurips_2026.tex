@@ -85,14 +85,14 @@ Graph Neural Networks (GNNs) are now the workhorse of \emph{graph classification
 \section{Background}
 \label{sec:background}
 
-\textbf{Notation.} A graph is $\mathcal{G}=(\mathcal{V},\mathcal{E},\mathbf{X})$ with $N=|\mathcal{V}|$, degree matrix $\mathbf{D}$, adjacency $\mathbf{A}\in\{0,1\}^{N\times N}$, feature matrix $\mathbf{X}\in\mathbb{R}^{N\times m}$, and normalized Laplacian $\mathbf{\Delta}=\mathbf{I}-\mathbf{D}^{-1/2}\mathbf{A}\mathbf{D}^{-1/2}$. In \emph{graph classification}, the dataset is $\mathcal{D}=\{(\mathcal{G}^i,\mathbf{y}_i)\}_{i=1}^n$, $\mathbf{y}_i\in\{0,1\}^{|C|}$ the one-hot graph label; we write $c_i$ for the class. Under message passing, $\mathbf{H}_i^{l+1}=\mathrm{UP}_{\mathbf{\Omega}_l}(\mathbf{H}_i^l,\mathrm{AGGR}_{\mathbf{W}_l}(\mathbf{H}_i^l,\mathbf{A}^i))$, with $\mathbf{H}_i^0\equiv\mathbf{X}^i$ and $\mathbf{Z}^i\equiv\mathbf{H}_i^L$. A permutation-invariant readout $f_\theta:\mathbb{R}^{N_i\times m'}\to\mathbb{R}^{|C|}$ maps node features to class probabilities $\hat{\mathbf{y}}_i$. Under noisy labels, the observed $c_i$ may differ from the ground truth; the test set is clean.
+\textbf{Notation.} A graph is $\mathcal{G}=(\mathcal{V},\mathcal{E},\mathbf{X})$ with $N=|\mathcal{V}|$, degree matrix $\mathbf{D}$, adjacency $\mathbf{A}\in\{0,1\}^{N\times N}$, feature matrix $\mathbf{X}\in\mathbb{R}^{N\times m}$, combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ (with eigenvalues $0=\lambda_1\le\lambda_2\le\dots\le\lambda_N$) and normalized Laplacian $\mathbf{\Delta}=\mathbf{D}^{-1/2}\mathbf{L}\mathbf{D}^{-1/2}$. We write $\lambda_2(\mathcal{G})$ for $\lambda_2(\mathbf{L})$ throughout and use $\mathbf{\Delta}$ only when explicitly stated. In \emph{graph classification}, the dataset is $\mathcal{D}=\{(\mathcal{G}^i,\mathbf{y}_i)\}_{i=1}^n$, $\mathbf{y}_i\in\{0,1\}^{|C|}$ the one-hot graph label; we write $c_i$ for the class. Under message passing, $\mathbf{H}_i^{l+1}=\mathrm{UP}_{\mathbf{\Omega}_l}(\mathbf{H}_i^l,\mathrm{AGGR}_{\mathbf{W}_l}(\mathbf{H}_i^l,\mathbf{A}^i))$, with $\mathbf{H}_i^0\equiv\mathbf{X}^i$ and $\mathbf{Z}^i\equiv\mathbf{H}_i^L$. A permutation-invariant readout $f_\theta:\mathbb{R}^{N_i\times m'}\to\mathbb{R}^{|C|}$ maps node features to class probabilities $\hat{\mathbf{y}}_i$. Under noisy labels, the observed $c_i$ may differ from the ground truth; the test set is clean.
 
-\textbf{Dirichlet energy on graphs.} For graph $\mathcal{G}^i$ with representation $\mathbf{Z}^i\in\mathbb{R}^{N_i\times m'}$,
+\textbf{Dirichlet energy on graphs.} For graph $\mathcal{G}^i$ with representation $\mathbf{Z}^i\in\mathbb{R}^{N_i\times m'}$ we use the combinatorial Dirichlet energy
 \begin{equation}
-\Edir(\mathbf{Z}^i)=\sum_{(u,v)\in\mathcal{E}^i}\Big\|\mathbf{Z}^i_u/\sqrt{d_u}-\mathbf{Z}^i_v/\sqrt{d_v}\Big\|_2^2.
+\Edir(\mathbf{Z}^i)=\sum_{(u,v)\in\mathcal{E}^i}\bigl\|\mathbf{Z}^i_u-\mathbf{Z}^i_v\bigr\|_2^2 = \mathrm{tr}\bigl((\mathbf{Z}^i)^\top\mathbf{L}^i\mathbf{Z}^i\bigr).
 \label{eq:edir}
 \end{equation}
-Small $\Edir$ means smooth (low-frequency) representations within the graph; large $\Edir$ means sharpening (high-frequency). To track behavior across a class-restricted subset $\mathcal{S}$ of training graphs we use
+Small $\Edir$ means smooth (low-frequency) representations within the graph; large $\Edir$ means sharpening (high-frequency). The symmetrically-normalized variant $\Edir_{\mathrm{sym}}(\mathbf{Z})=\sum_{(u,v)}\|\mathbf{Z}_u/\sqrt{d_u}-\mathbf{Z}_v/\sqrt{d_v}\|_2^2 = \mathrm{tr}(\mathbf{Z}^\top\mathbf{\Delta}\mathbf{Z})$, used in some over-smoothing analyses~\citep{nt2019revisiting,oversmoothing2}, is equivalent up to degree-bounded constants and our qualitative claims hold for either; we use \eqref{eq:edir} because it pairs cleanly with the Poincar\'e inequality of Section~\ref{sec:theory}. To track behavior across a class-restricted subset $\mathcal{S}$ of training graphs we use
 \begin{equation}
 \Edirset(\mathcal{S})=\frac{1}{|\mathcal{S}|}\sum_{\mathcal{G}^i\in\mathcal{S}}\Edir(\mathbf{Z}^i).
 \label{eq:edirset}
@@ -163,57 +163,62 @@ We now show that, under standard regularity assumptions, the within-graph Dirich
 
 \begin{proposition}[Dataset-level Dirichlet energy]
 \label{prop:dataset_energy}
-Let $\mathcal{D}=\{\mathcal{G}^1,\dots,\mathcal{G}^n\}$ with representations $\mathbf{Z}^i\in\mathbb{R}^{N^i\times m'}$ and adjacencies $\mathbf{A}^i$. Define the block-diagonal graph $\bar{\mathcal{G}}=(\bar{\mathbf{Z}},\bar{\mathbf{A}})$ with $\bar{\mathbf{Z}}=[\mathbf{Z}^1\|\dots\|\mathbf{Z}^n]\in\mathbb{R}^{N_{\text{tot}}\times m'}$ (vertical concatenation) and $\bar{\mathbf{A}}=\mathrm{blkdiag}(\mathbf{A}^1,\dots,\mathbf{A}^n)$. Then
+Let $\mathcal{D}=\{\mathcal{G}^1,\dots,\mathcal{G}^n\}$ with representations $\mathbf{Z}^i\in\mathbb{R}^{N^i\times m'}$ and adjacencies $\mathbf{A}^i$. Define the block-diagonal graph $\bar{\mathcal{G}}=(\bar{\mathbf{Z}},\bar{\mathbf{A}})$ with $\bar{\mathbf{Z}}=[\mathbf{Z}^1\|\dots\|\mathbf{Z}^n]\in\mathbb{R}^{N_{\text{tot}}\times m'}$ (vertical concatenation) and $\bar{\mathbf{A}}=\mathrm{blkdiag}(\mathbf{A}^1,\dots,\mathbf{A}^n)$, with associated combinatorial Laplacian $\bar{\mathbf{L}}=\mathrm{blkdiag}(\mathbf{L}^1,\dots,\mathbf{L}^n)$. Then
 \begin{equation}
 \Edirset(\mathcal{D})=\tfrac{1}{|\mathcal{D}|}\Edir(\bar{\mathbf{Z}})=\tfrac{1}{|\mathcal{D}|}\!\!\sum_{r=1}^{m'}\sum_{u=1}^{N_{\text{tot}}}\bar{\lambda}_u(\bar{\bm{\psi}}_u^\top\bar{\mathbf{Z}}_{:,r})^2,
 \label{eq:spectral_dataset}
 \end{equation}
-where $\{(\bar{\lambda}_u,\bar{\bm{\psi}}_u)\}$ are eigenpairs of $\bar{\mathbf{\Delta}}=\mathrm{blkdiag}(\mathbf{\Delta}^1,\dots,\mathbf{\Delta}^n)$, and the spectrum decomposes as $\bar{\Lambda}=\bigcup_i\Lambda^i$ with each eigenvector supported on a single connected component $\mathcal{G}^i$.
+where $\{(\bar{\lambda}_u,\bar{\bm{\psi}}_u)\}$ are eigenpairs of $\bar{\mathbf{L}}$, and the spectrum decomposes as $\bar{\Lambda}=\bigcup_i\Lambda^i$ with each eigenvector supported on a single connected component $\mathcal{G}^i$.
 \end{proposition}
 
-The proof (Appendix~\ref{app:proofs}) follows from $\det(\bar{\mathbf{\Delta}}-\lambda\mathbf{I})=\prod_i\det(\mathbf{\Delta}^i-\lambda\mathbf{I})$. The crucial structural fact is that \emph{each high-frequency eigenvector of $\bar{\mathbf{\Delta}}$ is owned by exactly one graph}; sharpening along such an eigenvector raises only that graph's energy.
+The proof (Appendix~\ref{app:proofs}) follows from $\det(\bar{\mathbf{L}}-\lambda\mathbf{I})=\prod_i\det(\mathbf{L}^i-\lambda\mathbf{I})$, since $\bar{\mathbf{L}}$ is block diagonal. The crucial structural fact is that \emph{each high-frequency eigenvector of $\bar{\mathbf{L}}$ is owned by exactly one graph}; sharpening along such an eigenvector raises only that graph's energy.
 
 \begin{lemma}[Graph Poincar\'e, vector-valued form]
 \label{lem:poincare}
-For any feature matrix $\mathbf{Z}\in\mathbb{R}^{N\times m'}$ on a connected graph $\mathcal{G}$ with normalized Laplacian $\mathbf{\Delta}$ and second-smallest eigenvalue $\lambda_2(\mathcal{G})>0$, let $\bar{\mathbf{z}}=\frac{1}{N}\sum_v\mathbf{Z}_v$. Then
+For any feature matrix $\mathbf{Z}\in\mathbb{R}^{N\times m'}$ on a connected graph $\mathcal{G}$ with combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ and second-smallest eigenvalue $\lambda_2(\mathcal{G})>0$, let $\bar{\mathbf{z}}=\frac{1}{N}\sum_v\mathbf{Z}_v$. Then
 \begin{equation}
 \sum_{v=1}^N\|\mathbf{Z}_v-\bar{\mathbf{z}}\|_2^2\;\le\;\frac{1}{\lambda_2(\mathcal{G})}\,\Edir(\mathbf{Z}).
 \label{eq:poincare}
 \end{equation}
 \end{lemma}
 
-\eqref{eq:poincare} bounds within-graph variance of node features by Dirichlet energy scaled by the spectral gap. Proof: standard Courant--Fischer applied per feature dimension (Appendix~\ref{app:proofs}).
+\eqref{eq:poincare} bounds within-graph variance of node features by the combinatorial Dirichlet energy scaled by the spectral gap. Proof: standard Courant--Fischer applied per feature dimension (Appendix~\ref{app:proofs}). The same statement holds with $\mathbf{\Delta}$ in place of $\mathbf{L}$ provided $\mathbf{Z}$ is replaced by its degree-normalization $\mathbf{D}^{-1/2}\mathbf{Z}$ throughout; we choose the form above so that the bound is on the variance of the raw representations.
 
-\begin{lemma}[Bi-Lipschitz lower bound for a GIN, adapted from~\citealp{chuang2022tree, davidson2024h, juvina2024training}]
+\begin{lemma}[Bi-Lipschitz lower bound for a GIN block with 2-layer combine, adapted from~\citealp{chuang2022tree, davidson2024h, juvina2024training}]
 \label{lem:bilip}
-Let $h_\theta$ be a 2-layer GIN whose aggregator $\mathbf{M}=(1+\varepsilon)\mathbf{I}+\mathbf{A}$ satisfies $\sigma_{\min}(\mathbf{M})\geq\kappa>0$ and whose MLP weights $\mathbf{W}_1,\mathbf{W}_2$ satisfy $\sigma_{\min}(\mathbf{W}_k)\geq m_k>0$, with leaky-ReLU/ReLU-with-margin activation of slope $\alpha>0$. Then for any feature perturbation $\Delta\mathbf{X}$,
+Let $h_\theta(\mathbf{X})=\sigma_2(\mathbf{W}_2\sigma_1(\mathbf{W}_1\mathbf{M}\mathbf{X}))$ be a single GIN aggregation $\mathbf{M}=(1+\varepsilon)\mathbf{I}+\mathbf{A}$ followed by a two-layer MLP with weights $\mathbf{W}_1,\mathbf{W}_2$. Assume $\sigma_{\min}(\mathbf{M})\geq\kappa>0$ (e.g., $1+\varepsilon>|\lambda_{\min}(\mathbf{A})|$), $\sigma_{\min}(\mathbf{W}_k)\geq m_k>0$, and that $\sigma_1,\sigma_2$ are leaky-ReLU with slope $\alpha>0$ (or ReLU operated with a strict margin $\delta>0$ along the line segment $\gamma(t)=\mathbf{X}+t\Delta\mathbf{X}$). Then
 \begin{equation}
-\|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_2\;\geq\;c_{\text{lower}}\,\|\Delta\mathbf{X}\|_2,\qquad c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa.
+\|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_F\;\geq\;c_{\text{lower}}\,\|\Delta\mathbf{X}\|_F,\qquad c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa.
 \label{eq:bilip}
 \end{equation}
+A second aggregation step (turning the block into a true two-layer GIN) replaces $c_{\text{lower}}$ by $\alpha^2 m_1 m_2 \kappa^2$; the qualitative content of the lemma is unchanged.
 \end{lemma}
 
-The lemma is the singular-value chain rule applied to the GIN Jacobian $\mathbf{J}=\mathbf{W}_2 \mathbf{D}_2 \mathbf{W}_1 \mathbf{D}_1 \mathbf{M}$; on the regularity regime above, $\sigma_{\min}(\mathbf{J})\geq c_{\text{lower}}>0$, and \eqref{eq:bilip} follows by the fundamental theorem of calculus along $\gamma(t)=\mathbf{X}+t\Delta\mathbf{X}$. The role of the lemma is to express that the GIN does not collapse meaningful feature differences, the property the model uses (and abuses) when fitting noisy labels.
+The lemma is the singular-value chain rule applied to the per-step Jacobian $\mathbf{J}=\mathbf{D}_2 \mathbf{W}_2 \mathbf{D}_1 \mathbf{W}_1 \mathbf{M}$ (acting per-feature on the row space and per-row on the feature space), where $\mathbf{D}_k=\mathrm{diag}(\sigma_k')$; on the regularity regime above, $\sigma_{\min}(\mathbf{J})\geq c_{\text{lower}}>0$, and \eqref{eq:bilip} follows by the fundamental theorem of calculus along $\gamma$. The role of the lemma is to express that the GIN does not collapse meaningful feature differences, the property the model uses (and abuses) when fitting noisy labels.
 
 \subsection{Main Theorem: Noise Fitting Forces Energy Growth}
 
-Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with structurally similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean training distribution. Suppose label noise flips $c_j$ to $c_i'\neq c_i$, so the network must produce \emph{different} graph-level outputs for them. Let $\mathbf{h}_i\in\mathbb{R}^{N^i\times m'}$ denote the per-node post-message-passing signal of $\mathcal{G}^i$, and $\bar{\mathbf{h}}_i$ its node-wise mean replicated to a constant signal at $\mathbf{g}_i=\frac{1}{N^i}\sum_v\mathbf{h}_{i,v}$.
+Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with the \emph{same} number of nodes $N=N^i=N^j$ and structurally similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean training distribution. (The same-$N$ assumption is mainly for notational simplicity; the qualitative conclusion extends to the general case via vertex-permutation matching, see Remark below.) Suppose label noise flips $c_j$ to $c_i'\neq c_i$, so the network must produce \emph{different} graph-level outputs for them. Let $\mathbf{h}_i\in\mathbb{R}^{N\times m'}$ denote the per-node post-message-passing signal of $\mathcal{G}^i$, and $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$ its node-wise mean replicated to a constant signal at $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}$.
 
 \begin{theorem}[Graph-level noise fitting forces $\Edir$ to grow]
 \label{thm:noise_forces_energy}
-Under the hypotheses of Lemmas~\ref{lem:poincare}--\ref{lem:bilip}, with $N=\max(N^i,N^j)$,
+Under the hypotheses of Lemmas~\ref{lem:poincare}--\ref{lem:bilip} and $N^i=N^j=N$,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_2 \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}.
+\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}.
 \label{eq:noise_bound}
 \end{equation}
-In particular, if the noisy training objective forces $\|\mathbf{h}_i-\mathbf{h}_j\|_2\geq\Theta_{\text{noise}}$ at the same time as the pooled descriptors must remain close, $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$ (because the underlying graphs are structurally similar), then
+In particular, if the noisy training objective combined with an $L$-Lipschitz readout forces a graph-level output gap of at least $\Delta_{\text{out}}$, so that $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq\Theta_{\text{noise}}:=L^{-1}\Delta_{\text{out}}$, while the structural similarity gives $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, then
 \begin{equation}
 \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}} \;\geq\; \Theta_{\text{noise}}-\sqrt{N}\,\varepsilon.
 \label{eq:energy_lower}
 \end{equation}
 \end{theorem}
 
-\textbf{Why this is non-trivial.} \eqref{eq:energy_lower} is a \emph{lower bound} on the within-graph Dirichlet energies forced by the noisy training objective. For two structurally similar graphs that must be mapped to different labels, $\mathbf{g}_i\approx\mathbf{g}_j$ at the pooled stage; the gap $\Theta_{\text{noise}}$ that the network must produce to fit the noise cannot come from the means alone. By the Poincar\'e inequality, the only remaining route is the within-graph variance, which is precisely $\Edir/\lambda_2$. Energy growth is therefore a \emph{mathematical consequence} of graph-level label noise fitting, not an empirical coincidence. The non-triviality of the link in graph classification is exactly that this bound has no analog in node classification, where labels live on the same nodes whose smoothness $\Edir$ measures.
+\textbf{Why this is non-trivial.} \eqref{eq:energy_lower} is a \emph{lower bound} on the within-graph Dirichlet energies forced by the noisy training objective. For two structurally similar graphs that must be mapped to different labels, $\mathbf{g}_i\approx\mathbf{g}_j$ at the pooled stage; the gap $\Theta_{\text{noise}}$ that the network must produce to fit the noise cannot come from the means alone. By the Poincar\'e inequality, the only remaining route is the within-graph variance, which is precisely $\Edir/\lambda_2$. Energy growth is therefore a \emph{mathematical consequence} of graph-level label noise fitting, not an empirical coincidence. The role of the bi-Lipschitz condition (Lemma~\ref{lem:bilip}) is to ensure that this required output gap cannot be obtained ``for free'' by collapsing different inputs onto the same representation: $c_{\text{lower}}\!>\!0$ guarantees that maintaining $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq\Theta_{\text{noise}}$ at convergence is consistent with non-degenerate weights, and so the inequality has content. The non-triviality of the link in graph classification is exactly that this bound has no analog in node classification, where labels live on the same nodes whose smoothness $\Edir$ measures.
+
+\begin{remark}[Unequal graph sizes]
+When $N^i\neq N^j$, replace $\|\mathbf{h}_i-\mathbf{h}_j\|_F$ in \eqref{eq:noise_bound} by $\inf_\pi \|\mathbf{h}_i-\pi(\mathbf{h}_j)\|_F$ where $\pi$ ranges over zero-padded permutation matchings. The triangle inequality and per-graph Poincar\'e bounds carry through unchanged for each graph; only the cross-term $\sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2$ is replaced by $\sqrt{\min(N^i,N^j)}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2$ plus a residual $|N^i-N^j|\cdot\|\mathbf{g}_\bullet\|_2^2$ from the padded rows. The energy lower bound \eqref{eq:energy_lower} therefore continues to hold with $\sqrt{N}\to\sqrt{\min(N^i,N^j)}$ and a shifted $\Theta_{\text{noise}}$.
+\end{remark}
 
 \subsection{Asymmetric Burden on High-Entropy Graphs}
 
@@ -223,7 +228,7 @@ For a graph $\mathcal{G}$, the structural Shannon entropy is $H(\mathcal{G})=-\s
 
 \begin{lemma}[Spectral counting]
 \label{lem:spectral_count}
-The number of distinct Laplacian eigenvalues of $\mathcal{G}^i$ is at most $N^i$, and $\lambda_{\max}(\mathcal{G}^i)\leq 2$ with equality iff $\mathcal{G}^i$ has a bipartite component~\citep{chung1997}. Therefore, when sharpening lifts spectral mass onto eigenvectors $\bar{\bm{\psi}}_u$ with $\bar{\lambda}_u\geq\tau$ for some threshold $\tau$, the share allocated to $\mathcal{G}^i$ is bounded above by $|\{j:\lambda^i_j\geq\tau\}|$, which is non-decreasing in $N^i$ and in connection density.
+The combinatorial Laplacian $\mathbf{L}^i$ has at most $N^i$ distinct eigenvalues, contained in $[0,\,\max_{(u,v)\in\mathcal{E}^i}(d_u+d_v)]$, hence in $[0,\,2d_{\max}(\mathcal{G}^i)]$~\citep{chung1997}. Equivalently, the normalized spectrum $\Lambda(\mathbf{\Delta}^i)\subset[0,2]$ with $\lambda_{\max}(\mathbf{\Delta}^i)=2$ iff $\mathcal{G}^i$ has a bipartite component. Therefore, when sharpening lifts spectral mass onto eigenvectors $\bar{\bm{\psi}}_u$ of $\bar{\mathbf{L}}$ with $\bar{\lambda}_u\geq\tau$ for some threshold $\tau$, the share allocated to $\mathcal{G}^i$ is bounded above by the count $n^i(\tau)=|\{j:\lambda^i_j\geq\tau\}|$, which is non-decreasing in $N^i$ and in connection density (by Cauchy interlacing under vertex/edge addition).
 \end{lemma}
 
 \begin{corollary}[Asymmetric burden]
@@ -244,9 +249,11 @@ The theory of Section~\ref{sec:theory} identifies three distinct levers to suppr
 
 \subsection{Method 1: Spectral Constraint on Weight Matrices (CE+W2)}
 
-\citet{GRAFF} show that, in linear graph convolutions with \emph{symmetric} weight matrices, positive eigenvalues induce attraction (smoothing) between connected nodes, while negative eigenvalues induce repulsion (sharpening). Together with Proposition~\ref{prop:dataset_energy}, this suggests removing negative eigenvalues from the post-aggregation matrix $\mathbf{W}_l^2$ to suppress harmful sharpening dataset-wide. Since $\mathbf{W}_l^2$ is generally non-symmetric and may have complex eigenvalues, we apply the projection to its symmetric part, which has guaranteed real spectrum.
+\citet{GRAFF} show that, in linear graph convolutions with \emph{symmetric} weight matrices $\mathbf{W}=\mathbf{Q}\bm{\Lambda}\mathbf{Q}^\top$, the gradient flow of the Dirichlet energy decomposes along the eigenvectors of $\mathbf{W}$: components corresponding to positive $\lambda_k$ evolve under attraction (smoothing) of connected nodes, while components with negative $\lambda_k$ undergo repulsion (sharpening). Together with Proposition~\ref{prop:dataset_energy}, this argues for projecting the post-aggregation matrix $\mathbf{W}_l^2$ onto its positive eigenspace whenever it is symmetric.
 
-\textbf{Procedure.} After each gradient step, decompose $\mathbf{W}_l^2=\mathbf{S}_l+\mathbf{N}_l$ with $\mathbf{S}_l=\tfrac{1}{2}(\mathbf{W}_l^2+(\mathbf{W}_l^2)^\top)$ symmetric and $\mathbf{N}_l=\tfrac{1}{2}(\mathbf{W}_l^2-(\mathbf{W}_l^2)^\top)$ skew-symmetric. Eigendecompose the symmetric part $\mathbf{S}_l=\bm{\Phi}_l\bm{\mu}_l\bm{\Phi}_l^\top$ ($\bm{\mu}_l$ real, $\bm{\Phi}_l$ orthogonal), project $\bm{\mu}_l\to[\bm{\mu}_l]^+=\max(\bm{\mu}_l,0)$, and reconstruct $\mathbf{W}_l^{2+}=\bm{\Phi}_l[\bm{\mu}_l]^+\bm{\Phi}_l^\top+\mathbf{N}_l$. By the analysis of~\citet{GRAFF}, the smoothing/sharpening effect on edge gradients is determined by the symmetric part of the weight; the skew part $\mathbf{N}_l$ contributes orthogonal mixing without changing edge gradients in the symmetric inner product, so retaining it preserves expressivity while removing the sharpening contribution. The projection is detached from the gradient graph (Appendix~\ref{app:weights_eigens}). \textbf{CE+W2} is CE training with this projection; it requires no clean validation data and no extra hyperparameters. It is most useful as a theoretical instantiation of the energy story; in practice, the eigendecomposition is costly and can destabilize convergence (Appendix~\ref{app:weights_eigens}), motivating the alternatives below.
+When $\mathbf{W}_l^2$ is non-symmetric, the GRAFF dichotomy no longer applies cleanly: eigenvalues may be complex and the flow has rotational components without a sign-based smoothing/sharpening interpretation. We therefore split $\mathbf{W}_l^2=\mathbf{S}_l+\mathbf{N}_l$ with $\mathbf{S}_l=\tfrac{1}{2}(\mathbf{W}_l^2+(\mathbf{W}_l^2)^\top)$ symmetric (real spectrum) and $\mathbf{N}_l=\tfrac{1}{2}(\mathbf{W}_l^2-(\mathbf{W}_l^2)^\top)$ skew-symmetric (purely imaginary spectrum, hence no signed contribution to the GRAFF smoothing/sharpening dichotomy), and apply the projection only to $\mathbf{S}_l$. This is a heuristic extension of the GRAFF analysis, not a theorem; we validate it empirically via the energy curves of Fig.~\ref{fig:diagnostic}.
+
+\textbf{Procedure.} After each gradient step, eigendecompose $\mathbf{S}_l=\bm{\Phi}_l\bm{\mu}_l\bm{\Phi}_l^\top$ ($\bm{\mu}_l$ real, $\bm{\Phi}_l$ orthogonal), project $\bm{\mu}_l\to[\bm{\mu}_l]^+=\max(\bm{\mu}_l,0)$, and reconstruct $\mathbf{W}_l^{2+}=\bm{\Phi}_l[\bm{\mu}_l]^+\bm{\Phi}_l^\top+\mathbf{N}_l$. The projection is detached from the gradient graph (Appendix~\ref{app:weights_eigens}). \textbf{CE+W2} is CE training with this projection; it requires no clean validation data and no extra hyperparameters. It is most useful as a theoretical instantiation of the energy story; in practice, the per-epoch eigendecomposition is costly and can destabilize convergence (Appendix~\ref{app:weights_eigens}), motivating the alternatives below.
 
 \subsection{Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal{L}_{DE}$)}
 
