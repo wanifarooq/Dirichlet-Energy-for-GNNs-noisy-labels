@@ -55,26 +55,36 @@ which is \eqref{eq:poincare}. The constant $1/\lambda_2$ is sharp, attained by t
 
 The block under analysis is one GIN aggregation followed by a two-layer MLP combine,
 \begin{equation}
-h_\theta(\mathbf{X})=\sigma_2\bigl(\mathbf{W}_2\,\sigma_1(\mathbf{W}_1\,\mathbf{M}\mathbf{X})\bigr),
+h_\theta(\mathbf{X})=\sigma_2\bigl(\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\,\mathbf{W}_2\bigr),
 \end{equation}
-acting on $\mathbf{X}\in\mathbb{R}^{N\times m}$ with $\mathbf{M}\in\mathbb{R}^{N\times N}$ and $\mathbf{W}_k$ acting on the feature dimension. For leaky-ReLU activation (or ReLU with a fixed margin $\delta>0$ along $\gamma(t)=\mathbf{X}+t\Delta\mathbf{X}$, ensuring no piecewise-linear region change occurs), $\sigma_k$ has derivative $\geq\alpha$ everywhere along the path. Differentiating w.r.t. $\mathbf{X}$ in the row-by-row sense (each row of $\mathbf{X}$ propagates through the same MLP, with rows mixed only by $\mathbf{M}$),
+acting on $\mathbf{X}\in\mathbb{R}^{N\times m}$ with $\mathbf{M}\in\mathbb{R}^{N\times N}$ mixing rows, and $\mathbf{W}_1\in\mathbb{R}^{m\times m'},\mathbf{W}_2\in\mathbb{R}^{m'\times m''}$ acting on the feature (column) dimension. For leaky-ReLU activations (or ReLU with a fixed margin $\delta>0$ along $\gamma(t)=\mathbf{X}+t\Delta\mathbf{X}$, ensuring no piecewise-linear region change), each $\sigma_k$ has derivative $\geq\alpha$ everywhere along the path.
+
+\textbf{Vectorized Jacobian.} Using $\mathrm{vec}(\mathbf{A}\mathbf{Y}\mathbf{B})=(\mathbf{B}^\top\otimes\mathbf{A})\mathrm{vec}(\mathbf{Y})$,
+\begin{align*}
+\mathrm{vec}(\mathbf{M}\mathbf{X}\mathbf{W}_1)&=(\mathbf{W}_1^\top\otimes\mathbf{M})\,\mathrm{vec}(\mathbf{X}),\\
+\mathrm{vec}\bigl(\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\,\mathbf{W}_2\bigr)&=(\mathbf{W}_2^\top\otimes\mathbf{I}_N)\,\mathbf{D}_1\,(\mathbf{W}_1^\top\otimes\mathbf{M})\,\mathrm{vec}(\mathbf{X}),
+\end{align*}
+so the full Jacobian in vectorized form is
 \begin{equation}
-\frac{\partial h_\theta}{\partial \mathbf{X}}=\mathbf{D}_2\,\mathbf{W}_2\,\mathbf{D}_1\,\mathbf{W}_1\,\mathbf{M},
+\mathbf{J}(\mathbf{X})=\mathbf{D}_2\,(\mathbf{W}_2^\top\otimes\mathbf{I}_N)\,\mathbf{D}_1\,(\mathbf{W}_1^\top\otimes\mathbf{M}),
 \end{equation}
-where $\mathbf{D}_k=\mathrm{diag}(\sigma_k')$ are diagonal with entries in $[\alpha,1]$. By submultiplicativity of the smallest singular value for full-rank factors (each factor here is square or has full column rank by hypothesis on $\sigma_{\min}(\mathbf{W}_k),\sigma_{\min}(\mathbf{M})>0$),
-\begin{align}
-\sigma_{\min}(\mathbf{J}(\mathbf{X})) &\geq \sigma_{\min}(\mathbf{D}_2)\,\sigma_{\min}(\mathbf{W}_2)\,\sigma_{\min}(\mathbf{D}_1)\,\sigma_{\min}(\mathbf{W}_1)\,\sigma_{\min}(\mathbf{M})\nonumber\\
-&\geq \alpha\cdot m_2\cdot \alpha\cdot m_1\cdot \kappa = \alpha^2 m_1 m_2 \kappa = c_{\text{lower}}.
-\end{align}
-For any $\mathbf{X},\Delta\mathbf{X}$, set $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$. Under the activation regularity above, $h_\theta\circ\gamma$ is a piecewise-linear curve with no region change; the fundamental theorem of calculus then gives
+with $\mathbf{D}_k=\mathrm{diag}(\sigma_k')\succeq\alpha\mathbf{I}$.
+
+\textbf{Singular-value chain.} For any product $\mathbf{ABCD}$ where each factor has $\sigma_{\min}>0$, $\sigma_{\min}(\mathbf{ABCD})\geq\sigma_{\min}(\mathbf{A})\sigma_{\min}(\mathbf{B})\sigma_{\min}(\mathbf{C})\sigma_{\min}(\mathbf{D})$ (chain rule for singular values; equivalent to applying the lower bound $\|\mathbf{A}\mathbf{x}\|\geq\sigma_{\min}(\mathbf{A})\|\mathbf{x}\|$ inductively). Using $\sigma_{\min}(\mathbf{P}\otimes\mathbf{Q})=\sigma_{\min}(\mathbf{P})\sigma_{\min}(\mathbf{Q})$,
+\begin{align*}
+\sigma_{\min}(\mathbf{J})&\geq\sigma_{\min}(\mathbf{D}_2)\,\sigma_{\min}(\mathbf{W}_2^\top\otimes\mathbf{I}_N)\,\sigma_{\min}(\mathbf{D}_1)\,\sigma_{\min}(\mathbf{W}_1^\top\otimes\mathbf{M})\\
+&\geq \alpha\cdot m_2\cdot\alpha\cdot m_1\kappa = \alpha^2 m_1 m_2 \kappa = c_{\text{lower}}.
+\end{align*}
+
+\textbf{Fundamental theorem of calculus.} For $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$, under the activation regularity above $h_\theta\circ\gamma$ has the same piecewise-linear region throughout, so
 \begin{equation}
-h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})=\int_0^1\mathbf{J}(\gamma(t))\,\Delta\mathbf{X}\,dt.
+\mathrm{vec}\bigl(h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\bigr)=\Bigl(\textstyle\int_0^1\mathbf{J}(\gamma(t))\,dt\Bigr)\,\mathrm{vec}(\Delta\mathbf{X}).
 \end{equation}
-Taking Frobenius norms and applying $\|\mathbf{J}\,\Delta\mathbf{X}\|_F\geq\sigma_{\min}(\mathbf{J})\,\|\Delta\mathbf{X}\|_F$ pointwise yields
+Taking the $\ell_2$ norm of both sides (= Frobenius norm in matrix form) and using $\|\mathbf{J}\,\mathbf{x}\|_2\geq\sigma_{\min}(\mathbf{J})\,\|\mathbf{x}\|_2$ pointwise (so $\|\int\mathbf{J}\,dt\,\mathbf{x}\|\geq c_{\text{lower}}\|\mathbf{x}\|$ by Jensen on the singular-value lower bound),
 \begin{equation}
 \|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_F\geq c_{\text{lower}}\,\|\Delta\mathbf{X}\|_F.
 \end{equation}
-For a true two-layer GIN $\sigma_2(\mathbf{W}_2\,\mathbf{M}\,\sigma_1(\mathbf{W}_1\,\mathbf{M}\mathbf{X}))$, an additional factor of $\sigma_{\min}(\mathbf{M})\geq\kappa$ enters the chain, giving $c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa^2$; the rest of the argument is identical. $\square$
+For a true two-layer GIN $\sigma_2(\mathbf{M}\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\mathbf{W}_2)$, the second Kronecker factor in the chain becomes $(\mathbf{W}_2^\top\otimes\mathbf{M})$ instead of $(\mathbf{W}_2^\top\otimes\mathbf{I}_N)$, contributing an extra $\sigma_{\min}(\mathbf{M})\geq\kappa$ and giving $c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa^2$. $\square$
 
 \subsection{Proof of Theorem~\ref{thm:noise_forces_energy} (Noise Forces Energy Growth)}
 
@@ -114,7 +124,11 @@ which is \eqref{eq:energy_lower}. $\square$
 
 The combinatorial Laplacian $\mathbf{L}^i$ is symmetric positive semi-definite. By Anderson--Morley's bound, every eigenvalue $\lambda^i_j$ of $\mathbf{L}^i$ satisfies $\lambda^i_j\leq\max_{(u,v)\in\mathcal{E}^i}(d_u+d_v)\leq 2 d_{\max}(\mathcal{G}^i)$. Equivalently, the normalized Laplacian $\mathbf{\Delta}^i=\mathbf{D}^{-1/2}\mathbf{L}^i\mathbf{D}^{-1/2}$ has eigenvalues in $[0,2]$, with $\lambda_{\max}(\mathbf{\Delta}^i)=2$ iff $\mathcal{G}^i$ has a bipartite component~\citep[Lemma 1.7, Thm.~1.13]{chung1997}. The number of distinct eigenvalues of $\mathbf{L}^i$ is at most $N^i$.
 
-For any threshold $\tau$, define $n^i(\tau)=|\{j:\lambda^i_j\geq\tau\}|$. We claim $n^i(\tau)$ is non-decreasing under (a) edge addition and (b) vertex addition at fixed sparsity. \emph{(a) Edge addition}: if $\mathcal{G}^{i\prime}=\mathcal{G}^i+e$ is obtained by adding edge $e=(u,v)$, then $\mathbf{L}^{i\prime}=\mathbf{L}^i+\mathbf{e}_{uv}\mathbf{e}_{uv}^\top$, a rank-one positive update where $\mathbf{e}_{uv}=\mathbf{e}_u-\mathbf{e}_v$. By Weyl's interlacing theorem, the eigenvalues of $\mathbf{L}^{i\prime}$ majorize those of $\mathbf{L}^i$ pointwise, so $n^i(\tau)$ does not decrease. \emph{(b) Vertex addition}: adjoining a new vertex with at least one edge enlarges the matrix to $\mathbf{L}^{i\prime}\succeq\mathbf{L}^i\oplus[0]$, again leaving the count $n^i(\tau)$ non-decreasing by Cauchy interlacing for principal submatrices.
+For any threshold $\tau>0$, define $n^i(\tau)=|\{j:\lambda^i_j\geq\tau\}|$. We claim $n^i(\tau)$ is non-decreasing under (a) edge addition and (b) vertex addition with at least one incident edge.
+
+\emph{(a) Edge addition}: if $\mathcal{G}^{i\prime}=\mathcal{G}^i+\{(u,v)\}$, then $\mathbf{L}^{i\prime}=\mathbf{L}^i+(\mathbf{e}_u-\mathbf{e}_v)(\mathbf{e}_u-\mathbf{e}_v)^\top$, a rank-one PSD update. By Weyl's monotonicity theorem (\citealp{horn2012matrix}, Cor.~4.3.12), $\lambda_k(\mathbf{L}^{i\prime})\geq\lambda_k(\mathbf{L}^i)$ for every $k$. Hence if $\lambda^i_j\geq\tau$ then $\lambda^{i\prime}_j\geq\tau$, so $n^{i\prime}(\tau)\geq n^i(\tau)$.
+
+\emph{(b) Vertex addition}: write $\mathcal{G}^{i\prime}$ as the result of starting from the padded graph $\mathcal{G}^i\sqcup\{v_{N+1}\}$ (an isolated extra vertex) and then adding all incident edges $\{(v_{N+1},u):u\in\mathcal{N}(v_{N+1})\}$ one at a time. The padded Laplacian is $\mathbf{L}_0=\mathbf{L}^i\oplus[0]\in\mathbb{R}^{(N^i+1)\times(N^i+1)}$, with spectrum $\Lambda(\mathbf{L}^i)\cup\{0\}$. Each subsequent edge addition is a rank-one PSD update covered by case (a), so $\lambda_k(\mathbf{L}^{i\prime})\geq\lambda_k(\mathbf{L}_0)$ for all $k$. Since $\Lambda(\mathbf{L}_0)\setminus\{0\}=\Lambda(\mathbf{L}^i)\setminus\{0\}$, the count above any $\tau>0$ satisfies $n^{i\prime}(\tau)\geq n_0(\tau)=n^i(\tau)$. (The case $\tau=0$ is trivial since $n^{i\prime}(0)=N^i+1\geq N^i=n^i(0)$.)
 
 Now let $\bar{\mathbf{L}}=\mathrm{blkdiag}(\mathbf{L}^1,\dots,\mathbf{L}^n)$ as in Proposition~\ref{prop:dataset_energy}. By the block-diagonal structure, every eigenpair $(\bar{\lambda}_u,\bar{\bm{\psi}}_u)$ of $\bar{\mathbf{L}}$ is supported on exactly one $\mathcal{G}^i$. Sharpening that lifts spectral mass onto eigenvectors with $\bar{\lambda}_u\geq\tau$ therefore allocates a share to $\mathcal{G}^i$ that is bounded above by $n^i(\tau)/\sum_k n^k(\tau)$, which grows with $N^i$ and connection density of $\mathcal{G}^i$. $\square$
 
