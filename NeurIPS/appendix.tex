@@ -76,15 +76,19 @@ with $\mathbf{D}_k=\mathrm{diag}(\sigma_k')\succeq\alpha\mathbf{I}$.
 &\geq \alpha\cdot m_2\cdot\alpha\cdot m_1\kappa = \alpha^2 m_1 m_2 \kappa = c_{\text{lower}}.
 \end{align*}
 
-\textbf{Fundamental theorem of calculus.} For $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$, under the activation regularity above $h_\theta\circ\gamma$ has the same piecewise-linear region throughout, so
+\textbf{Fundamental theorem of calculus.} For $\gamma(t)=\mathbf{X}+t\,\Delta\mathbf{X}$, the strict-margin assumption ensures that no entry of the pre-activation $\mathbf{W}_1\mathbf{M}\gamma(t)$ or $\mathbf{W}_2\sigma_1(\mathbf{W}_1\mathbf{M}\gamma(t))$ changes sign along $[0,1]$, so $\mathbf{D}_1$ and $\mathbf{D}_2$ are \emph{constant} in $t$. Hence $\mathbf{J}(\gamma(t))\equiv\mathbf{J}$ is constant, and $h_\theta\circ\gamma$ is exactly affine on $[0,1]$:
 \begin{equation}
-\mathrm{vec}\bigl(h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\bigr)=\Bigl(\textstyle\int_0^1\mathbf{J}(\gamma(t))\,dt\Bigr)\,\mathrm{vec}(\Delta\mathbf{X}).
+\mathrm{vec}\bigl(h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\bigr)=\mathbf{J}\,\mathrm{vec}(\Delta\mathbf{X}).
 \end{equation}
-Taking the $\ell_2$ norm of both sides (= Frobenius norm in matrix form) and using $\|\mathbf{J}\,\mathbf{x}\|_2\geq\sigma_{\min}(\mathbf{J})\,\|\mathbf{x}\|_2$ pointwise (so $\|\int\mathbf{J}\,dt\,\mathbf{x}\|\geq c_{\text{lower}}\|\mathbf{x}\|$ by Jensen on the singular-value lower bound),
+Taking the $\ell_2$ norm (= Frobenius norm in matrix form) and applying $\|\mathbf{J}\,\mathbf{x}\|_2\geq\sigma_{\min}(\mathbf{J})\,\|\mathbf{x}\|_2$,
 \begin{equation}
 \|h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})\|_F\geq c_{\text{lower}}\,\|\Delta\mathbf{X}\|_F.
 \end{equation}
 For a true two-layer GIN $\sigma_2(\mathbf{M}\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\mathbf{W}_2)$, the second Kronecker factor in the chain becomes $(\mathbf{W}_2^\top\otimes\mathbf{M})$ instead of $(\mathbf{W}_2^\top\otimes\mathbf{I}_N)$, contributing an extra $\sigma_{\min}(\mathbf{M})\geq\kappa$ and giving $c_{\text{lower}}=\alpha^2 m_1 m_2 \kappa^2$. $\square$
+
+\begin{remark}[Beyond strict margin]
+Without the strict-margin condition $\gamma$ may cross piecewise-linear boundaries of $\sigma_k$. Then $h_\theta(\mathbf{X}+\Delta\mathbf{X})-h_\theta(\mathbf{X})=(\sum_k p_k\mathbf{J}_k)\Delta\mathbf{X}$ with $\mathbf{J}_k$ the per-region Jacobians (each satisfying $\sigma_{\min}(\mathbf{J}_k)\geq c_{\text{lower}}$) and $p_k\geq 0,\sum p_k=1$. Convex combinations of matrices with $\sigma_{\min}\geq c$ do not in general satisfy the same lower bound, so $c_{\text{lower}}$ may degrade across region boundaries. We therefore use Lemma~\ref{lem:bilip} only as a local non-degeneracy regularity statement in Theorem~\ref{thm:noise_forces_energy}; this is sufficient for our purposes.
+\end{remark}
 
 \subsection{Proof of Theorem~\ref{thm:noise_forces_energy} (Noise Forces Energy Growth)}
 
@@ -119,6 +123,8 @@ The role of Lemma~\ref{lem:bilip} is to make this lower bound non-vacuous: $c_{\
 \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}\;\geq\;\Theta_{\text{noise}}-\sqrt{N}\,\varepsilon,
 \end{equation}
 which is \eqref{eq:energy_lower}. $\square$
+
+\textbf{Unequal graph sizes.} When $N^i\neq N^j$, set $N=\max(N^i,N^j)$ and pad the smaller graph by appending $N-N^{\min}$ rows equal to its mean $\mathbf{g}_\bullet$, with the corresponding padded vertices isolated (no edges). Two facts make this padding harmless: (i) appending $\mathbf{g}_\bullet$-valued rows leaves the graph mean unchanged, and (ii) isolated padded vertices contribute nothing to the Dirichlet energy, so $\Edir(\mathbf{Z}^{\text{pad}})=\Edir(\mathbf{Z})$. The within-graph variance $\|\mathbf{h}_\bullet^{\text{pad}}-\bar{\mathbf{h}}_\bullet^{\text{pad}}\|_F^2=\sum_{v=1}^{N^{\min}}\|\mathbf{h}_{\bullet,v}-\mathbf{g}_\bullet\|^2$ is also preserved, so Lemma~\ref{lem:poincare} applies unchanged. The middle term becomes $\|\bar{\mathbf{h}}_i^{\text{pad}}-\bar{\mathbf{h}}_j^{\text{pad}}\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$, and the readout's lower bound is preserved up to a fixed pooling constant. Hence \eqref{eq:noise_bound} and \eqref{eq:energy_lower} hold with $N\to\max(N^i,N^j)$.
 
 \subsection{Proof of Lemma~\ref{lem:spectral_count} (Spectral Counting)}
 
