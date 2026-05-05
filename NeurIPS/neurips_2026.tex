@@ -50,7 +50,7 @@
 \maketitle
 
 \begin{abstract}
-Graph Neural Networks (GNNs) are vulnerable to label noise in graph classification, yet, unlike for image or node classification, the mechanisms that drive this vulnerability are poorly understood. We show that GNN robustness in this setting is governed by a property of the \emph{learned representations}, not of the labels themselves: the within-graph Dirichlet energy of node features. Energy decreases while the model captures genuine class structure, but increases sharply, particularly in high-frequency components, when the model begins to memorize corrupted graph-level labels. We give a theoretical justification for why this decrease is non-trivial in graph classification by combining (i) a spectral argument that relates dataset-level energy to per-graph low-frequency structure and (ii) an entropy-based argument adapted from \citet{exploreOversmoothing}, showing that uncontrolled energy growth disproportionately harms graphs that are most informative for classification. Building on this insight, we propose three complementary interventions, a spectral weight constraint (CE+W2), a Dirichlet-energy regularizer ($\mathcal{L}_{DE}$), and a robust loss function (\method{}), which all suppress harmful high-frequency energy through different mechanisms. Across eight benchmarks, including the full and modified ogbg-ppa, under symmetric noise (up to $60\%$), asymmetric noise, and a transfer to node classification on Cora, the three methods yield consistent gains while preserving clean-data performance. \method{} matches or exceeds the strongest noise-robust baseline OMG \citet{omg7} at $\sim$70$\times$ lower training overhead, establishing Dirichlet energy as both a diagnostic signal and a principled design target for noise-robust GNNs.
+Graph Neural Networks (GNNs) are vulnerable to label noise in graph classification, yet the mechanisms driving this vulnerability are poorly understood. We empirically identify a property of the \emph{learned representations} that tracks noise memorization: the within-graph Dirichlet energy of node features. Energy decreases as the model captures genuine class structure, then rises sharply, mainly in high-frequency components, when the model begins to memorize corrupted graph labels. We support this observation with a Poincar\'e--bi-Lipschitz lower bound on the energy implied by noise fitting, combined with an entropy-based asymmetry result adapted from \citet{exploreOversmoothing} indicating that the energy growth is preferentially absorbed by graphs most informative for classification. Guided by these observations we evaluate three interventions: a Dirichlet-energy regularizer ($\mathcal{L}_{DE}$), a robust loss (\method{}), and a spectral weight constraint (CE+W2). Across eight benchmarks, including the full and modified ogbg-ppa, symmetric noise up to $60\%$, asymmetric noise, and a transfer to Cora node classification, the three interventions all reduce within-graph energy and improve robustness while preserving clean-data performance. \method{}, our practical recommendation, matches OMG~\citep{omg7} at $\sim$70$\times$ lower training overhead.
 \end{abstract}
 
 \section{Introduction}
@@ -60,17 +60,17 @@ Graph Neural Networks (GNNs) are now the workhorse of \emph{graph classification
 
 \textbf{Graph classification is a fundamentally different setting.} In node classification, label noise corrupts \emph{individual node labels} on a single graph, and homophily, the tendency of connected nodes to share labels, is a structural prior that directly couples Dirichlet energy of the \emph{label signal} to noise. In graph classification, label noise flips the label of an \emph{entire graph}: nodes have no individual classification labels, and within-graph homophily/heterophily is largely orthogonal to the graph-level label. The standard tools and intuitions from node classification therefore do not transfer.
 
-\textbf{Our central observation is non-trivial.} We measure the Dirichlet energy of \emph{learned node representations}, not of labels. Empirically, this energy first decreases as the model captures genuine, transferable patterns. Then, when the model begins to memorize incorrect graph-level labels, the within-graph energy rises sharply, with the surge concentrated in the high-frequency spectrum. This is not a tautology: noise is injected only at the graph-label level, while node features and edges are unchanged. We show in Theorem~\ref{thm:noise_forces_energy} that, under a bi-Lipschitz assumption on the GNN, fitting noisy graph-level labels for two structurally similar graphs \emph{forces} their within-graph Dirichlet energies to grow, via the Graph Poincar\'e inequality. The connection between graph-level label noise and within-graph spectral sharpening therefore emerges through training dynamics, not by definition.
+\textbf{Our central observation.} We measure the Dirichlet energy of \emph{learned node representations}, not of labels. Empirically, this energy first decreases as the model captures genuine, transferable patterns; then, when the model begins to memorize incorrect graph-level labels, it rises sharply, with the surge concentrated in the high-frequency spectrum. This rise is not a tautology: noise is injected only at the graph-label level, while node features and edges are unchanged, so any correlation between energy and labels has to emerge through training dynamics. Theorem~\ref{thm:noise_forces_energy} supports this observation analytically: under a bi-Lipschitz regularity assumption, fitting noisy graph-level labels for two structurally similar graphs forces a lower bound on their within-graph Dirichlet energies via the Graph Poincar\'e inequality.
 
-\textbf{Why does suppressing this energy growth help?} Combining a dataset-level spectral identity (Proposition~\ref{prop:dataset_energy}) with an entropy-based argument adapted from~\citet{exploreOversmoothing}, we show in Section~\ref{sec:theory} that uncontrolled within-graph energy growth disproportionately damages \emph{high-entropy graphs}, the very graphs that carry the most discriminative signal at the pooling stage. A non-trivial decrease of within-graph Dirichlet energy thus simultaneously (i) prevents the network from fitting graph-level label noise and (ii) preserves the high-entropy regions on which graph classification accuracy depends.
+\textbf{Why does suppressing this energy growth help?} Combining a dataset-level spectral identity (Proposition~\ref{prop:dataset_energy}) with an entropy argument from~\citet{exploreOversmoothing}, Section~\ref{sec:theory} argues that uncontrolled energy growth is preferentially absorbed by \emph{high-entropy graphs}, the ones carrying most discriminative signal at pooling. Reducing within-graph Dirichlet energy therefore plausibly suppresses noise fitting while preserving the high-entropy regions classification accuracy depends on, a hypothesis we test with three mechanistically distinct interventions.
 
 \textbf{Contributions.}
 \begin{itemize}[leftmargin=*,itemsep=0.5pt,topsep=2pt]
-    \item We give the first systematic study of \emph{when} GNNs fit graph-level label noise (Section~\ref{sec:failure_modes}), isolating three failure modes: over-parameterization relative to task complexity, low-order graphs, and small training sets.
-    \item We establish Dirichlet energy as a diagnostic for graph-level noise memorization (Section~\ref{sec:diagnostic}), with a frequency decomposition showing the surge is concentrated in high-frequency components.
-    \item We provide \emph{theoretical grounding for why a non-trivial energy decrease prevents noise fitting in graph classification} (Section~\ref{sec:theory}), through a dataset-level spectral identity (Proposition~\ref{prop:dataset_energy}), a Poincar\'e--bi-Lipschitz lower bound (Theorem~\ref{thm:noise_forces_energy}), and an entropy-based asymmetry result (Corollary~\ref{cor:asymmetric}) showing that high-entropy graphs absorb the bulk of the energy growth. This is what makes the connection \emph{non-trivial} for graph classification, in contrast to the trivial relationship that exists for node classification.
-    \item We translate the theory into three convergent interventions (Section~\ref{sec:methods}): spectral weight constraints (CE+W2), explicit Dirichlet regularization ($\mathcal{L}_{DE}$), and a centroid-based loss \method{}. The fact that mechanistically distinct interventions all reduce energy and improve robustness provides causal evidence beyond a single-method study.
-    \item We evaluate on eight benchmarks under symmetric, asymmetric and high-rate ($60\%$) noise, the full and modified ogbg-ppa, and a node-classification transfer (Cora). \method{} matches or exceeds OMG~\citep{omg7} and SOP~\citep{liu2022robusttraininglabelnoise} at $\sim$70$\times$ lower compute, and our energy-based methods generalize beyond their original setting.
+    \item A controlled study of \emph{when} GNNs fit graph-level label noise (Section~\ref{sec:failure_modes}), isolating three failure modes: over-parameterization, low-order graphs, and small training sets.
+    \item Within-graph Dirichlet energy as a diagnostic for graph-level noise memorization (Section~\ref{sec:diagnostic}), with a frequency decomposition that localizes the surge to high-frequency components and an empirical scaling with the noise rate.
+    \item Analytical support for the diagnostic (Section~\ref{sec:theory}): a spectral identity (Proposition~\ref{prop:dataset_energy}), a Poincar\'e--bi-Lipschitz lower bound under noise fitting (Theorem~\ref{thm:noise_forces_energy}), and an entropy-based asymmetry result (Corollary~\ref{cor:asymmetric}). These results are unique to graph classification, where labels and feature smoothness live on different objects, unlike node classification.
+    \item Three interventions (Section~\ref{sec:methods}): a Dirichlet-energy regularizer $\mathcal{L}_{DE}$, a centroid-based loss \method{}, and a spectral weight constraint CE+W2. They are mechanistically distinct and all reduce within-graph energy while improving robustness; \method{} is our practical recommendation.
+    \item Evaluation on eight benchmarks under symmetric, asymmetric, and high-rate ($60\%$) noise, the full and a modified ogbg-ppa, and a transfer to Cora node classification. \method{} matches OMG~\citep{omg7} and SOP~\citep{liu2022robusttraininglabelnoise} at $\sim$70$\times$ lower compute.
 \end{itemize}
 
 \section{Related Work}
@@ -119,7 +119,7 @@ GNNs trained with standard cross-entropy (CE) on graph classification tasks are 
 \label{fig:failure_modes}
 \end{figure}
 
-In all three regimes (Fig.~\ref{fig:failure_modes} and Appendix~\ref{app:failure_modes_extra}), GNNs progressively memorize noisy graph-level labels. This narrows the question to: what changes in the network's internal representations during memorization, and can this change be controlled?
+In all three regimes (Fig.~\ref{fig:failure_modes} and Appendix~\ref{app:failure_modes_extra}), GNNs progressively memorize noisy graph-level labels. The natural next question is therefore: what changes in the network's internal representations during memorization, and can this change be detected and controlled? The next section identifies Dirichlet energy as that internal signal.
 
 \section{Dirichlet Energy as a Diagnostic for Noise Fitting}
 \label{sec:diagnostic}
@@ -154,10 +154,10 @@ We track $\Edirset(\mathcal{D}_c)$, the within-graph energy averaged over traini
 
 \textbf{Why energy is more useful than a generic overfitting signal.} Standard noise-detection signals require a \emph{clean} held-out set: validation loss is uninformative when validation labels follow the same noise distribution as training (the noisy validation loss continues to decrease as the model fits noise, as we observe in our setting); train--test gap is unobservable at training time; small-loss heuristics need a calibration regime. Within-graph Dirichlet energy is computed entirely on the training graphs and their representations, so it remains a valid noise-fitting indicator under fully-noisy supervision. Beyond replacing the missing clean signal, it tells you \emph{how} the network is failing: which spectral components drive the surge. This mechanistic specificity is what turns a diagnostic into a design principle, and motivates the three interventions in Section~\ref{sec:methods}, each of which targets the same harmful spectral behavior in a distinct way.
 
-\section{Why a Non-Trivial Energy Decrease Prevents Noise Fitting}
+\section{Analytical Support: Why Energy Suppression Helps}
 \label{sec:theory}
 
-We now show that, under standard regularity assumptions, the within-graph Dirichlet energy must \emph{grow} when a GNN is forced to fit graph-level label noise, and that this growth is absorbed disproportionately by graphs with richer structure. The argument has three pieces: a dataset-level spectral identity (Proposition~\ref{prop:dataset_energy}), the Graph Poincar\'e inequality (Lemma~\ref{lem:poincare}), and a bi-Lipschitz lower bound on the GNN (Lemma~\ref{lem:bilip})~\citep{chuang2022tree, davidson2024h, juvina2024training}. Together they yield Theorem~\ref{thm:noise_forces_energy}, which says that fitting noisy graph-level labels mathematically forces $\Edirset$ to rise.
+Section~\ref{sec:diagnostic} established Dirichlet energy as a reliable empirical signal. We now show this is not just correlation: under standard regularity, within-graph energy is \emph{provably forced} to grow when a GNN fits graph-level label noise, with the growth absorbed disproportionately by structurally rich graphs. The argument combines three pieces: a dataset-level spectral identity (Proposition~\ref{prop:dataset_energy}), the Graph Poincar\'e inequality (Lemma~\ref{lem:poincare}), and a bi-Lipschitz lower bound on the GNN (Lemma~\ref{lem:bilip})~\citep{chuang2022tree, davidson2024h, juvina2024training}, yielding Theorem~\ref{thm:noise_forces_energy}.
 
 \subsection{Three Building Blocks}
 
@@ -171,7 +171,7 @@ Let $\mathcal{D}=\{\mathcal{G}^1,\dots,\mathcal{G}^n\}$ with representations $\m
 where $\{(\bar{\lambda}_u,\bar{\bm{\psi}}_u)\}$ are eigenpairs of $\bar{\mathbf{L}}$, and the spectrum decomposes as $\bar{\Lambda}=\bigcup_i\Lambda^i$ with each eigenvector supported on a single connected component $\mathcal{G}^i$.
 \end{proposition}
 
-The proof (Appendix~\ref{app:proofs}) follows from $\det(\bar{\mathbf{L}}-\lambda\mathbf{I})=\prod_i\det(\mathbf{L}^i-\lambda\mathbf{I})$, since $\bar{\mathbf{L}}$ is block diagonal. The crucial structural fact is that \emph{each high-frequency eigenvector of $\bar{\mathbf{L}}$ is owned by exactly one graph}; sharpening along such an eigenvector raises only that graph's energy.
+The proof (Appendix~\ref{app:proofs}) follows from the block-diagonal structure of $\bar{\mathbf{L}}$. The key structural fact: \emph{each high-frequency eigenvector of $\bar{\mathbf{L}}$ is owned by exactly one graph}, so sharpening along it raises only that graph's energy.
 
 \begin{lemma}[Graph Poincar\'e, vector-valued form]
 \label{lem:poincare}
@@ -182,7 +182,7 @@ For any feature matrix $\mathbf{Z}\in\mathbb{R}^{N\times m'}$ on a connected gra
 \end{equation}
 \end{lemma}
 
-\eqref{eq:poincare} bounds within-graph variance of node features by the combinatorial Dirichlet energy scaled by the spectral gap. Proof: standard Courant--Fischer applied per feature dimension (Appendix~\ref{app:proofs}). The same statement holds with $\mathbf{\Delta}$ in place of $\mathbf{L}$ provided $\mathbf{Z}$ is replaced by its degree-normalization $\mathbf{D}^{-1/2}\mathbf{Z}$ throughout; we choose the form above so that the bound is on the variance of the raw representations.
+\eqref{eq:poincare} bounds within-graph feature variance by Dirichlet energy scaled by the spectral gap; proof by Courant--Fischer per feature dimension (Appendix~\ref{app:proofs}).
 
 \begin{lemma}[Bi-Lipschitz lower bound for a GIN block with 2-layer combine, adapted from~\citealp{chuang2022tree, davidson2024h, juvina2024training}]
 \label{lem:bilip}
@@ -194,11 +194,11 @@ Let $h_\theta(\mathbf{X})=\sigma_2\bigl(\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_
 A second aggregation step (turning the block into a true two-layer GIN $\sigma_2(\mathbf{M}\sigma_1(\mathbf{M}\mathbf{X}\mathbf{W}_1)\mathbf{W}_2)$) replaces $c_{\text{lower}}$ by $\alpha^2 m_1 m_2 \kappa^2$; the qualitative content of the lemma is unchanged.
 \end{lemma}
 
-The lemma is the singular-value chain rule on the vectorized Jacobian $\mathbf{J}=\mathbf{D}_2(\mathbf{W}_2^\top\!\otimes\mathbf{I}_N)\,\mathbf{D}_1(\mathbf{W}_1^\top\!\otimes\mathbf{M})$, where $\mathbf{D}_k=\mathrm{diag}(\sigma_k')$ and the Kronecker structure follows from $\mathrm{vec}(\mathbf{A}\mathbf{Y}\mathbf{B})=(\mathbf{B}^\top\!\otimes\mathbf{A})\mathrm{vec}(\mathbf{Y})$; on the regularity regime above, $\sigma_{\min}(\mathbf{J})\geq c_{\text{lower}}>0$, and \eqref{eq:bilip} follows by the fundamental theorem of calculus along $\gamma$. The role of the lemma is to express that the GIN does not collapse meaningful feature differences, the property the model uses (and abuses) when fitting noisy labels.
+Proof: singular-value chain rule on the vectorized Jacobian $\mathbf{J}=\mathbf{D}_2(\mathbf{W}_2^\top\!\otimes\mathbf{I}_N)\mathbf{D}_1(\mathbf{W}_1^\top\!\otimes\mathbf{M})$ (Appendix~\ref{app:proofs}). The lemma encodes that the GIN does not collapse meaningful feature differences, a property the model exploits when fitting noisy labels.
 
 \subsection{Main Theorem: Noise Fitting Forces Energy Growth}
 
-Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with the \emph{same} number of nodes $N=N^i=N^j$ and structurally similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean training distribution. (The same-$N$ assumption is mainly for notational simplicity; the qualitative conclusion extends to the general case via vertex-permutation matching, see Remark below.) Suppose label noise flips $c_j$ to $c_i'\neq c_i$, so the network must produce \emph{different} graph-level outputs for them. Let $\mathbf{h}_i\in\mathbb{R}^{N\times m'}$ denote the per-node post-message-passing signal of $\mathcal{G}^i$, and $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$ its node-wise mean replicated to a constant signal at $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}$.
+Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with $N^i=N^j=N$ and similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean distribution (the same-$N$ assumption is for notational simplicity; unequal $N$ in Appendix~\ref{app:proofs}). Suppose label noise flips $c_j$ to $c_i'\neq c_i$, forcing the network to output different graph-level labels. Let $\mathbf{h}_i\in\mathbb{R}^{N\times m'}$ be the post-message-passing signal of $\mathcal{G}^i$, $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}$, and $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$.
 
 \begin{theorem}[Graph-level noise fitting forces $\Edir$ to grow]
 \label{thm:noise_forces_energy}
@@ -214,11 +214,9 @@ In particular, if the noisy training objective combined with an $L$-Lipschitz re
 \end{equation}
 \end{theorem}
 
-\textbf{Why this is non-trivial.} \eqref{eq:energy_lower} is a \emph{lower bound} on the within-graph Dirichlet energies forced by the noisy training objective. For two structurally similar graphs that must be mapped to different labels, $\mathbf{g}_i\approx\mathbf{g}_j$ at the pooled stage; the gap $\Theta_{\text{noise}}$ that the network must produce to fit the noise cannot come from the means alone. By the Poincar\'e inequality, the only remaining route is the within-graph variance, which is precisely $\Edir/\lambda_2$. Energy growth is therefore a \emph{mathematical consequence} of graph-level label noise fitting, not an empirical coincidence. The role of the bi-Lipschitz condition (Lemma~\ref{lem:bilip}) is to ensure that this required output gap cannot be obtained ``for free'' by collapsing different inputs onto the same representation: $c_{\text{lower}}\!>\!0$ guarantees that maintaining $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq\Theta_{\text{noise}}$ at convergence is consistent with non-degenerate weights, and so the inequality has content. The non-triviality of the link in graph classification is exactly that this bound has no analog in node classification, where labels live on the same nodes whose smoothness $\Edir$ measures.
+\textbf{Reading the bound.} \eqref{eq:energy_lower} lower-bounds the within-graph Dirichlet energies. The intuition is geometric: for two structurally similar graphs mapped to different labels, $\mathbf{g}_i\approx\mathbf{g}_j$, so the required output gap $\Theta_{\text{noise}}$ cannot come from the means alone; by Poincar\'e, the only remaining route is the within-graph variance $\Edir/\lambda_2$. The unequal-$N$ case (zero-padded matching) is handled in Appendix~\ref{app:proofs}. The bound has no node-classification analog: there labels live on the same nodes whose smoothness $\Edir$ measures, so any link is trivial by construction.
 
-\begin{remark}[Unequal graph sizes]
-When $N^i\neq N^j$, replace $\|\mathbf{h}_i-\mathbf{h}_j\|_F$ in \eqref{eq:noise_bound} by $\inf_\pi \|\mathbf{h}_i-\pi(\mathbf{h}_j)\|_F$ where $\pi$ ranges over zero-padded permutation matchings. The triangle inequality and per-graph Poincar\'e bounds carry through unchanged for each graph; only the cross-term $\sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2$ is replaced by $\sqrt{\min(N^i,N^j)}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2$ plus a residual $|N^i-N^j|\cdot\|\mathbf{g}_\bullet\|_2^2$ from the padded rows. The energy lower bound \eqref{eq:energy_lower} therefore continues to hold with $\sqrt{N}\to\sqrt{\min(N^i,N^j)}$ and a shifted $\Theta_{\text{noise}}$.
-\end{remark}
+\textbf{Empirical anchor.} The bound predicts that $\sqrt{\Edir/\lambda_2}$ should grow monotonically with the noise rate, since higher noise forces the encoder to discriminate more pairs of similar graphs. The PPA noise-rate sweep in Appendix~\ref{app:additional_studies} confirms this: asymptotic $\Edirset$ at $10\%,20\%,30\%,40\%$ noise is monotonically increasing.
 
 \subsection{Asymmetric Burden on High-Entropy Graphs}
 
@@ -236,36 +234,24 @@ The combinatorial Laplacian $\mathbf{L}^i$ has at most $N^i$ distinct eigenvalue
 If $H(\mathcal{G}^j)\geq H(\mathcal{G}^i)$ via either of the conditions in \citet[Thm.~1--2]{exploreOversmoothing}, then the count of high-frequency eigenvalues of $\mathcal{G}^j$ above any threshold $\tau$ is at least that of $\mathcal{G}^i$, so the energy increase forced by Theorem~\ref{thm:noise_forces_energy} is preferentially absorbed by $\mathcal{G}^j$. This collapses the node-distribution distinctness of $\mathcal{G}^j$~\citep[Sec.~3.3]{exploreOversmoothing}, the very property pooled graph classifiers rely on.
 \end{corollary}
 
-\textbf{Implication.} Theorem~\ref{thm:noise_forces_energy} says noise fitting must raise energy somewhere; Corollary~\ref{cor:asymmetric} says it raises it preferentially in graphs the classifier most needs to distinguish. \emph{Suppressing within-graph energy growth therefore blocks the noise-fitting path while preserving the classification signal}, an alignment that has no analog in node classification. This is precisely the non-trivial property of graph classification we set out to establish.
+\textbf{Implication.} Theorem~\ref{thm:noise_forces_energy} says noise fitting must raise energy somewhere; Corollary~\ref{cor:asymmetric} says it raises it preferentially in the graphs the classifier most needs to distinguish. Suppressing within-graph energy growth therefore blocks the noise-fitting path while preserving the classification signal, an alignment that has no node-classification analog. This also explains why the surge of $\Edir(Z_2)$ under noise (Section~\ref{sec:diagnostic}) is steeper than under clean overfitting: noise fitting on similar graphs is structurally constrained to high-frequency, high-entropy directions, while clean overfitting can spread across the full spectrum.
 
-\begin{remark}
-This explains why, in Section~\ref{sec:diagnostic}, the surge of $\Edir(Z_2)$ under noise is much steeper than under clean overfitting. Clean overfitting can be absorbed across the full spectrum and across both means and variances; noise fitting on similar graphs is structurally constrained to high-frequency, high-entropy directions.
-\end{remark}
-
-\section{Three Convergent Methods}
+\section{Three Methods that Reduce Within-Graph Energy}
 \label{sec:methods}
 
-The theory of Section~\ref{sec:theory} identifies three distinct levers to suppress harmful within-graph energy growth: the \emph{spectrum of the weight matrices} (architectural), the \emph{energy of representations} (regularization), and the \emph{loss function} (sample re-weighting). We design one intervention for each, and use them as convergent evidence for the energy framework.
+The diagnostic and analytical results above suggest controlling within-graph Dirichlet energy through any of three mechanistically distinct levers: a regularizer on the energy itself, a loss that down-weights samples driving the energy up, or an architectural projection that removes the spectral directions responsible for sharpening. We instantiate one intervention per lever. \method{} is our practical recommendation; CE+W2 is included as a theoretical instantiation.
 
-\subsection{Method 1: Spectral Constraint on Weight Matrices (CE+W2)}
+\subsection{Explicit Dirichlet-Energy Regularization ($\mathcal{L}_{DE}$)}
 
-\citet{GRAFF} show that, in linear graph convolutions with \emph{symmetric} weight matrices $\mathbf{W}=\mathbf{Q}\bm{\Lambda}\mathbf{Q}^\top$, the gradient flow of the Dirichlet energy decomposes along the eigenvectors of $\mathbf{W}$: components corresponding to positive $\lambda_k$ evolve under attraction (smoothing) of connected nodes, while components with negative $\lambda_k$ undergo repulsion (sharpening). Together with Proposition~\ref{prop:dataset_energy}, this argues for projecting the post-aggregation matrix $\mathbf{W}_l^2$ onto its positive eigenspace whenever it is symmetric.
-
-When $\mathbf{W}_l^2$ is non-symmetric, the GRAFF dichotomy no longer applies cleanly: eigenvalues may be complex and the flow has rotational components without a sign-based smoothing/sharpening interpretation. We therefore split $\mathbf{W}_l^2=\mathbf{S}_l+\mathbf{N}_l$ with $\mathbf{S}_l=\tfrac{1}{2}(\mathbf{W}_l^2+(\mathbf{W}_l^2)^\top)$ symmetric (real spectrum) and $\mathbf{N}_l=\tfrac{1}{2}(\mathbf{W}_l^2-(\mathbf{W}_l^2)^\top)$ skew-symmetric (purely imaginary spectrum, hence no signed contribution to the GRAFF smoothing/sharpening dichotomy), and apply the projection only to $\mathbf{S}_l$. This is a heuristic extension of the GRAFF analysis, not a theorem; we validate it empirically via the energy curves of Fig.~\ref{fig:diagnostic}.
-
-\textbf{Procedure.} After each gradient step, eigendecompose $\mathbf{S}_l=\bm{\Phi}_l\bm{\mu}_l\bm{\Phi}_l^\top$ ($\bm{\mu}_l$ real, $\bm{\Phi}_l$ orthogonal), project $\bm{\mu}_l\to[\bm{\mu}_l]^+=\max(\bm{\mu}_l,0)$, and reconstruct $\mathbf{W}_l^{2+}=\bm{\Phi}_l[\bm{\mu}_l]^+\bm{\Phi}_l^\top+\mathbf{N}_l$. The projection is detached from the gradient graph (Appendix~\ref{app:weights_eigens}). \textbf{CE+W2} is CE training with this projection; it requires no clean validation data and no extra hyperparameters. It is most useful as a theoretical instantiation of the energy story; in practice, the per-epoch eigendecomposition is costly and can destabilize convergence (Appendix~\ref{app:weights_eigens}), motivating the alternatives below.
-
-\subsection{Method 2: Explicit Dirichlet-Energy Regularization ($\mathcal{L}_{DE}$)}
-
-A more direct lever is to penalize $\Edir(\mathbf{Z}^i)$ above a threshold $U_{c_i}$ that is class-aware:
+The most direct lever is to penalize $\Edir(\mathbf{Z}^i)$ above a class-aware threshold $U_{c_i}$:
 \begin{equation}
 \mathcal{L}_{DE}(\mathcal{D})=\frac{1}{N}\sum_{i=1}^N\bigl[\max(0,\Edir(\mathbf{Z}^i)-U_{c_i})\bigr]^2,\quad
 \mathcal{L}=\mathcal{L}_{CE}+\lambda\,\mathcal{L}_{DE}.
 \label{eq:lde}
 \end{equation}
-We instantiate the threshold in two ways. \textbf{Class-specific:} $U_c$ is recomputed every epoch as the mean $\Edir$ over a small clean validation set restricted to class $c$. This adapts to class-dependent baseline energies (e.g.\ a small molecular graph's natural energy is different from a social graph's), but requires a clean held-out set. \textbf{Fixed:} $U_c=U$ globally, a single hyperparameter that does not require any clean validation data, at the cost of mild over-smoothing on clean labels. Both variants improve robustness; the class-specific variant additionally improves \emph{clean-label} accuracy by acting as a generalization-aware regularizer.
+We instantiate the threshold in two ways. \textbf{Class-specific:} $U_c$ is recomputed every epoch as the mean $\Edir$ over a small clean validation subset of class $c$. This adapts to class-dependent baseline energies (a molecular graph's natural energy differs from a social graph's), but requires clean held-out data. \textbf{Fixed:} $U_c=U$ globally, a single hyperparameter, no clean validation needed, at the cost of mild over-smoothing on clean labels. Both variants improve robustness; class-specific additionally improves \emph{clean-label} accuracy by acting as a generalization-aware regularizer.
 
-\subsection{Method 3: Graph Centroid Outlier Discounting (\method{})}
+\subsection{Graph Centroid Outlier Discounting (\method{})}
 
 \method{} is our practical recommendation. It extends NCOD~\citep{wani2023combining} (originally an image-classification loss) to graph classification, with two design changes that are necessary in the graph-classification regime: a third KL term that disentangles clean from noisy graphs via per-sample trainable parameters $\mathbf{u}\in[0,1]^n$, and feedback through the current training accuracy $a_{\text{train}}$ that prevents premature outlier discounting. For batch $B$ with predictions $f_\theta(\mathbf{Z}_B)$, hard predictions $\hat{\mathbf{y}}_B$, soft labels $\tilde{\mathbf{y}}_B$ (centroid-based, see Appendix~\ref{app:gcod}), and observed labels $\mathbf{y}_B$:
 \begin{align}
@@ -273,12 +259,16 @@ We instantiate the threshold in two ways. \textbf{Class-specific:} $U_c$ is reco
 \mathcal{L}_2 &= \frac{1}{|C|}\bigl\|\hat{\mathbf{y}}_B+\mathrm{diag}_{\text{vec}}(\mathbf{u}_B)\,\mathbf{y}_B-\mathbf{y}_B\bigr\|^2,\label{eq:gcod2}\\
 \mathcal{L}_3 &= (1-a_{\text{train}})\,D_{KL}\bigl\{\mathfrak{L},\;\sigma(-\log\mathbf{u}_B)\bigr\},\label{eq:gcod3}
 \end{align}
-with $\mathfrak{L}=\log\sigma(\mathrm{diag}_{\text{mat}}(f_\theta(\mathbf{Z}_B)\mathbf{y}_B^\top))$. Updates are split: $\theta\leftarrow\theta-\alpha\nabla_\theta(\mathcal{L}_1+\mathcal{L}_3)$, $\mathbf{u}\leftarrow\mathbf{u}-\beta\nabla_{\mathbf{u}}\mathcal{L}_2$. Empirically, \method{} reduces $\Edirset$ during training (Fig.~\ref{fig:diagnostic}) without explicitly minimizing it: by down-weighting graphs flagged as noisy via large $u_i$, it removes the only gradient pressure that would push the network toward high-frequency directions in the first place. \method{} \emph{is not} a theoretically derived energy minimizer. Instead, the theory predicts that any sample-level mechanism that suppresses noise-driven gradients will reduce $\Edirset$, which is exactly the convergent evidence we observe.
+with $\mathfrak{L}=\log\sigma(\mathrm{diag}_{\text{mat}}(f_\theta(\mathbf{Z}_B)\mathbf{y}_B^\top))$. Updates are split: $\theta\leftarrow\theta-\alpha\nabla_\theta(\mathcal{L}_1+\mathcal{L}_3)$, $\mathbf{u}\leftarrow\mathbf{u}-\beta\nabla_{\mathbf{u}}\mathcal{L}_2$. \method{} is not a theoretically derived energy minimizer. Empirically, however, it reduces $\Edirset$ during training (Fig.~\ref{fig:diagnostic}) without explicitly penalizing it: by down-weighting graphs flagged as noisy via large $u_i$, it removes the gradient pressure that would otherwise push the network toward high-frequency directions, exactly as Theorem~\ref{thm:noise_forces_energy} predicts for any sample-level mechanism that suppresses noise-driven gradients.
+
+\subsection{Spectral Constraint on Weight Matrices (CE+W2)}
+
+A third lever, included as a theoretical instantiation, acts directly on the weights. \citet{GRAFF} show that for linear graph convolutions with symmetric $\mathbf{W}$, the gradient flow of $\Edir$ decomposes along eigenvectors of $\mathbf{W}$: positive eigenvalues smooth, negative ones sharpen. Practical $\mathbf{W}_l^2$ is not symmetric, so we split $\mathbf{W}_l^2=\mathbf{S}_l+\mathbf{N}_l$ and project only $\mathbf{S}_l$ to its positive eigenspace, leaving the skew $\mathbf{N}_l$ (purely imaginary spectrum, rotational) untouched. This is a heuristic extension of GRAFF — the energy of $\mathbf{M}\mathbf{Z}\mathbf{W}$ depends on $\mathbf{W}^\top\mathbf{W}$, not just $\mathbf{S}_l$ — but the resulting CE+W2 needs neither clean validation nor extra hyperparameters and shows the energy mechanism can be controlled architecturally. Implementation details are in Appendix~\ref{app:weights_eigens}; the per-epoch eigendecomposition is costly and can destabilize convergence, so we recommend $\mathcal{L}_{DE}$ or \method{} for practical use.
 
 \section{Experiments}
 \label{sec:experiments}
 
-\textbf{Setup.} We evaluate on ogbg-ppa~\citep{PPA} (full and a controlled $30\%$/$6$-class subset), MUTAG, PROTEINS, ENZYMES, IMDB-BINARY, REDDIT-MULTI-12K, MSRC-21, MNIST-graph, and Cora (node classification, transfer test). Backbones are GIN~\citep{WL1} and GCN~\citep{gcn}; full hyperparameters are in Appendix~\ref{app:experimental_setting}. Baselines: standard CE; SOP~\citep{liu2022robusttraininglabelnoise}, a strong noise-robust loss from image classification; OMG~\citep{omg7}, the leading graph-classification noise method. All numbers are mean$\pm$std over $4$ runs.
+\textbf{Setup.} We evaluate on ogbg-ppa~\citep{PPA} (full and a controlled $30\%$/$6$-class subset), MUTAG, PROTEINS, ENZYMES, IMDB-BINARY, REDDIT-MULTI-12K, MSRC-21, MNIST-graph, and Cora (node classification, transfer test). Backbones are GIN~\citep{WL1} and GCN~\citep{gcn}; full hyperparameters are in Appendix~\ref{app:experimental_setting}. We compare against three baselines: standard cross-entropy (CE); SOP~\citep{liu2022robusttraininglabelnoise}, a strong noise-robust loss from image classification; and OMG~\citep{omg7}, the leading graph-classification noise method. All numbers are mean$\pm$std over $4$ runs.
 
 \textbf{Why a controlled PPA subset?} On the full $37$-class PPA, all methods are under-parameterized for the task, and CE itself is robust (Section~\ref{sec:failure_modes}); a noise-robustness method cannot help where the baseline does not fail. We use a $30\%$/$6$-class PPA subset as a \emph{controlled} testbed where over-parameterization triggers noise fitting, and we additionally report the full-PPA result to show our methods do no harm there. Generality claims are grounded in the seven additional benchmarks.
 
@@ -351,13 +341,13 @@ MSRC-21  & $96.69$ & $90.26$ & $94.69$ & $94.39$ & $95.57\pm0.32$\\
 \end{tabular}}
 \end{table}
 
-Table~\ref{tab:multidataset} reports \method{} across seven benchmarks beyond PPA. \method{} consistently improves over CE under both 20\% symmetric and 40\% asymmetric noise, and matches CE on REDDIT where the baseline is already saturated by class imbalance. Section~\ref{sec:experiments} of Theorem~\ref{thm:noise_forces_energy}'s prediction (energy growth scales with the demanded $\Theta_{\text{noise}}$) is consistent with the empirical observation that gains grow with the noise rate~(Appendix~\ref{app:additional_studies}).
+Table~\ref{tab:multidataset} reports \method{} across seven benchmarks beyond PPA. \method{} consistently improves over CE under both 20\% symmetric and 40\% asymmetric noise, and matches CE on REDDIT where the baseline is already saturated by class imbalance. The empirical trend that gains grow with the noise rate (Appendix~\ref{app:additional_studies}) is consistent with Theorem~\ref{thm:noise_forces_energy}: the forced energy lower bound $\Theta_{\text{noise}}-\sqrt N\varepsilon$ scales with the noise level, so the room a method has to help also scales.
 
 \textbf{Full ogbg-ppa.} Under the full $37$-class benchmark, all methods including CE behave robustly to noise (Section~\ref{sec:failure_modes}); we therefore use it only as a do-no-harm check. Detailed results are in Appendix~\ref{app:full_ppa}.
 
-\textbf{Comparison with OMG.} Under the OMG~\citep{omg7} protocol (Table~\ref{tab:omg_table}), \method{} matches OMG's accuracy (within $0.1$--$0.2$ pp) while requiring \emph{$\sim$70$\times$ less} training overhead (Table~\ref{tab:runtime}): OMG adds $\approx$200\% runtime relative to CE-GIN, while \method{} adds only $\approx$2.9\%. The accuracy-per-FLOP advantage is substantial and matters for any deployment beyond toy benchmarks.
+\textbf{Comparison with OMG.} Under the OMG~\citep{omg7} protocol (Table~\ref{tab:omg_table}), \method{} matches OMG's accuracy (within $0.1$--$0.2$ pp) while requiring $\sim$70$\times$ less training overhead (Table~\ref{tab:runtime}): OMG adds $\approx$200\% runtime, \method{} only $\approx$2.9\%.
 
-\textbf{Cross-setting transfer to node classification (Cora).} As a stress test of generality, we apply \method{} and CE+W2 unchanged to node classification on Cora under $20\%$ symmetric noise, against $13$ node-specific baselines (NRGNN, RTGNN, GNN-Cleaner, ERASE, CR-GNN, and others; full table in Appendix~\ref{app:cora}). On both GAT and GCN backbones, our methods rank in the top half despite not being designed for node classification: CE+W2 reaches $0.8157$ (rank \#2) on GAT and $0.7247$ (rank \#5) on GCN; \method{} reaches $0.7910$ (rank \#4) on GAT and $0.7403$ (rank \#4) on GCN. The fact that an energy-based regularizer that does not access neighbor labels or homophily can outperform specialized node-classification methods is direct evidence that the perspective captures a general property of GNN training under label noise rather than a graph-classification-specific quirk.
+\textbf{Cross-setting transfer to node classification (Cora).} Applied unchanged to node classification on Cora under $20\%$ symmetric noise (full table in Appendix~\ref{app:cora}, against $13$ node-specific baselines including NRGNN, RTGNN, GNN-Cleaner, ERASE, CR-GNN), our methods rank in the top half on both GAT and GCN backbones: CE+W2 reaches $0.8157$ (rank \#2) on GAT and $0.7247$ (rank \#5) on GCN; \method{} reaches $0.7910$ (rank \#4) on GAT and $0.7403$ (rank \#4) on GCN. An energy-based regularizer that uses neither neighbor labels nor homophily yet outperforms specialized node-classification methods is direct evidence that the perspective captures a general property of GNN training under label noise.
 
 \begin{table}[t]
 \centering
@@ -396,26 +386,20 @@ OMG~\citep{omg7} & $\approx 3.00$\\
 \end{minipage}
 \end{table}
 
-\subsection{Convergent Evidence for the Energy Story}
-
-The three methods are mechanistically distinct, CE+W2 is architectural, $\mathcal{L}_{DE}$ is regularization, \method{} is sample re-weighting, yet they all (i) reduce $\Edirset(\mathcal{D}_c)$ during training (Fig.~\ref{fig:diagnostic} and Appendix~\ref{app:additional_studies}) and (ii) improve robustness on noisy graph classification. This convergence is the strongest causal evidence we can offer in absence of a fully closed-form theoretical characterization: three independent levers acting on the same target produce the same outcome. Theorem~\ref{thm:noise_forces_energy} and Corollary~\ref{cor:asymmetric} together explain why this is expected.
+\textbf{Convergent evidence.} The three methods are mechanistically distinct (architectural, regularization, sample re-weighting), yet all reduce $\Edirset$ during training (Fig.~\ref{fig:diagnostic}, Appendix~\ref{app:additional_studies}) and improve robustness over CE — three independent levers acting on the same target, as Theorem~\ref{thm:noise_forces_energy} and Corollary~\ref{cor:asymmetric} predict.
 
 \section{Conclusion}
 
-We have argued, theoretically and empirically, that GNN robustness to graph-level label noise is governed by the within-graph Dirichlet energy of learned representations. The connection is non-trivial in graph classification, requiring an entropy-based argument that does not exist in node classification, and it leads naturally to three convergent interventions (CE+W2, $\mathcal{L}_{DE}$, \method{}) that all improve robustness across eight benchmarks while preserving clean-label performance. \method{}, our practical recommendation, requires no clean validation data and adds only $\approx$3\% training overhead, while matching the accuracy of state-of-the-art OMG at $\sim$70$\times$ lower compute.
-
-\textbf{Limitations.} Our theoretical bridge to graph classification, while non-trivial, is not yet a closed-form characterization of the noise-energy relationship. Real-world noisy graph-classification benchmarks are scarce; we follow the standard synthetic-noise protocol, which limits ecological validity. Extending the framework to instance-dependent noise and to non-classification graph tasks (regression, link prediction) is a natural direction.
-
-\textbf{Broader impact.} Robust graph learning matters in chemistry and biology, where annotation errors are systematic. Methods that achieve robustness without requiring clean validation sets (\method{}) reduce the cost of deploying GNNs in such settings.
+Within-graph Dirichlet energy of learned representations is an empirical signal of graph-level noise memorization, supported by a Poincar\'e--bi-Lipschitz lower bound and an entropy-based asymmetry argument specific to graph classification. The diagnostic translates into three interventions ($\mathcal{L}_{DE}$, \method{}, CE+W2) that all reduce within-graph energy and improve robustness across eight benchmarks while preserving clean-label performance; \method{} adds $\approx$3\% training overhead and matches OMG at $\sim$70$\times$ lower compute. \textbf{Limitations.} The bound is a sufficient condition, not a closed-form characterization; we use synthetic noise protocols since real-world noisy graph-classification benchmarks are scarce; CE+W2 is a heuristic extension of GRAFF. \textbf{Broader impact.} Robust graph learning matters in chemistry and biology, where annotation errors are systematic, and \method{} avoids the need for clean validation data.
 
 \bibliographystyle{plainnat}
 \bibliography{main}
 
 \appendix
+\clearpage
+\input{appendix}
 
-\input{NeurIPS/appendix}
-
-\newpage
-\input{NeurIPS/checklist}
+\clearpage
+\input{checklist}
 
 \end{document}
