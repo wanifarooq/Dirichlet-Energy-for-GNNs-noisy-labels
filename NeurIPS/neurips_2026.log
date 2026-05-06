@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.5)  5 MAY 2026 15:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.5)  6 MAY 2026 02:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -724,32 +724,32 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 6
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [2]
-<figures/fig3.pdf, id=337, 339.18718pt x 233.9139pt>
+<figures/fig3.pdf, id=335, 339.18718pt x 233.9139pt>
 File: figures/fig3.pdf Graphic file (type pdf)
 <use figures/fig3.pdf>
 Package pdftex.def Info: figures/fig3.pdf  used on input line 110.
 (pdftex.def)             Requested size: 190.79109pt x 131.5798pt.
-<figures/fig2.pdf, id=338, 339.18718pt x 233.9139pt>
+<figures/fig2.pdf, id=336, 339.18718pt x 233.9139pt>
 File: figures/fig2.pdf Graphic file (type pdf)
 <use figures/fig2.pdf>
 Package pdftex.def Info: figures/fig2.pdf  used on input line 115.
 (pdftex.def)             Requested size: 190.79109pt x 131.5798pt.
-<figures/fig8a.pdf, id=341, 339.18718pt x 233.9139pt>
+<figures/fig8a.pdf, id=339, 339.18718pt x 233.9139pt>
 File: figures/fig8a.pdf Graphic file (type pdf)
 <use figures/fig8a.pdf>
 Package pdftex.def Info: figures/fig8a.pdf  used on input line 130.
 (pdftex.def)             Requested size: 182.84575pt x 126.10103pt.
-<figures/fig8b.pdf, id=342, 339.18718pt x 233.9139pt>
+<figures/fig8b.pdf, id=340, 339.18718pt x 233.9139pt>
 File: figures/fig8b.pdf Graphic file (type pdf)
 <use figures/fig8b.pdf>
 Package pdftex.def Info: figures/fig8b.pdf  used on input line 135.
 (pdftex.def)             Requested size: 182.84575pt x 126.10103pt.
-<figures/gin_gcn_dir.pdf, id=343, 339.18718pt x 233.9139pt>
+<figures/gin_gcn_dir.pdf, id=341, 339.18718pt x 233.9139pt>
 File: figures/gin_gcn_dir.pdf Graphic file (type pdf)
 <use figures/gin_gcn_dir.pdf>
 Package pdftex.def Info: figures/gin_gcn_dir.pdf  used on input line 139.
 (pdftex.def)             Requested size: 182.84575pt x 126.10103pt.
-<figures/compareDataset.pdf, id=344, 339.18718pt x 233.9139pt>
+<figures/compareDataset.pdf, id=342, 339.18718pt x 233.9139pt>
 File: figures/compareDataset.pdf Graphic file (type pdf)
 <use figures/compareDataset.pdf>
 Package pdftex.def Info: figures/compareDataset.pdf  used on input line 144.
@@ -759,17 +759,17 @@ figures/fig8b.pdf> <./figures/gin_gcn_dir.pdf> <./figures/compareDataset.pdf>]
 [6]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 244.
+(hyperref)                removing `math shift' on input line 257.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 244.
+(hyperref)                removing `subscript' on input line 257.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 244.
+(hyperref)                removing `math shift' on input line 257.
 
-LaTeX Font Info:    Trying to load font information for U+euf on input line 261
+LaTeX Font Info:    Trying to load font information for U+euf on input line 274
 .
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -795,65 +795,65 @@ ptm/m/it/10 (+20) pro-ceed-ings neurips\T1/ptm/m/n/10 (+20) , 35:2944--
 ] [16] [17] [18]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 145.
+(hyperref)                removing `math shift' on input line 143.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 145.
+(hyperref)                removing `superscript' on input line 143.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 145.
+(hyperref)                removing `subscript' on input line 143.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 145.
+(hyperref)                removing `math shift' on input line 143.
 
 [19]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 181.
+(hyperref)                removing `math shift' on input line 179.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 181.
+(hyperref)                removing `subscript' on input line 179.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 181.
+(hyperref)                removing `math shift' on input line 179.
 
-<figures/fig4.pdf, id=875, 339.18718pt x 233.9139pt>
+<figures/fig4.pdf, id=876, 339.18718pt x 233.9139pt>
 File: figures/fig4.pdf Graphic file (type pdf)
 <use figures/fig4.pdf>
-Package pdftex.def Info: figures/fig4.pdf  used on input line 197.
+Package pdftex.def Info: figures/fig4.pdf  used on input line 195.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/fig5.pdf, id=876, 339.18718pt x 233.9139pt>
+<figures/fig5.pdf, id=877, 339.18718pt x 233.9139pt>
 File: figures/fig5.pdf Graphic file (type pdf)
 <use figures/fig5.pdf>
-Package pdftex.def Info: figures/fig5.pdf  used on input line 202.
+Package pdftex.def Info: figures/fig5.pdf  used on input line 200.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/enzymez1z2y.pdf, id=881, 451.6875pt x 264.02641pt>
+<figures/enzymez1z2y.pdf, id=882, 451.6875pt x 264.02641pt>
 File: figures/enzymez1z2y.pdf Graphic file (type pdf)
 <use figures/enzymez1z2y.pdf>
-Package pdftex.def Info: figures/enzymez1z2y.pdf  used on input line 220.
+Package pdftex.def Info: figures/enzymez1z2y.pdf  used on input line 218.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
-<figures/enzymez2.pdf, id=882, 451.6875pt x 264.02641pt>
+<figures/enzymez2.pdf, id=883, 451.6875pt x 264.02641pt>
 File: figures/enzymez2.pdf Graphic file (type pdf)
 <use figures/enzymez2.pdf>
-Package pdftex.def Info: figures/enzymez2.pdf  used on input line 225.
+Package pdftex.def Info: figures/enzymez2.pdf  used on input line 223.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/overfit_enzyme.pdf, id=883, 451.6875pt x 264.02641pt>
+<figures/overfit_enzyme.pdf, id=884, 451.6875pt x 264.02641pt>
 File: figures/overfit_enzyme.pdf Graphic file (type pdf)
 <use figures/overfit_enzyme.pdf>
-Package pdftex.def Info: figures/overfit_enzyme.pdf  used on input line 242.
+Package pdftex.def Info: figures/overfit_enzyme.pdf  used on input line 240.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
-<figures/ablation_noise.pdf, id=884, 451.6875pt x 264.02641pt>
+<figures/ablation_noise.pdf, id=885, 451.6875pt x 264.02641pt>
 File: figures/ablation_noise.pdf Graphic file (type pdf)
 <use figures/ablation_noise.pdf>
-Package pdftex.def Info: figures/ablation_noise.pdf  used on input line 248.
+Package pdftex.def Info: figures/ablation_noise.pdf  used on input line 246.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -862,48 +862,48 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/fig1a.pdf, id=914, 339.18718pt x 233.9139pt>
+<figures/fig1a.pdf, id=915, 339.18718pt x 233.9139pt>
 File: figures/fig1a.pdf Graphic file (type pdf)
 <use figures/fig1a.pdf>
-Package pdftex.def Info: figures/fig1a.pdf  used on input line 320.
+Package pdftex.def Info: figures/fig1a.pdf  used on input line 318.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/fig6.pdf, id=915, 339.18718pt x 233.9139pt>
+<figures/fig6.pdf, id=916, 339.18718pt x 233.9139pt>
 File: figures/fig6.pdf Graphic file (type pdf)
 <use figures/fig6.pdf>
-Package pdftex.def Info: figures/fig6.pdf  used on input line 325.
+Package pdftex.def Info: figures/fig6.pdf  used on input line 323.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/ablation_trainingacc.pdf, id=916, 451.6875pt x 264.02641pt>
+<figures/ablation_trainingacc.pdf, id=917, 451.6875pt x 264.02641pt>
 File: figures/ablation_trainingacc.pdf Graphic file (type pdf)
 <use figures/ablation_trainingacc.pdf>
 Package pdftex.def Info: figures/ablation_trainingacc.pdf  used on input line 3
-34.
+32.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/unstability.pdf, id=917, 339.18718pt x 233.9139pt>
+<figures/unstability.pdf, id=918, 339.18718pt x 233.9139pt>
 File: figures/unstability.pdf Graphic file (type pdf)
 <use figures/unstability.pdf>
-Package pdftex.def Info: figures/unstability.pdf  used on input line 341.
+Package pdftex.def Info: figures/unstability.pdf  used on input line 339.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/mutag.pdf, id=918, 339.18718pt x 233.9139pt>
+<figures/mutag.pdf, id=919, 339.18718pt x 233.9139pt>
 File: figures/mutag.pdf Graphic file (type pdf)
 <use figures/mutag.pdf>
-Package pdftex.def Info: figures/mutag.pdf  used on input line 348.
+Package pdftex.def Info: figures/mutag.pdf  used on input line 346.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [21 <./figures/enzymez1z2y.pdf> <./figures/enzymez2.pdf> <./figures/overfit_enz
 yme.pdf> <./figures/ablation_noise.pdf>] [22 <./figures/fig1a.pdf> <./figures/f
-ig6.pdf>]) [23 <./figures/ablation_trainingacc.pdf> <./figures/unstability.pdf>
-] [24 <./figures/mutag.pdf>] (./checklist.tex [25
+ig6.pdf>] [23 <./figures/ablation_trainingacc.pdf> <./figures/unstability.pdf>]
+) [24 <./figures/mutag.pdf>] (./checklist.tex [25
 
 ]) [26] (./neurips_2026.aux)
  ***********
@@ -911,16 +911,16 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `neurips_2026.out' has not changed.
-(rerunfilecheck)             Checksum: 0D670515D181C5E03E9499D8349F6691;10185.
+(rerunfilecheck)             Checksum: E6623EBA3F96E7D4EA9FDA1DFA071369;10170.
  ) 
 Here is how much of TeX's memory you used:
  17387 strings out of 474222
- 274413 string characters out of 5748734
+ 274353 string characters out of 5748734
  1954975 words of memory out of 5000000
- 38791 multiletter control sequences out of 15000+600000
- 631271 words of font info for 339 fonts, out of 8000000 for 9000
+ 38788 multiletter control sequences out of 15000+600000
+ 631496 words of font info for 341 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,17n,79p,1436b,697s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,17n,79p,1433b,697s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texli
@@ -944,10 +944,10 @@ s/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/fonts/type1/public
 uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on neurips_2026.pdf (26 pages, 1296073 bytes).
+Output written on neurips_2026.pdf (26 pages, 1295918 bytes).
 PDF statistics:
- 1942 PDF objects out of 2073 (max. 8388607)
- 1104 compressed objects within 12 object streams
+ 1943 PDF objects out of 2073 (max. 8388607)
+ 1105 compressed objects within 12 object streams
  197 named destinations out of 1000 (max. 500000)
  71598 words of extra memory for PDF output out of 74296 (max. 10000000)
 
