@@ -173,7 +173,7 @@ We adopt the centroid-based soft labels of \citet{wani2023combining}: normalize 
 \label{app:failure_modes_extra}
 Additional plots for the F1--F3 failure modes are provided here for completeness, including effect-of-dataset-size for both PPA and synthetic datasets.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\linewidth]{figures/fig4}
@@ -196,7 +196,7 @@ We use the HLFF-GNN framework~\citep{hlffgnn} (implemented as \texttt{FGRLConv})
 \end{equation}
 the spectral form of the high-frequency energy is $\Edir(Z_2)=\sum_{r,u}\lambda_u(\bm{\psi}_u^\top Z_{2,r})^2$, in which large $\lambda_u$ amplify any noise-driven content. On ENZYMES with $30\%$ symmetric noise, we observe a sharp monotone increase in $\Edir(Z_2)$, while $\Edir(Z_1)$ and $\Edir(Y)$ remain stable, consistent with Theorem~\ref{thm:noise_forces_energy}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\linewidth]{figures/enzymez1z2y.pdf}
@@ -218,7 +218,7 @@ the spectral form of the high-frequency energy is $\Edir(Z_2)=\sum_{r,u}\lambda_
 
 \textbf{Energy scales with noise rate.} On the controlled PPA subset, we sweep symmetric noise $\in\{10,20,30,40,60\}\%$. All curves follow the same U-shape (initial decrease, then rise), and the asymptotic energy increases monotonically with noise rate. This monotonicity is what makes $\Edirset$ a diagnostic.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\linewidth]{figures/overfit_enzyme.pdf}
@@ -237,7 +237,7 @@ the spectral form of the high-frequency energy is $\Edir(Z_2)=\sum_{r,u}\lambda_
 \section{Additional Tables and Figures}
 \label{app:additional_tables}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Sensitivity of \method{} to the learning rate $\eta_u$ of the outlier parameter $\mathbf{u}$, under $40\%$ asymmetric noise.}
 \label{tab:lr_sensitivity}
@@ -256,7 +256,7 @@ MSRC-21  & $95.57$ & $95.45$ & $-0.13\%$\\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Performance of CE vs.\ \method{} with $20\%$ symmetric label noise. Last column reports the absolute gain (\method{}$-$CE) on test accuracy.}
 \label{tab:alldataset}
@@ -296,7 +296,7 @@ MSRC-21  & $95.57$ & $95.45$ & $-0.13\%$\\
 \end{tabular}}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\linewidth]{figures/fig1a.pdf}
@@ -311,21 +311,21 @@ MSRC-21  & $95.57$ & $95.45$ & $-0.13\%$\\
 \caption{(a) Train accuracy on known noisy and clean PPA subsets (4-class, $40\%$ symmetric noise) for GCN with CE: the model never separates noisy from clean training samples without a robust loss. (b) Train/test accuracy on ENZYMES with GIN under clean and $20\%$ symmetric noise.}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.45\linewidth]{figures/ablation_trainingacc.pdf}
 \caption{Ablation on the training-accuracy feedback in \method{}. Without scaling $u$ by $a_{\text{train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full \method{} activates outlier-discounting gradually.}
 \label{fig:uablation}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.45\linewidth]{figures/unstability.pdf}
 \caption{Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition.}
 \label{fig:unstability_app}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.45\linewidth]{figures/mutag.pdf}
 \caption{Average test accuracy and average within-graph $\Edirset$ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN.}
@@ -350,7 +350,7 @@ This is by design: the methods are conditional regularizers, not unconditional s
 
 To assess whether the energy perspective captures a property of GNN training under label noise that is more general than the graph-classification setting it was designed for, we apply CE+W2 and \method{} \emph{unchanged} to node classification on Cora. We use both GAT and GCN backbones with the standard public split, the transductive setting, and compare against 13 baselines: standard cross-entropy (CE; column ``standard''), UnionNet, GraphCleaner, GNNGuard, GNN-Cleaner, PI-GNN, NRGNN~\citep{nrgnn11}, RTGNN~\citep{contrastivelearning5}, Community-Defense, ERASE, and CR-GNN. We evaluate four label-noise regimes: clean (no noise), symmetric uniform 20\%, symmetric random 20\%, and pairwise flip 20\%. Each entry is mean$\pm$std over 3 independent runs.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Cora node classification, GAT backbone. Each cell is test accuracy (mean over 3 runs; std deviations available in the released code repository). Best per column is bold; our methods (CE+W2 and \method{}) are highlighted in gray. ``--'' denotes settings not run for the given baseline.}
 \label{tab:cora_gat}
@@ -377,7 +377,7 @@ NRGNN                 & $0.6887$ & $0.6207$ & --       & --\\
 \end{tabular}}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Cora node classification, GCN backbone. Each cell is test accuracy (mean over 3 runs). Best per column is bold; our methods are highlighted in gray.}
 \label{tab:cora_gcn}
@@ -404,7 +404,7 @@ ERASE                 & $0.6957$ & $0.6597$ & $0.6897$\\
 \end{tabular}}
 \end{table}
 
-\textbf{Findings.} Tables~\ref{tab:cora_gat} and~\ref{tab:cora_gcn} show that on every backbone-noise combination, at least one of CE+W2 or \method{} ranks in the top three among 13 methods, despite neither using neighbor labels, homophily, contrastive losses, pseudo-labels, nor any other node-specific machinery. Highlights: \method{} reaches $0.787$ under uniform-20\% on GAT (\#2 of 10), $0.792$ on clean GCN (\#3 of 13), and $0.769$ on flip-20\% GCN (\#3 of 13); CE+W2 reaches $0.816$ on clean GAT (\#2 of 13) and $0.774$ on random-20\% GCN (\#2 of 13). The only baseline that consistently outperforms both is UnionNet, a node-classification-specific method that exploits label-propagation priors unavailable in the graph-classification setting our methods were designed for.
+\textbf{Findings.} Tables~\ref{tab:cora_gat} and~\ref{tab:cora_gcn} show that on every backbone-noise combination, at least one of CE+W2 or \method{} ranks in the top four among the compared methods, with most placements in the top three, despite neither using neighbor labels, homophily, contrastive losses, pseudo-labels, nor any other node-specific machinery. Highlights: \method{} reaches $0.787$ under uniform-20\% on GAT (\#2 of 10), $0.792$ on clean GCN (\#3 of 13), and $0.769$ on flip-20\% GCN (\#3 of 13); CE+W2 reaches $0.816$ on clean GAT (\#2 of 13) and $0.774$ on random-20\% GCN (\#2 of 13). The single combination where neither of our methods cracks the top three is Cora-GAT random-20\%, where \method{} is \#4 of 10. The only baseline that consistently outperforms both is UnionNet, a node-classification-specific method that exploits label-propagation priors unavailable in the graph-classification setting our methods were designed for.
 
 \textbf{Interpretation, consistent with Theorem~\ref{thm:noise_forces_energy}.} The spectral mechanism by which noise fitting forces within-graph energy to grow is not specific to graph classification: in node classification, individual labels are also embedded in node-level representations whose Dirichlet energy reflects local smoothness, and constraining that smoothness penalizes the same noise-fitting path. The transfer is therefore not a coincidence but a corollary of the energy-based framing. Additional comparisons on \texttt{dblp} (GCN clean) and \texttt{amazon-computers} (GCN clean), available in the released code repository, show CE+W2 reaching $0.866$ on \texttt{dblp} (\#3 of 13) and competitive accuracy on \texttt{amazon-computers}, further supporting the cross-setting generality.
 \newpage
