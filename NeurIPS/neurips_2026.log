@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.5)  6 MAY 2026 16:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.5)  6 MAY 2026 17:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -408,12 +408,29 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2022/06/20 v1.0f Color table columns (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
+\col@sep=\dimen181
+\ar@mcellbox=\box55
+\extrarowheight=\dimen182
+\NC@list=\toks37
+\extratabsurround=\skip65
+\backup@length=\skip66
+\ar@cellbox=\box56
+)
+\everycr=\toks38
+\minrowclearance=\skip67
+\rownum=\count303
+)
 (/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
-\multirow@colwidth=\skip65
-\multirow@cntb=\count303
-\multirow@dima=\skip66
-\bigstrutjot=\dimen181
+\multirow@colwidth=\skip68
+\multirow@cntb=\count304
+\multirow@dima=\skip69
+\bigstrutjot=\dimen183
 )
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
@@ -429,8 +446,8 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 107.
 )
-\Gin@req@height=\dimen182
-\Gin@req@width=\dimen183
+\Gin@req@height=\dimen184
+\Gin@req@width=\dimen185
 )
 (/usr/share/texlive/texmf-dist/tex/latex/caption/subcaption.sty
 Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
@@ -440,41 +457,30 @@ Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 
 (/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen184
-\captionmargin=\dimen185
-\caption@leftmargin=\dimen186
-\caption@rightmargin=\dimen187
-\caption@width=\dimen188
-\caption@indent=\dimen189
-\caption@parindent=\dimen190
-\caption@hangindent=\dimen191
+\caption@tempdima=\dimen186
+\captionmargin=\dimen187
+\caption@leftmargin=\dimen188
+\caption@rightmargin=\dimen189
+\caption@width=\dimen190
+\caption@indent=\dimen191
+\caption@parindent=\dimen192
+\caption@hangindent=\dimen193
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count304
-\c@continuedfloat=\count305
+\c@caption@flags=\count305
+\c@continuedfloat=\count306
 Package caption Info: hyperref package is loaded.
 )
 Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count306
+\c@subfigure=\count307
 Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count307
+\c@subtable=\count308
 )
 (/usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
-
-(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
-Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
-\col@sep=\dimen192
-\ar@mcellbox=\box55
-\extrarowheight=\dimen193
-\NC@list=\toks37
-\extratabsurround=\skip67
-\backup@length=\skip68
-\ar@cellbox=\box56
-)
 \rotheadsize=\dimen194
-\c@nlinenum=\count308
-\TeXr@lab=\toks38
+\c@nlinenum=\count309
+\TeXr@lab=\toks39
 )
 (/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithm.sty
 Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
@@ -482,23 +488,23 @@ nment
 
 (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count309
-\float@exts=\toks39
+\c@float@type=\count310
+\float@exts=\toks40
 \float@box=\box57
-\@float@everytoks=\toks40
+\@float@everytoks=\toks41
 \@floatcapt=\box58
 )
-\@float@every@algorithm=\toks41
-\c@algorithm=\count310
+\@float@every@algorithm=\toks42
+\c@algorithm=\count311
 )
 (/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithmic.sty
 Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
-\c@ALC@unique=\count311
-\c@ALC@line=\count312
-\c@ALC@rem=\count313
-\c@ALC@depth=\count314
-\ALC@tlm=\skip69
-\algorithmicindent=\skip70
+\c@ALC@unique=\count312
+\c@ALC@line=\count313
+\c@ALC@rem=\count314
+\c@ALC@depth=\count315
+\ALC@tlm=\skip70
+\algorithmicindent=\skip71
 )
 (/usr/share/texlive/texmf-dist/tex/latex/tools/bm.sty
 Package: bm 2023/07/08 v1.2f Bold Symbol Support (DPC/FMi)
@@ -512,23 +518,23 @@ LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
 Package: enumitem 2019/06/20 v3.9 Customized lists
-\labelindent=\skip71
+\labelindent=\skip72
 \enit@outerparindent=\dimen195
-\enit@toks=\toks42
+\enit@toks=\toks43
 \enit@inbox=\box59
-\enit@count@id=\count315
-\enitdp@description=\count316
+\enit@count@id=\count316
+\enitdp@description=\count317
 )
-\c@theorem=\count317
-\c@proposition=\count318
-\c@lemma=\count319
-\c@corollary=\count320
-\c@definition=\count321
-\c@remark=\count322
+\c@theorem=\count318
+\c@proposition=\count319
+\c@lemma=\count320
+\c@corollary=\count321
+\c@definition=\count322
+\c@remark=\count323
 
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count323
+\l__color_backend_stack_int=\count324
 \l__pdf_internal_box=\box60
 )
 (./neurips_2026.aux)
@@ -646,17 +652,17 @@ File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 )
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count324
+\scratchcounter=\count325
 \scratchdimen=\dimen196
 \scratchbox=\box61
-\nofMPsegments=\count325
-\nofMParguments=\count326
-\everyMPshowfont=\toks43
-\MPscratchCnt=\count327
+\nofMPsegments=\count326
+\nofMParguments=\count327
+\everyMPshowfont=\toks44
+\MPscratchCnt=\count328
 \MPscratchDim=\dimen197
-\MPnumerator=\count328
-\makeMPintoPDFobject=\count329
-\everyMPtoPDFconversion=\toks44
+\MPnumerator=\count329
+\makeMPintoPDFobject=\count330
+\everyMPtoPDFconversion=\toks45
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -777,10 +783,7 @@ File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-euf.cfg
 File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
-) [7]
-Underfull \vbox (badness 4242) has occurred while \output is active []
-
- [8]
+) [7] [8]
 (./neurips_2026.bbl [9]
 Underfull \hbox (badness 5711) in paragraph at lines 73--79
 []\T1/ptm/m/n/10 (+20) Ching-Yao Chuang and Ste-fanie Jegelka.  Tree mover\TS1/
@@ -828,22 +831,22 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Underfull \vbox (badness 4120) has occurred while \output is active []
 
  [19]
-<figures/fig4.pdf, id=877, 339.18718pt x 233.9139pt>
+<figures/fig4.pdf, id=881, 339.18718pt x 233.9139pt>
 File: figures/fig4.pdf Graphic file (type pdf)
 <use figures/fig4.pdf>
 Package pdftex.def Info: figures/fig4.pdf  used on input line 195.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/fig5.pdf, id=878, 339.18718pt x 233.9139pt>
+<figures/fig5.pdf, id=882, 339.18718pt x 233.9139pt>
 File: figures/fig5.pdf Graphic file (type pdf)
 <use figures/fig5.pdf>
 Package pdftex.def Info: figures/fig5.pdf  used on input line 200.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/enzymez1z2y.pdf, id=883, 451.6875pt x 264.02641pt>
+<figures/enzymez1z2y.pdf, id=887, 451.6875pt x 264.02641pt>
 File: figures/enzymez1z2y.pdf Graphic file (type pdf)
 <use figures/enzymez1z2y.pdf>
 Package pdftex.def Info: figures/enzymez1z2y.pdf  used on input line 218.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
-<figures/enzymez2.pdf, id=884, 451.6875pt x 264.02641pt>
+<figures/enzymez2.pdf, id=888, 451.6875pt x 264.02641pt>
 File: figures/enzymez2.pdf Graphic file (type pdf)
 <use figures/enzymez2.pdf>
 Package pdftex.def Info: figures/enzymez2.pdf  used on input line 223.
@@ -852,12 +855,12 @@ Package pdftex.def Info: figures/enzymez2.pdf  used on input line 223.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/overfit_enzyme.pdf, id=885, 451.6875pt x 264.02641pt>
+<figures/overfit_enzyme.pdf, id=889, 451.6875pt x 264.02641pt>
 File: figures/overfit_enzyme.pdf Graphic file (type pdf)
 <use figures/overfit_enzyme.pdf>
 Package pdftex.def Info: figures/overfit_enzyme.pdf  used on input line 240.
 (pdftex.def)             Requested size: 178.86702pt x 104.55316pt.
-<figures/ablation_noise.pdf, id=886, 451.6875pt x 264.02641pt>
+<figures/ablation_noise.pdf, id=890, 451.6875pt x 264.02641pt>
 File: figures/ablation_noise.pdf Graphic file (type pdf)
 <use figures/ablation_noise.pdf>
 Package pdftex.def Info: figures/ablation_noise.pdf  used on input line 246.
@@ -869,12 +872,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/fig1a.pdf, id=916, 339.18718pt x 233.9139pt>
+<figures/fig1a.pdf, id=920, 339.18718pt x 233.9139pt>
 File: figures/fig1a.pdf Graphic file (type pdf)
 <use figures/fig1a.pdf>
 Package pdftex.def Info: figures/fig1a.pdf  used on input line 318.
 (pdftex.def)             Requested size: 178.86702pt x 123.3563pt.
-<figures/fig6.pdf, id=917, 339.18718pt x 233.9139pt>
+<figures/fig6.pdf, id=921, 339.18718pt x 233.9139pt>
 File: figures/fig6.pdf Graphic file (type pdf)
 <use figures/fig6.pdf>
 Package pdftex.def Info: figures/fig6.pdf  used on input line 323.
@@ -882,7 +885,7 @@ Package pdftex.def Info: figures/fig6.pdf  used on input line 323.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/ablation_trainingacc.pdf, id=918, 451.6875pt x 264.02641pt>
+<figures/ablation_trainingacc.pdf, id=922, 451.6875pt x 264.02641pt>
 File: figures/ablation_trainingacc.pdf Graphic file (type pdf)
 <use figures/ablation_trainingacc.pdf>
 Package pdftex.def Info: figures/ablation_trainingacc.pdf  used on input line 3
@@ -891,7 +894,7 @@ Package pdftex.def Info: figures/ablation_trainingacc.pdf  used on input line 3
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/unstability.pdf, id=919, 339.18718pt x 233.9139pt>
+<figures/unstability.pdf, id=923, 339.18718pt x 233.9139pt>
 File: figures/unstability.pdf Graphic file (type pdf)
 <use figures/unstability.pdf>
 Package pdftex.def Info: figures/unstability.pdf  used on input line 339.
@@ -899,7 +902,7 @@ Package pdftex.def Info: figures/unstability.pdf  used on input line 339.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/mutag.pdf, id=920, 339.18718pt x 233.9139pt>
+<figures/mutag.pdf, id=924, 339.18718pt x 233.9139pt>
 File: figures/mutag.pdf Graphic file (type pdf)
 <use figures/mutag.pdf>
 Package pdftex.def Info: figures/mutag.pdf  used on input line 346.
@@ -909,8 +912,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [21 <./figures/enzymez1z2y.pdf> <./figures/enzymez2.pdf> <./figures/overfit_enz
 yme.pdf> <./figures/ablation_noise.pdf>] [22 <./figures/fig1a.pdf> <./figures/f
-ig6.pdf>] [23 <./figures/ablation_trainingacc.pdf> <./figures/unstability.pdf>]
-) [24 <./figures/mutag.pdf>] (./checklist.tex [25
+ig6.pdf>]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[23 <./figures/ablation_trainingacc.pdf> <./figures/unstability.pdf>] [24 <./fi
+gures/mutag.pdf>]) (./checklist.tex [25
 
 ]) [26] (./neurips_2026.aux)
  ***********
@@ -921,13 +928,13 @@ Package rerunfilecheck Info: File `neurips_2026.out' has not changed.
 (rerunfilecheck)             Checksum: E6623EBA3F96E7D4EA9FDA1DFA071369;10170.
  ) 
 Here is how much of TeX's memory you used:
- 17387 strings out of 474222
- 274353 string characters out of 5748734
- 1954975 words of memory out of 5000000
- 38788 multiletter control sequences out of 15000+600000
- 631398 words of font info for 341 fonts, out of 8000000 for 9000
+ 17511 strings out of 474222
+ 276283 string characters out of 5748734
+ 1956975 words of memory out of 5000000
+ 38901 multiletter control sequences out of 15000+600000
+ 634189 words of font info for 350 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,17n,79p,1433b,697s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,19n,79p,1433b,697s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texli
@@ -947,14 +954,15 @@ f-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/fonts/type1/public
-/cm-super/sftt1000.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/
-uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive
-/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on neurips_2026.pdf (26 pages, 1295359 bytes).
+/cm-super/sftt0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/urw/times/utmri8a.pfb>
+Output written on neurips_2026.pdf (26 pages, 1330353 bytes).
 PDF statistics:
- 1944 PDF objects out of 2073 (max. 8388607)
- 1106 compressed objects within 12 object streams
- 197 named destinations out of 1000 (max. 500000)
- 71598 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 1956 PDF objects out of 2073 (max. 8388607)
+ 1116 compressed objects within 12 object streams
+ 199 named destinations out of 1000 (max. 500000)
+ 73134 words of extra memory for PDF output out of 74296 (max. 10000000)
 

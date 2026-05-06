@@ -101,13 +101,13 @@
 \citation{gcn}
 \citation{liu2022robusttraininglabelnoise}
 \citation{omg7}
-\citation{wani2023combining}
-\citation{wani2023combining}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Test accuracy on the PPA-30\%-6 subset (5-layer GIN, mean$\pm $std over 4 runs). \textbf  {Best} is highlighted in red and bold, second-best in blue. ``CE clean only'' shows accuracy on the clean subset of the noisy data, as a reference upper bound. Class-specific $\mathcal  {L}_{DE}^*$ requires a clean validation set.}}{8}{table.caption.4}\protected@file@percent }
 \newlabel{tab:ppa_30_perc_6_classes}{{1}{8}{Test accuracy on the PPA-30\%-6 subset (5-layer GIN, mean$\pm $std over 4 runs). \textbf {Best} is highlighted in red and bold, second-best in blue. ``CE clean only'' shows accuracy on the clean subset of the noisy data, as a reference upper bound. Class-specific $\mathcal {L}_{DE}^*$ requires a clean validation set}{table.caption.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Experiments}{8}{section.8}\protected@file@percent }
 \newlabel{sec:experiments}{{8}{8}{Experiments}{section.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Main Result: Controlled PPA Subset}{8}{subsection.8.1}\protected@file@percent }
+\citation{wani2023combining}
+\citation{wani2023combining}
 \citation{omg7}
 \citation{omg7}
 \bibstyle{plainnat}
@@ -267,7 +267,6 @@
 \newlabel{tab:lr_sensitivity}{{5}{21}{Sensitivity of \method {} to the learning rate $\eta _u$ of the outlier parameter $\mathbf {u}$, under $40\%$ asymmetric noise}{table.caption.11}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {H}Full ogbg-ppa: Do-No-Harm Check}{21}{appendix.H}\protected@file@percent }
 \newlabel{app:full_ppa}{{H}{21}{Full ogbg-ppa: Do-No-Harm Check}{appendix.H}{}}
-\citation{ghosh2017robust}
 \citation{nrgnn11}
 \citation{contrastivelearning5}
 \@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Performance of CE vs.\ GCOD{} with $20\%$ symmetric label noise. Last column reports the absolute gain (GCOD{}$-$CE) on test accuracy.}}{22}{table.caption.12}\protected@file@percent }
@@ -283,8 +282,10 @@
 \newlabel{fig:uablation}{{7}{23}{Ablation on the training-accuracy feedback in \method {}. Without scaling $u$ by $a_{\text {train}}$ (``GCOD WOT''), the outlier parameter dominates early and harms generalization; the full \method {} activates outlier-discounting gradually}{figure.caption.14}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition.}}{23}{figure.caption.15}\protected@file@percent }
 \newlabel{fig:unstability_app}{{8}{23}{Test accuracy on PPA-30\%-6 for CE and CE+W2. CE+W2 reaches comparable peak accuracy but exhibits unstable convergence due to the per-epoch eigendecomposition}{figure.caption.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cross-setting transfer of GCOD{} and CE+W2 to node classification on Cora under $20\%$ symmetric label noise. Numbers are test accuracy; ranks are with respect to the full $13$-method comparison reported in the rebuttal materials. We report only the verified results for our two methods on each backbone; the ``rank'' field indicates their position in the full ranking. The methods are not modified, regularization parameters are kept at their graph-classification defaults.}}{23}{table.caption.17}\protected@file@percent }
-\newlabel{tab:cora_transfer}{{7}{23}{Cross-setting transfer of \method {} and CE+W2 to node classification on Cora under $20\%$ symmetric label noise. Numbers are test accuracy; ranks are with respect to the full $13$-method comparison reported in the rebuttal materials. We report only the verified results for our two methods on each backbone; the ``rank'' field indicates their position in the full ranking. The methods are not modified, regularization parameters are kept at their graph-classification defaults}{table.caption.17}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cora node classification, GAT backbone. Each cell is test accuracy (mean over 3 runs; std deviations available in the released code repository). Best per column is bold; our methods (CE+W2 and GCOD{}) are highlighted in gray. ``--'' denotes settings not run for the given baseline.}}{23}{table.caption.17}\protected@file@percent }
+\newlabel{tab:cora_gat}{{7}{23}{Cora node classification, GAT backbone. Each cell is test accuracy (mean over 3 runs; std deviations available in the released code repository). Best per column is bold; our methods (CE+W2 and \method {}) are highlighted in gray. ``--'' denotes settings not run for the given baseline}{table.caption.17}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Average test accuracy and average within-graph $E^{\text  {dir}}_{\text  {set}}$ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN.}}{24}{figure.caption.16}\protected@file@percent }
 \newlabel{fig:mutag_app}{{9}{24}{Average test accuracy and average within-graph $\Edirset $ on MUTAG ($0\%$ noise) with GIN: classification accuracy improves while energy decays, the clean-data signature of a healthy GNN}{figure.caption.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Cora node classification, GCN backbone. Each cell is test accuracy (mean over 3 runs). Best per column is bold; our methods are highlighted in gray.}}{24}{table.caption.18}\protected@file@percent }
+\newlabel{tab:cora_gcn}{{8}{24}{Cora node classification, GCN backbone. Each cell is test accuracy (mean over 3 runs). Best per column is bold; our methods are highlighted in gray}{table.caption.18}{}}
 \gdef \@abspage@last{26}

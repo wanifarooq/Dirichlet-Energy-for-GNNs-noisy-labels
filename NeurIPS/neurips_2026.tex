@@ -14,7 +14,7 @@
 \usepackage{amsthm}
 \usepackage{nicefrac}
 \usepackage{microtype}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 \usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{subcaption}
@@ -281,7 +281,7 @@ A third lever, included as a theoretical instantiation, acts directly on the wei
 \section{Experiments}
 \label{sec:experiments}
 
-\textbf{Setup.} We evaluate on ogbg-ppa~\citep{PPA} (full and a controlled $30\%$/$6$-class subset), MUTAG, PROTEINS, ENZYMES, IMDB-BINARY, REDDIT-MULTI-12K, MSRC-21, MNIST-graph, and Cora (node classification, transfer test). Backbones are GIN~\citep{WL1} and GCN~\citep{gcn}; full hyperparameters are in Appendix~\ref{app:experimental_setting}. We compare against three baselines: standard cross-entropy (CE); SOP~\citep{liu2022robusttraininglabelnoise}, a strong noise-robust loss from image classification; and OMG~\citep{omg7}, the leading graph-classification noise method. All numbers are mean$\pm$std over $4$ runs.
+\textbf{Setup.} We evaluate on ogbg-ppa~\citep{PPA} (full and a controlled $30\%$/$6$-class subset), MUTAG, PROTEINS, ENZYMES, IMDB-BINARY, REDDIT-MULTI-12K, MSRC-21, MNIST-graph, and Cora (node classification, transfer test).\footnote{Anonymized code: \url{https://anonymous.4open.science/r/Robustness_Graph_Classification-E76F/}.} Backbones are GIN~\citep{WL1} and GCN~\citep{gcn}; full hyperparameters are in Appendix~\ref{app:experimental_setting}. We compare against three baselines: standard cross-entropy (CE); SOP~\citep{liu2022robusttraininglabelnoise}, a strong noise-robust loss from image classification; and OMG~\citep{omg7}, the leading graph-classification noise method. All numbers are mean$\pm$std over $4$ runs.
 
 \textbf{Why a controlled PPA subset?} On the full $37$-class PPA, all methods are under-parameterized for the task, and CE itself is robust (Section~\ref{sec:failure_modes}); a noise-robustness method cannot help where the baseline does not fail. We use a $30\%$/$6$-class PPA subset as a \emph{controlled} testbed where over-parameterization triggers noise fitting, and we additionally report the full-PPA result to show our methods do no harm there. Generality claims are grounded in the seven additional benchmarks.
 
@@ -360,7 +360,7 @@ Table~\ref{tab:multidataset} reports \method{} across seven benchmarks beyond PP
 
 \textbf{Comparison with OMG.} Under the OMG~\citep{omg7} protocol (Table~\ref{tab:omg_table}), \method{} matches OMG's accuracy (within $0.1$--$0.2$ pp) while requiring $\sim$70$\times$ less training overhead (Table~\ref{tab:runtime}): OMG adds $\approx$200\% runtime, \method{} only $\approx$2.9\%.
 
-\textbf{Cross-setting transfer to node classification (Cora).} Applied unchanged to node classification on Cora under $20\%$ symmetric noise (full table in Appendix~\ref{app:cora}, against $13$ node-specific baselines including NRGNN, RTGNN, GNN-Cleaner, ERASE, CR-GNN), our methods rank in the top half on both GAT and GCN backbones: CE+W2 reaches $0.8157$ (rank \#2) on GAT and $0.7247$ (rank \#5) on GCN; \method{} reaches $0.7910$ (rank \#4) on GAT and $0.7403$ (rank \#4) on GCN. An energy-based regularizer that uses neither neighbor labels nor homophily yet outperforms specialized node-classification methods is direct evidence that the perspective captures a general property of GNN training under label noise.
+\textbf{Cross-setting transfer to node classification (Cora).} Applied unchanged to Cora under three structured 20\% noise types (flip, random, uniform) against 13 node-specific baselines (full table in Appendix~\ref{app:cora}), our methods rank in the top three on every backbone-noise combination. Highlights: on GAT, \method{} reaches $0.787$ (\#2) under uniform noise and CE+W2 $0.8157$ (\#2) under clean labels; on GCN, CE+W2 reaches $0.7743$ (\#3) under random noise and \method{} $0.7687$ (\#3) under flip noise. That an energy-based regularizer using neither neighbor labels nor homophily matches specialized node-classification methods is direct evidence the perspective captures a general property of GNN training under label noise.
 
 \begin{table}[t]
 \centering
