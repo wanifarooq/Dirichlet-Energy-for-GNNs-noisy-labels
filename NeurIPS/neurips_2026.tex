@@ -85,9 +85,9 @@ Graph Neural Networks (GNNs) are now the workhorse of \emph{graph classification
 \section{Background}
 \label{sec:background}
 
-\textbf{Notation.} A graph is $\mathcal{G}=(\mathcal{V},\mathcal{E},\mathbf{X})$ with $N=|\mathcal{V}|$, degree matrix $\mathbf{D}$, adjacency $\mathbf{A}\in\{0,1\}^{N\times N}$, feature matrix $\mathbf{X}\in\mathbb{R}^{N\times m}$, combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ (with eigenvalues $0=\lambda_1\le\lambda_2\le\dots\le\lambda_N$) and normalized Laplacian $\mathbf{\Delta}=\mathbf{D}^{-1/2}\mathbf{L}\mathbf{D}^{-1/2}$. We write $\lambda_2(\mathcal{G})$ for $\lambda_2(\mathbf{L})$ throughout and use $\mathbf{\Delta}$ only when explicitly stated. In \emph{graph classification}, the dataset is $\mathcal{D}=\{(\mathcal{G}^i,\mathbf{y}_i)\}_{i=1}^n$, $\mathbf{y}_i\in\{0,1\}^{|C|}$ the one-hot graph label; we write $c_i$ for the class. Under message passing, $\mathbf{H}_i^{l+1}=\mathrm{UP}_{\mathbf{\Omega}_l}(\mathbf{H}_i^l,\mathrm{AGGR}_{\mathbf{W}_l}(\mathbf{H}_i^l,\mathbf{A}^i))$, with $\mathbf{H}_i^0\equiv\mathbf{X}^i$ and $\mathbf{Z}^i\equiv\mathbf{H}_i^L$. A permutation-invariant readout $f_\theta:\mathbb{R}^{N_i\times m'}\to\mathbb{R}^{|C|}$ maps node features to class probabilities $\hat{\mathbf{y}}_i$. Under noisy labels, the observed $c_i$ may differ from the ground truth; the test set is clean.
+\textbf{Notation.} A graph is $\mathcal{G}=(\mathcal{V},\mathcal{E},\mathbf{X})$ with $N=|\mathcal{V}|$, degree matrix $\mathbf{D}$, adjacency $\mathbf{A}\in\{0,1\}^{N\times N}$, feature matrix $\mathbf{X}\in\mathbb{R}^{N\times m}$, combinatorial Laplacian $\mathbf{L}=\mathbf{D}-\mathbf{A}$ (with eigenvalues $0=\lambda_1\le\lambda_2\le\dots\le\lambda_N$) and normalized Laplacian $\mathbf{\Delta}=\mathbf{D}^{-1/2}\mathbf{L}\mathbf{D}^{-1/2}$. We write $\lambda_2(\mathcal{G})$ for $\lambda_2(\mathbf{L})$ throughout and use $\mathbf{\Delta}$ only when explicitly stated. In \emph{graph classification}, the dataset is $\mathcal{D}=\{(\mathcal{G}^i,\mathbf{y}_i)\}_{i=1}^n$, $\mathbf{y}_i\in\{0,1\}^{|C|}$ the one-hot graph label; we write $c_i$ for the class. Under message passing, $\mathbf{H}_i^{l+1}=\mathrm{UP}_{\mathbf{\Omega}_l}(\mathbf{H}_i^l,\mathrm{AGGR}_{\mathbf{W}_l}(\mathbf{H}_i^l,\mathbf{A}^i))$, with $\mathbf{H}_i^0\equiv\mathbf{X}^i$ and $\mathbf{Z}^i\equiv\mathbf{H}_i^L$. A permutation-invariant readout $f_\theta:\mathbb{R}^{N^i\times m'}\to\mathbb{R}^{|C|}$ maps node features to class probabilities $\hat{\mathbf{y}}_i$. Under noisy labels, the observed $c_i$ may differ from the ground truth; the test set is clean.
 
-\textbf{Dirichlet energy on graphs.} For graph $\mathcal{G}^i$ with representation $\mathbf{Z}^i\in\mathbb{R}^{N_i\times m'}$ we use the combinatorial Dirichlet energy
+\textbf{Dirichlet energy on graphs.} For graph $\mathcal{G}^i$ with representation $\mathbf{Z}^i\in\mathbb{R}^{N^i\times m'}$ we use the combinatorial Dirichlet energy
 \begin{equation}
 \Edir(\mathbf{Z}^i)=\sum_{(u,v)\in\mathcal{E}^i}\bigl\|\mathbf{Z}^i_u-\mathbf{Z}^i_v\bigr\|_2^2 = \mathrm{tr}\bigl((\mathbf{Z}^i)^\top\mathbf{L}^i\mathbf{Z}^i\bigr).
 \label{eq:edir}
@@ -211,16 +211,16 @@ Proof: chain the global element-wise lower-Lipschitz bound of leaky-ReLU ($\|\si
 
 \subsection{Main Theorem: Noise Fitting Forces Energy Growth}
 
-Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with $N^i=N^j=N$ and similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean distribution (the same-$N$ assumption is for notational simplicity; unequal $N$ in Appendix~\ref{app:proofs}). Suppose label noise flips $c_j$ to $c_i'\neq c_i$, forcing the network to output different graph-level labels. Let $\mathbf{h}_i\in\mathbb{R}^{N\times m'}$ be the post-message-passing signal of $\mathcal{G}^i$, $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}$, and $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$.
+Consider two graphs $\mathcal{G}^i,\mathcal{G}^j$ with $N^i=N^j=N$ and similar pooled descriptors $\mathbf{g}_i\approx\mathbf{g}_j$ on the clean distribution (same-$N$ for notational simplicity; unequal $N$ in Appendix~\ref{app:proofs}). Suppose label noise flips $c_j$ to $c_i'\neq c_i$, forcing different graph-level outputs. Recall $\mathbf{Z}^i\in\mathbb{R}^{N\times m'}$ from Section~\ref{sec:background}; let $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{Z}^i_v$ and $\widetilde{\mathbf{Z}}^i:=\mathbf{1}_N\mathbf{g}_i^\top$ (constant-signal replication of $\mathbf{g}_i$).
 
 \begin{theorem}[Graph-level noise fitting forces $\Edir$ to grow]
 \label{thm:noise_forces_energy}
 Under the hypotheses of Lemmas~\ref{lem:poincare}--\ref{lem:bilip} and $N^i=N^j=N$,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}.
+\|\mathbf{Z}^i-\mathbf{Z}^j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}.
 \label{eq:noise_bound}
 \end{equation}
-In particular, if the noisy training objective combined with an $L$-Lipschitz readout forces a graph-level output gap of at least $\Delta_{\text{out}}$, so that $\|\mathbf{h}_i-\mathbf{h}_j\|_F\geq\Theta_{\text{noise}}:=L^{-1}\Delta_{\text{out}}$, while the structural similarity gives $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, then
+In particular, if the noisy training objective combined with an $L$-Lipschitz readout forces a graph-level output gap of at least $\Delta_{\text{out}}$, so that $\|\mathbf{Z}^i-\mathbf{Z}^j\|_F\geq\Theta_{\text{noise}}:=L^{-1}\Delta_{\text{out}}$, while the structural similarity gives $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, then
 \begin{equation}
 \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}} \;\geq\; \Theta_{\text{noise}}-\sqrt{N}\,\varepsilon.
 \label{eq:energy_lower}
@@ -399,11 +399,11 @@ OMG~\citep{omg7} & $\approx 3.00$\\
 \end{minipage}
 \end{table}
 
-\textbf{Convergent evidence.} The three methods are mechanistically distinct (architectural, regularization, sample re-weighting), yet all reduce $\Edirset$ during training (Fig.~\ref{fig:diagnostic}, Appendix~\ref{app:additional_studies}) and improve robustness over CE — three independent levers acting on the same target, as Theorem~\ref{thm:noise_forces_energy} and Corollary~\ref{cor:asymmetric} predict.
+\textbf{Convergent evidence.} The three methods (architectural, regularization, sample re-weighting) all reduce $\Edirset$ during training and improve robustness over CE — convergent evidence for the energy mechanism (Fig.~\ref{fig:diagnostic}, Appendix~\ref{app:additional_studies}).
 
 \section{Conclusion}
 
-Within-graph Dirichlet energy of learned representations is an empirical signal of graph-level noise memorization, supported by a Poincar\'e-based lower bound and an entropy-based asymmetry argument specific to graph classification. The diagnostic translates into three interventions ($\mathcal{L}_{DE}$, \method{}, CE+W2) that all reduce within-graph energy and improve robustness across eight benchmarks while preserving clean-label performance; \method{} adds $\approx$3\% training overhead and matches OMG at $\sim$70$\times$ lower compute. \textbf{Limitations.} The bound is a sufficient condition, not a closed-form characterization; we use synthetic noise protocols since real-world noisy graph-classification benchmarks are scarce; CE+W2 is a heuristic extension of GRAFF. \textbf{Broader impact.} Robust graph learning matters in chemistry and biology, where annotation errors are systematic, and \method{} avoids the need for clean validation data.
+Within-graph Dirichlet energy diagnoses graph-level noise memorization, supported by a Poincar\'e-based bound and an entropy asymmetry argument unique to graph classification. Three interventions ($\mathcal{L}_{DE}$, \method{}, CE+W2) reduce energy and improve robustness on eight benchmarks; \method{} matches OMG at $\sim$70$\times$ lower compute. \textbf{Limitations:} sufficient bound only, synthetic noise, heuristic CE+W2. \textbf{Impact:} robust GNNs aid chemistry/biology; \method{} needs no clean validation.
 
 \bibliographystyle{plainnat}
 \bibliography{main}

@@ -90,39 +90,39 @@ The widening regime $m\leq m'\leq m''$ together with $\sigma_{\min}(\mathbf{W}_k
 
 \subsection{Proof of Theorem~\ref{thm:noise_forces_energy} (Noise Forces Energy Growth)}
 
-Let $\mathbf{h}_i,\mathbf{h}_j\in\mathbb{R}^{N\times m'}$ be the post-message-passing per-node signals of $\mathcal{G}^i$ and $\mathcal{G}^j$ (we assume $N^i=N^j=N$; the unequal-$N$ case is treated in the Remark in the main text). Let $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{h}_{i,v}\in\mathbb{R}^{m'}$ be the mean-pooled graph descriptor, and let $\bar{\mathbf{h}}_i=\mathbf{1}_N\mathbf{g}_i^\top$ be its replication to a constant per-node signal. By the Frobenius-norm triangle inequality,
+Let $\mathbf{Z}^i,\mathbf{Z}^j\in\mathbb{R}^{N\times m'}$ be the post-message-passing per-node representations of $\mathcal{G}^i$ and $\mathcal{G}^j$ as defined in Section~\ref{sec:background} (we assume $N^i=N^j=N$; the unequal-$N$ case is treated below). Let $\mathbf{g}_i=\frac{1}{N}\sum_v\mathbf{Z}^i_v\in\mathbb{R}^{m'}$ be the mean-pooled graph descriptor, and let $\widetilde{\mathbf{Z}}^i=\mathbf{1}_N\mathbf{g}_i^\top$ denote its replication to a constant per-node signal. By the Frobenius-norm triangle inequality,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \|\mathbf{h}_i-\bar{\mathbf{h}}_i\|_F + \|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F + \|\bar{\mathbf{h}}_j-\mathbf{h}_j\|_F.
+\|\mathbf{Z}^i-\mathbf{Z}^j\|_F \;\le\; \|\mathbf{Z}^i-\widetilde{\mathbf{Z}}^i\|_F + \|\widetilde{\mathbf{Z}}^i-\widetilde{\mathbf{Z}}^j\|_F + \|\widetilde{\mathbf{Z}}^j-\mathbf{Z}^j\|_F.
 \end{equation}
-\textbf{Middle term.} Because both $\bar{\mathbf{h}}_i,\bar{\mathbf{h}}_j$ are constant signals of size $N\times m'$,
+\textbf{Middle term.} Because both $\widetilde{\mathbf{Z}}^i,\widetilde{\mathbf{Z}}^j$ are constant signals of size $N\times m'$,
 \begin{equation}
-\|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F^2=\sum_{v=1}^N\|\mathbf{g}_i-\mathbf{g}_j\|_2^2=N\,\|\mathbf{g}_i-\mathbf{g}_j\|_2^2,
+\|\widetilde{\mathbf{Z}}^i-\widetilde{\mathbf{Z}}^j\|_F^2=\sum_{v=1}^N\|\mathbf{g}_i-\mathbf{g}_j\|_2^2=N\,\|\mathbf{g}_i-\mathbf{g}_j\|_2^2,
 \end{equation}
-so $\|\bar{\mathbf{h}}_i-\bar{\mathbf{h}}_j\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$.
+so $\|\widetilde{\mathbf{Z}}^i-\widetilde{\mathbf{Z}}^j\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$.
 
-\textbf{Variance terms.} Identifying $\mathbf{h}_i$ with $\mathbf{Z}^i$ (the layer-$L$ representation whose Dirichlet energy we measure), Lemma~\ref{lem:poincare} applied to $\mathbf{Z}^i$ gives
+\textbf{Variance terms.} Lemma~\ref{lem:poincare} applied to $\mathbf{Z}^i$ gives
 \begin{equation}
-\|\mathbf{h}_i-\bar{\mathbf{h}}_i\|_F^2=\sum_v\|\mathbf{h}_{i,v}-\mathbf{g}_i\|_2^2\;\le\;\frac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)},
+\|\mathbf{Z}^i-\widetilde{\mathbf{Z}}^i\|_F^2=\sum_v\|\mathbf{Z}^i_v-\mathbf{g}_i\|_2^2\;\le\;\frac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)},
 \end{equation}
 and analogously for $\mathcal{G}^j$. Taking square roots and combining,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}},
+\|\mathbf{Z}^i-\mathbf{Z}^j\|_F \;\le\; \sqrt{N}\,\|\mathbf{g}_i-\mathbf{g}_j\|_2 + \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}},
 \end{equation}
 which is \eqref{eq:noise_bound}.
 
-\textbf{Lower bound from the noisy training objective.} The graph-level prediction is $\hat{\mathbf{y}}=R(\mathbf{h})$ for some permutation-invariant readout $R$ that is $L$-Lipschitz in the Frobenius norm (mean- or sum-pooling followed by an MLP with bounded weights). At convergence, the noisy training objective enforces $\hat{\mathbf{y}}_i$ to lie near a one-hot vector at $c_i$ and $\hat{\mathbf{y}}_j$ near a one-hot at $c_j\neq c_i$, so $\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\geq\Delta_{\mathrm{out}}$ for some $\Delta_{\mathrm{out}}>0$. By the readout's upper-Lipschitz property,
+\textbf{Lower bound from the noisy training objective.} The graph-level prediction is $\hat{\mathbf{y}}_i=f_\theta(\mathbf{Z}^i)$, where $f_\theta$ is the permutation-invariant readout from Section~\ref{sec:background}; we assume $f_\theta$ is $L$-Lipschitz in the Frobenius norm (mean- or sum-pooling followed by an MLP with bounded weights). At convergence, the noisy training objective enforces $\hat{\mathbf{y}}_i$ to lie near a one-hot vector at $c_i$ and $\hat{\mathbf{y}}_j$ near a one-hot at $c_j\neq c_i$, so $\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\geq\Delta_{\mathrm{out}}$ for some $\Delta_{\mathrm{out}}>0$. By the readout's upper-Lipschitz property,
 \begin{equation}
-\|\mathbf{h}_i-\mathbf{h}_j\|_F\;\geq\;L^{-1}\,\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\;\geq\;L^{-1}\Delta_{\mathrm{out}}=:\Theta_{\text{noise}}.
+\|\mathbf{Z}^i-\mathbf{Z}^j\|_F\;\geq\;L^{-1}\,\|\hat{\mathbf{y}}_i-\hat{\mathbf{y}}_j\|_2\;\geq\;L^{-1}\Delta_{\mathrm{out}}=:\Theta_{\text{noise}}.
 \end{equation}
-The role of Lemma~\ref{lem:bilip} is to make this lower bound non-vacuous: $c_{\text{lower}}>0$ ensures that the encoder has a positive lower-Lipschitz constant at convergence, so the noisy-label constraint cannot be satisfied by collapsing $(\mathbf{X}^i,\mathbf{A}^i)$ and $(\mathbf{X}^j,\mathbf{A}^j)$ to the same internal representation; equivalently, the encoder remains in a regularity regime where $\|\mathbf{h}_i-\mathbf{h}_j\|_F$ is a meaningful quantity.
+The role of Lemma~\ref{lem:bilip} is to make this lower bound non-vacuous: $c_{\text{lower}}>0$ ensures that the encoder has a positive lower-Lipschitz constant at convergence, so the noisy-label constraint cannot be satisfied by collapsing $(\mathbf{X}^i,\mathbf{A}^i)$ and $(\mathbf{X}^j,\mathbf{A}^j)$ to the same internal representation; equivalently, the encoder remains in a regularity regime where $\|\mathbf{Z}^i-\mathbf{Z}^j\|_F$ is a meaningful quantity.
 
-\textbf{Combining upper and lower bounds.} Under the structural-similarity assumption $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, substituting $\Theta_{\text{noise}}\leq\|\mathbf{h}_i-\mathbf{h}_j\|_F$ into \eqref{eq:noise_bound} and rearranging,
+\textbf{Combining upper and lower bounds.} Under the structural-similarity assumption $\|\mathbf{g}_i-\mathbf{g}_j\|_2\leq\varepsilon$, substituting $\Theta_{\text{noise}}\leq\|\mathbf{Z}^i-\mathbf{Z}^j\|_F$ into \eqref{eq:noise_bound} and rearranging,
 \begin{equation}
 \sqrt{\tfrac{\Edir(\mathbf{Z}^i)}{\lambda_2(\mathcal{G}^i)}}+\sqrt{\tfrac{\Edir(\mathbf{Z}^j)}{\lambda_2(\mathcal{G}^j)}}\;\geq\;\Theta_{\text{noise}}-\sqrt{N}\,\varepsilon,
 \end{equation}
 which is \eqref{eq:energy_lower}. $\square$
 
-\textbf{Unequal graph sizes.} When $N^i\neq N^j$, set $N=\max(N^i,N^j)$ and pad the smaller graph by appending $N-N^{\min}$ rows equal to its mean $\mathbf{g}_\bullet$, with the corresponding padded vertices isolated (no edges). Two facts make this padding harmless: (i) appending $\mathbf{g}_\bullet$-valued rows leaves the graph mean unchanged, and (ii) isolated padded vertices contribute nothing to the Dirichlet energy, so $\Edir(\mathbf{Z}^{\text{pad}})=\Edir(\mathbf{Z})$. The within-graph variance $\|\mathbf{h}_\bullet^{\text{pad}}-\bar{\mathbf{h}}_\bullet^{\text{pad}}\|_F^2=\sum_{v=1}^{N^{\min}}\|\mathbf{h}_{\bullet,v}-\mathbf{g}_\bullet\|^2$ is also preserved, so Lemma~\ref{lem:poincare} applies unchanged. The middle term becomes $\|\bar{\mathbf{h}}_i^{\text{pad}}-\bar{\mathbf{h}}_j^{\text{pad}}\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$, and the readout's lower bound is preserved up to a fixed pooling constant. Hence \eqref{eq:noise_bound} and \eqref{eq:energy_lower} hold with $N\to\max(N^i,N^j)$.
+\textbf{Unequal graph sizes.} When $N^i\neq N^j$, set $N=\max(N^i,N^j)$ and pad the smaller graph by appending $N-N^{\min}$ rows equal to its mean $\mathbf{g}_\bullet$, with the corresponding padded vertices isolated (no edges). Let $(\mathbf{Z}^\bullet)^{\text{pad}}$ and $(\widetilde{\mathbf{Z}}^\bullet)^{\text{pad}}$ denote the padded representation and its constant-signal replication. Two facts make this padding harmless: (i) appending $\mathbf{g}_\bullet$-valued rows leaves the graph mean unchanged, and (ii) isolated padded vertices contribute nothing to the Dirichlet energy, so $\Edir((\mathbf{Z}^\bullet)^{\text{pad}})=\Edir(\mathbf{Z}^\bullet)$. The within-graph variance $\|(\mathbf{Z}^\bullet)^{\text{pad}}-(\widetilde{\mathbf{Z}}^\bullet)^{\text{pad}}\|_F^2=\sum_{v=1}^{N^{\min}}\|\mathbf{Z}^\bullet_v-\mathbf{g}_\bullet\|^2$ is also preserved, so Lemma~\ref{lem:poincare} applies unchanged. The middle term becomes $\|(\widetilde{\mathbf{Z}}^i)^{\text{pad}}-(\widetilde{\mathbf{Z}}^j)^{\text{pad}}\|_F=\sqrt{N}\|\mathbf{g}_i-\mathbf{g}_j\|_2$, and the readout's lower bound is preserved up to a fixed pooling constant. Hence \eqref{eq:noise_bound} and \eqref{eq:energy_lower} hold with $N\to\max(N^i,N^j)$.
 
 \subsection{Proof of Lemma~\ref{lem:spectral_count} (Spectral Counting)}
 
