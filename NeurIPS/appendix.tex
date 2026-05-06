@@ -362,8 +362,8 @@ To assess whether the energy perspective captures a property of GNN training und
 \midrule
 UnionNet              & $\mathbf{0.8287}$ & $\mathbf{0.7997}$ & $\mathbf{0.8183}$ & $\mathbf{0.8060}$\\
 \rowcolor[gray]{0.9} CE+W2 (positive\_eig.) & $0.8157$ & $0.7660$ & $0.7603$ & $0.7483$\\
-GraphCleaner          & $0.8023$ & $0.7920$ & $0.7877$ & $0.7690$\\
 \rowcolor[gray]{0.9} \method{} (gcod)       & $0.8120$ & $0.7607$ & $0.7733$ & $0.7870$\\
+GraphCleaner          & $0.8023$ & $0.7920$ & $0.7877$ & $0.7690$\\
 GNNGuard              & $0.7983$ & $0.7527$ & $0.7787$ & $0.7460$\\
 Community-Defense     & $0.7953$ & $0.7440$ & $0.7680$ & $0.7390$\\
 CE (standard)         & $0.7950$ & $0.7440$ & $0.7693$ & $0.7437$\\
@@ -404,7 +404,7 @@ ERASE                 & $0.6957$ & $0.6597$ & $0.6897$\\
 \end{tabular}}
 \end{table}
 
-\textbf{Findings.} Tables~\ref{tab:cora_gat} and~\ref{tab:cora_gcn} show that on every backbone-noise combination, at least one of CE+W2 or \method{} ranks in the top three among 13 methods, despite neither using neighbor labels, homophily, contrastive losses, pseudo-labels, nor any other node-specific machinery. Highlights: \method{} reaches $0.787$ under uniform-20\% on GAT (\#2 of 10), $0.792$ on clean GCN (\#3 of 13), and $0.769$ on flip-20\% GCN (\#3 of 13); CE+W2 reaches $0.816$ on clean GAT (\#2 of 13) and $0.774$ on random-20\% GCN (\#3 of 13). The only baseline that consistently outperforms both is UnionNet, a node-classification-specific method that exploits label-propagation priors unavailable in the graph-classification setting our methods were designed for.
+\textbf{Findings.} Tables~\ref{tab:cora_gat} and~\ref{tab:cora_gcn} show that on every backbone-noise combination, at least one of CE+W2 or \method{} ranks in the top three among 13 methods, despite neither using neighbor labels, homophily, contrastive losses, pseudo-labels, nor any other node-specific machinery. Highlights: \method{} reaches $0.787$ under uniform-20\% on GAT (\#2 of 10), $0.792$ on clean GCN (\#3 of 13), and $0.769$ on flip-20\% GCN (\#3 of 13); CE+W2 reaches $0.816$ on clean GAT (\#2 of 13) and $0.774$ on random-20\% GCN (\#2 of 13). The only baseline that consistently outperforms both is UnionNet, a node-classification-specific method that exploits label-propagation priors unavailable in the graph-classification setting our methods were designed for.
 
 \textbf{Interpretation, consistent with Theorem~\ref{thm:noise_forces_energy}.} The spectral mechanism by which noise fitting forces within-graph energy to grow is not specific to graph classification: in node classification, individual labels are also embedded in node-level representations whose Dirichlet energy reflects local smoothness, and constraining that smoothness penalizes the same noise-fitting path. The transfer is therefore not a coincidence but a corollary of the energy-based framing. Additional comparisons on \texttt{dblp} (GCN clean) and \texttt{amazon-computers} (GCN clean), available in the released code repository, show CE+W2 reaching $0.866$ on \texttt{dblp} (\#3 of 13) and competitive accuracy on \texttt{amazon-computers}, further supporting the cross-setting generality.
 \newpage
